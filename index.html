@@ -165,6 +165,18 @@ textarea.notes-input::placeholder { color: var(--steel); }
 .general-notes-header { padding: 10px 14px; background: linear-gradient(90deg, var(--steel), var(--navy2)); display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
 textarea.general-notes-input { width: 100%; min-height: 120px; font-size: 13px; font-family: var(--font); padding: 14px; background: transparent; border: none; color: var(--text); resize: none; outline: none; line-height: 1.6; }
 textarea.general-notes-input::placeholder { color: var(--steel); }
+
+/* Photo tab */
+.photo-pane { padding: 12px 14px; }
+.photo-thumb-wrap { position: relative; display: inline-block; }
+.photo-thumb { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); display: block; }
+.photo-retake { position: absolute; top: 6px; right: 6px; background: rgba(10,22,40,0.75); border: 1px solid var(--border); color: var(--accent); font-size: 11px; font-family: var(--mono); padding: 4px 8px; border-radius: 6px; cursor: pointer; touch-action: manipulation; }
+.photo-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px 0; }
+.photo-empty-icon { font-size: 36px; opacity: 0.3; }
+.photo-empty-txt { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+.camera-btn { font-family: var(--font); font-size: 13px; font-weight: 600; padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); color: var(--accent); cursor: pointer; touch-action: manipulation; display: flex; align-items: center; gap: 6px; }
+.camera-btn:active { background: rgba(245,158,11,0.2); }
+.thumb-badge { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-left: 4px; vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -221,7 +233,7 @@ textarea.general-notes-input::placeholder { color: var(--steel); }
 const TASK_NAMES = ['Trenching','Pipelay','Welded','Tested','Sleeved','Diapered','Slurry'];
 
 function blankTasks(){
-  return TASK_NAMES.map(name=>({name, stStart:'', stEnd:'', wjStart:'', wjEnd:'', notes:''}));
+  return TASK_NAMES.map(name=>({name, stStart:'', stEnd:'', wjStart:'', wjEnd:'', notes:'', photo:''}));
 }
 
 let TASKS = blankTasks();
@@ -354,6 +366,7 @@ function renderCards(tasks, readonly){
         <div class="card-tabs">
           <button class="card-tab active" onclick="switchTab(this,'data')">Data</button>
           <button class="card-tab" onclick="switchTab(this,'notes')">Notes</button>
+          <button class="card-tab" onclick="switchTab(this,'photo')">Photo${t.photo?'<span class=\'thumb-badge\'></span>':''}</button>
         </div>
         <div class="card-pane active" data-pane="data">
           <div class="fields">
@@ -375,6 +388,13 @@ function renderCards(tasks, readonly){
         </div>
         <div class="card-pane" data-pane="notes">
           <div class="notes-ro ${t.notes?'':'empty'}">${t.notes||'No notes.'}</div>
+        </div>
+        <div class="card-pane" data-pane="photo">
+          <div class="photo-pane">
+            ${t.photo
+              ? `<div class="photo-thumb-wrap"><img class="photo-thumb" src="${t.photo}" alt="${t.name}"></div>`
+              : `<div class="photo-empty"><div class="photo-empty-icon">📷</div><div class="photo-empty-txt">No photo taken</div></div>`}
+          </div>
         </div>`;
     } else {
       div.innerHTML = `
@@ -386,6 +406,7 @@ function renderCards(tasks, readonly){
         <div class="card-tabs">
           <button class="card-tab active" onclick="switchTab(this,'data')">Data</button>
           <button class="card-tab" onclick="switchTab(this,'notes')">Notes</button>
+          <button class="card-tab" onclick="switchTab(this,'photo')">Photo${t.photo?'<span class=\'thumb-badge\'></span>':''}</button>
         </div>
         <div class="card-pane active" data-pane="data">
           <div class="fields">
@@ -407,6 +428,21 @@ function renderCards(tasks, readonly){
         </div>
         <div class="card-pane" data-pane="notes">
           <textarea class="notes-input" data-i="${i}" placeholder="Add notes for ${t.name}…">${t.notes||''}</textarea>
+        </div>
+        <div class="card-pane" data-pane="photo">
+          <div class="photo-pane">
+            ${t.photo
+              ? `<div class="photo-thumb-wrap">
+                   <img class="photo-thumb" src="${t.photo}" alt="${t.name}">
+                   <button class="photo-retake" onclick="triggerCamera(${i})">Retake</button>
+                 </div>`
+              : `<div class="photo-empty">
+                   <div class="photo-empty-icon">📷</div>
+                   <div class="photo-empty-txt">No photo yet</div>
+                   <button class="camera-btn" onclick="triggerCamera(${i})">📷 Take Photo</button>
+                 </div>`}
+            <input type="file" accept="image/*" capture="environment" id="cam-${i}" style="display:none" onchange="handlePhoto(event,${i})">
+          </div>
         </div>`;
     }
     wrap.appendChild(div);
@@ -445,6 +481,30 @@ function switchTab(btn, pane){
   card.querySelectorAll('.card-pane').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
   card.querySelector('[data-pane="'+pane+'"]').classList.add('active');
+}
+
+function triggerCamera(i){
+  const input = document.getElementById('cam-'+i);
+  if(input) input.click();
+}
+
+function handlePhoto(event, i){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    TASKS[i].photo = e.target.result; // base64 data URL
+    renderCards(TASKS, false);
+    // Switch to photo tab on the updated card
+    setTimeout(()=>{
+      const cards = document.querySelectorAll('.task-card');
+      if(cards[i]){
+        const photoTab = cards[i].querySelectorAll('.card-tab')[2];
+        if(photoTab) switchTab(photoTab, 'photo');
+      }
+    }, 50);
+  };
+  reader.readAsDataURL(file);
 }
 
 function addTask(beforeIndex){
@@ -498,6 +558,19 @@ function downloadDoc(){
   }).join('');
 
   const notesHeader = hasNotes ? '<td rowspan="2" style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #ccc;vertical-align:middle;">Notes</td>' : '';
+  // Build photo sections per task
+  const photoSections = activeTasks
+    .filter(t=>t.photo)
+    .map(t=>`
+      <div style="margin-bottom:20px;page-break-inside:avoid;">
+        <div style="font-weight:600;color:#1a3a5c;font-size:13px;margin-bottom:6px;font-family:Arial;">${t.name}</div>
+        <img src="${t.photo}" style="max-width:100%;max-height:300px;border-radius:4px;border:1px solid #ccc;display:block;">
+      </div>`).join('');
+
+  const photosHtml = photoSections ? `
+    <h3 style="color:#1a3a5c;margin-top:28px;margin-bottom:12px;font-family:Arial;">Site Photos</h3>
+    ${photoSections}` : '';
+
   const genNotesHtml = generalNotes.trim() ? `
     <h3 style="color:#1a3a5c;margin-top:28px;margin-bottom:8px;font-family:Arial;">General Notes</h3>
     <div style="border:1px solid #ccc;border-radius:4px;padding:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#333;">${generalNotes}</div>` : '';
@@ -531,6 +604,7 @@ function downloadDoc(){
   ${rows}
 </table>
 ${genNotesHtml}
+${photosHtml}
 <div class="footer">Generated: ${new Date().toLocaleString()}</div>
 </body></html>`;
 
