@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pipeline">
+<meta name="theme-color" content="#0a1628">
+<title>Parsons Pipeline Progress</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --navy: #0a1628;
+  --navy2: #0f2040;
+  --steel: #1a3a5c;
+  --accent: #f59e0b;
+  --muted: #7a9ab8;
+  --text: #e8f0f8;
+  --text2: #a0c0d8;
+  --green: #22c55e;
+  --card-bg: #0f2040;
+  --border: rgba(255,255,255,0.08);
+  --font: 'Sora', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: var(--font);
+  background: var(--navy);
+  color: var(--text);
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(245,158,11,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,158,11,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none; z-index: 0;
+}
+.app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 0 80px; }
+
+/* Header */
+.header {
+  background: linear-gradient(160deg, var(--navy2) 0%, var(--steel) 100%);
+  padding: 56px 20px 24px;
+  border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.header::after {
+  content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+  height: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+.header-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; margin-bottom: 6px; font-family: var(--mono); }
+.header h1 { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.2; }
+.header-sub { font-size: 12px; color: var(--muted); margin-top: 4px; font-family: var(--mono); }
+
+/* Date section */
+.date-section { margin: 16px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+.date-inner { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.date-row { display: flex; align-items: center; gap: 10px; }
+.date-row label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; min-width: 88px; font-family: var(--mono); }
+
+/* Stepper */
+.date-stepper { flex: 1; display: flex; align-items: stretch; background: var(--steel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; height: 48px; }
+.step-btn {
+  width: 52px; background: transparent; border: none;
+  color: var(--accent); font-size: 28px; font-weight: 300;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.1s; touch-action: manipulation;
+}
+.step-btn:active { background: rgba(245,158,11,0.22); }
+.step-sep { width: 1px; background: var(--border); flex-shrink: 0; }
+.date-display {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 12px; color: var(--text);
+  user-select: none; text-align: center; line-height: 1.35; padding: 0 4px;
+}
+.prev-label { font-family: var(--mono); font-size: 12px; color: var(--muted); line-height: 1.35; }
+
+/* Viewing mode indicator */
+.mode-bar { display: none; margin: 0 16px 0; padding: 8px 14px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 10px; font-family: var(--mono); font-size: 11px; color: var(--accent); text-align: center; }
+.mode-bar.visible { display: block; }
+
+.section-divider { height: 1px; background: var(--border); }
+.btn-row { padding: 14px 16px; background: rgba(0,0,0,0.15); }
+.btn {
+  width: 100%; font-family: var(--font); font-size: 14px; font-weight: 600;
+  padding: 14px; border-radius: 10px; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  touch-action: manipulation; transition: opacity 0.15s, transform 0.1s;
+  background: linear-gradient(135deg, #065f46, #047857); color: #6ee7b7;
+  border: 1px solid rgba(110,231,183,0.2);
+}
+.btn:active { transform: scale(0.97); opacity: 0.85; }
+
+/* Task cards */
+.section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; font-family: var(--mono); padding: 0 16px; margin-bottom: 8px; }
+.cards { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+.task-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.task-card.flash { animation: cardFlash 0.8s ease; }
+@keyframes cardFlash { 0% { border-color: var(--green); box-shadow: 0 0 0 1px var(--green); } 100% { border-color: var(--border); box-shadow: none; } }
+.task-header { padding: 10px 14px; background: linear-gradient(90deg, var(--steel), var(--navy2)); display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+.task-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.task-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.fields { display: grid; grid-template-columns: 1fr 1fr; }
+.field-group { padding: 12px 14px; border-right: 1px solid var(--border); }
+.field-group:last-child { border-right: none; }
+.field-group-title { font-size: 10px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; font-family: var(--mono); }
+.field-pair { display: flex; flex-direction: column; gap: 8px; }
+.field-item { display: flex; flex-direction: column; gap: 3px; }
+.field-label { font-size: 10px; color: var(--muted); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* Editable inputs */
+input.ci {
+  width: 100%; font-size: 15px; font-family: var(--mono);
+  border: 1px solid var(--border); border-radius: 7px;
+  padding: 9px 10px; background: var(--navy); color: var(--text);
+  -webkit-appearance: none; transition: border-color 0.15s;
+}
+input.ci.start { background: rgba(0,0,0,0.3); color: var(--text2); }
+input.ci.start:focus { background: var(--navy2); color: var(--text); border-color: var(--accent); }
+input.ci:focus { outline: none; border-color: var(--accent); color: var(--text); background: var(--navy2); }
+
+/* Read-only display for history view */
+.ci-ro {
+  width: 100%; font-size: 15px; font-family: var(--mono);
+  border: 1px solid var(--border); border-radius: 7px;
+  padding: 9px 10px; color: var(--text2); background: transparent;
+  min-height: 38px;
+}
+.ci-ro.start { color: var(--muted); }
+.ci-ro.empty { color: var(--steel); }
+.insert-row { display: flex; align-items: center; gap: 8px; padding: 4px 16px; }
+.insert-line { flex: 1; height: 1px; background: var(--border); }
+.insert-btn { font-size: 11px; font-family: var(--mono); padding: 3px 12px; border-radius: 99px; border: 1px solid rgba(245,158,11,0.25); background: rgba(245,158,11,0.06); color: var(--accent); cursor: pointer; white-space: nowrap; touch-action: manipulation; flex-shrink: 0; }
+.insert-btn:active { background: rgba(245,158,11,0.18); }
+.del-btn { margin-left: auto; background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 0 4px; touch-action: manipulation; line-height: 1; }
+.del-btn:active { color: #ef4444; }
+input.task-name-input { background: transparent; border: none; border-bottom: 1px solid transparent; color: var(--text); font-family: var(--font); font-size: 13px; font-weight: 600; width: 100%; outline: none; padding: 0; }
+input.task-name-input:focus { border-bottom-color: var(--accent); }
+
+/* Card tabs */
+.card-tabs { display: flex; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.15); }
+.card-tab { flex: 1; padding: 8px 4px; font-size: 11px; font-weight: 600; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); text-align: center; cursor: pointer; border: none; background: none; touch-action: manipulation; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; }
+.card-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.card-tab:active { background: rgba(255,255,255,0.03); }
+.card-pane { display: none; }
+.card-pane.active { display: block; }
+textarea.notes-input { width: 100%; min-height: 90px; font-size: 13px; font-family: var(--font); padding: 12px 14px; background: transparent; border: none; color: var(--text); resize: none; outline: none; line-height: 1.5; }
+textarea.notes-input::placeholder { color: var(--steel); }
+.notes-ro { font-size: 13px; font-family: var(--font); padding: 12px 14px; color: var(--text2); line-height: 1.5; min-height: 50px; white-space: pre-wrap; }
+.notes-ro.empty { color: var(--steel); font-style: italic; }
+
+/* General notes card */
+.general-notes-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin: 0 16px; }
+.general-notes-header { padding: 10px 14px; background: linear-gradient(90deg, var(--steel), var(--navy2)); display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+textarea.general-notes-input { width: 100%; min-height: 120px; font-size: 13px; font-family: var(--font); padding: 14px; background: transparent; border: none; color: var(--text); resize: none; outline: none; line-height: 1.6; }
+textarea.general-notes-input::placeholder { color: var(--steel); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="header-eyebrow">Parsons / Field Report</div>
+    <h1>Pipeline Progress</h1>
+    <div class="header-sub">Transmission Line Tracker</div>
+  </div>
+
+  <div style="height:16px"></div>
+
+  <div class="date-section">
+    <div class="date-inner">
+      <div class="date-stepper">
+          <button class="step-btn" onclick="stepDate(-1)">−</button>
+          <div class="step-sep"></div>
+          <div class="date-display" id="newDisplay">—</div>
+          <div class="step-sep"></div>
+          <button class="step-btn" onclick="stepDate(1)">+</button>
+        </div>
+        <div id="curDisplay" style="display:none"></div>
+    </div>
+    <div class="section-divider"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="downloadDoc()">↓ Download report</button>
+    </div>
+  </div>
+
+  <div class="mode-bar" id="modebar">📋 Viewing saved entry — tap + to return to today</div>
+
+  <div style="height:12px"></div>
+  <div class="section-label" style="display:flex;align-items:center;justify-content:space-between;padding-right:16px;">
+    Tasks
+    <button onclick="addTask(-1)" style="font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);color:var(--accent);cursor:pointer;touch-action:manipulation;">+ Add task</button>
+  </div>
+  <div class="cards" id="cards"></div>
+
+  <div style="height:16px"></div>
+  <div class="section-label" style="padding-left:16px;">General Notes</div>
+  <div style="height:6px"></div>
+  <div class="general-notes-card">
+    <div class="general-notes-header">
+      <div class="task-dot"></div>
+      <span class="task-name">Site / General Notes</span>
+    </div>
+    <textarea class="general-notes-input" id="generalNotes" placeholder="Enter general site notes, observations, issues…" oninput="generalNotes=this.value"></textarea>
+  </div>
+
+</div>
+<script>
+// ── Data ──────────────────────────────────────────────────────
+const TASK_NAMES = ['Trenching','Pipelay','Welded','Tested','Sleeved','Diapered','Slurry'];
+
+function blankTasks(){
+  return TASK_NAMES.map(name=>({name, stStart:'', stEnd:'', wjStart:'', wjEnd:'', notes:''}));
+}
+
+let TASKS = blankTasks();
+let generalNotes = '';      // live editable state
+const dayLog = [];             // [{prevDate, date, tasks:[...]}]  oldest→newest
+let viewIndex = -1;            // -1 = live view; 0..n = history index (newest = dayLog.length-1)
+
+// ── Date helpers ──────────────────────────────────────────────
+function localMid(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function addDays(d,n){ const r=localMid(d); r.setDate(r.getDate()+n); return r; }
+function fmtISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function fmtNice(d){
+  const D=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return D[d.getDay()]+' '+d.getDate()+' '+M[d.getMonth()]+' '+d.getFullYear();
+}
+
+let currDate, prevDate;
+
+function initDates(){
+  const today = localMid(new Date());
+  currDate = today;
+  prevDate = addDays(today, -1);
+  updateDateDisplay();
+}
+
+function updateDateDisplay(){
+  if(viewIndex === -1){
+    document.getElementById('newDisplay').innerText = fmtNice(currDate);
+    document.getElementById('curDisplay').innerText  = fmtNice(prevDate);
+    document.getElementById('modebar').classList.remove('visible');
+  } else {
+    const e = dayLog[viewIndex];
+    document.getElementById('newDisplay').innerText = e.date;
+    document.getElementById('curDisplay').innerText  = e.prevDate;
+    document.getElementById('modebar').classList.add('visible');
+  }
+}
+
+// ── Date stepper ──────────────────────────────────────────────
+function stepDate(delta){
+  if(viewIndex === -1){
+    // Live view
+    if(delta === 1){
+      // Save current live state, advance
+      saveDayAndAdvance();
+    } else {
+      // Step back — go into history if available, else just move date back
+      if(dayLog.length > 0){
+        viewIndex = dayLog.length - 1;
+        updateDateDisplay();
+        renderCards(dayLog[viewIndex].tasks, true);
+      } else {
+        // No history yet — just slide dates back freely
+        currDate = addDays(currDate, -1);
+        prevDate = addDays(currDate, -1);
+        updateDateDisplay();
+      }
+    }
+  } else {
+    // History view
+    if(delta === -1 && viewIndex > 0){
+      viewIndex--;
+      updateDateDisplay();
+      renderCards(dayLog[viewIndex].tasks, true);
+    } else if(delta === 1){
+      if(viewIndex < dayLog.length - 1){
+        viewIndex++;
+        updateDateDisplay();
+        renderCards(dayLog[viewIndex].tasks, true);
+      } else {
+        // Return to live view
+        viewIndex = -1;
+        updateDateDisplay();
+        renderCards(TASKS, false);
+      }
+    }
+  }
+}
+
+// ── Save & advance ────────────────────────────────────────────
+function saveDayAndAdvance(){
+  // Snapshot live data
+  dayLog.push({
+    prevDate: fmtNice(prevDate),
+    date:     fmtNice(currDate),
+    tasks:    TASKS.map(t=>({...t}))
+  });
+  // Shift end→start, clear end
+  const moved = [];
+  TASKS.forEach((t,i)=>{
+    if(t.stEnd||t.wjEnd) moved.push(i);
+    t.stStart = t.stEnd;  t.stEnd  = '';
+    t.wjStart = t.wjEnd;  t.wjEnd  = '';
+  });
+  prevDate = localMid(currDate);
+  currDate = addDays(currDate, 1);
+  viewIndex = -1;
+  updateDateDisplay();
+  renderCards(TASKS, false);
+  // Flash moved rows
+  if(moved.length){
+    document.querySelectorAll('.task-card').forEach((el,i)=>{
+      if(moved.includes(i)) el.classList.add('flash');
+      setTimeout(()=>el.classList.remove('flash'), 900);
+    });
+  }
+}
+
+// ── Render cards ──────────────────────────────────────────────
+function renderCards(tasks, readonly){
+  const wrap = document.getElementById('cards');
+  wrap.innerHTML = '';
+
+  tasks.forEach((t,i)=>{
+    // Insert button BEFORE each card (only in live edit mode)
+    if(!readonly){
+      const ins = document.createElement('div');
+      ins.className = 'insert-row';
+      ins.innerHTML = `<div class="insert-line"></div><button class="insert-btn" onclick="addTask(${i})">+ insert here</button><div class="insert-line"></div>`;
+      wrap.appendChild(ins);
+    }
+
+    const div = document.createElement('div');
+    div.className = 'task-card';
+
+    if(readonly){
+      div.innerHTML = `
+        <div class="task-header"><div class="task-dot"></div><span class="task-name">${t.name}</span></div>
+        <div class="card-tabs">
+          <button class="card-tab active" onclick="switchTab(this,'data')">Data</button>
+          <button class="card-tab" onclick="switchTab(this,'notes')">Notes</button>
+        </div>
+        <div class="card-pane active" data-pane="data">
+          <div class="fields">
+            <div class="field-group">
+              <div class="field-group-title">Station</div>
+              <div class="field-pair">
+                <div class="field-item"><div class="field-label">Start</div><div class="ci-ro start ${t.stStart?'':'empty'}">${t.stStart||'—'}</div></div>
+                <div class="field-item"><div class="field-label">End</div><div class="ci-ro ${t.stEnd?'':'empty'}">${t.stEnd||'—'}</div></div>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-group-title">Weld / Joint #</div>
+              <div class="field-pair">
+                <div class="field-item"><div class="field-label">Start</div><div class="ci-ro start ${t.wjStart?'':'empty'}">${t.wjStart||'—'}</div></div>
+                <div class="field-item"><div class="field-label">End</div><div class="ci-ro ${t.wjEnd?'':'empty'}">${t.wjEnd||'—'}</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-pane" data-pane="notes">
+          <div class="notes-ro ${t.notes?'':'empty'}">${t.notes||'No notes.'}</div>
+        </div>`;
+    } else {
+      div.innerHTML = `
+        <div class="task-header">
+          <div class="task-dot"></div>
+          <input class="task-name-input" data-i="${i}" value="${t.name}" placeholder="Task name">
+          <button class="del-btn" onclick="deleteTask(${i})" title="Remove">✕</button>
+        </div>
+        <div class="card-tabs">
+          <button class="card-tab active" onclick="switchTab(this,'data')">Data</button>
+          <button class="card-tab" onclick="switchTab(this,'notes')">Notes</button>
+        </div>
+        <div class="card-pane active" data-pane="data">
+          <div class="fields">
+            <div class="field-group">
+              <div class="field-group-title">Station</div>
+              <div class="field-pair">
+                <div class="field-item"><div class="field-label">Start</div><input class="ci start" data-i="${i}" data-f="stStart" value="${t.stStart}" placeholder="—"></div>
+                <div class="field-item"><div class="field-label">End</div><input class="ci" data-i="${i}" data-f="stEnd" value="${t.stEnd}" placeholder="enter"></div>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-group-title">Weld / Joint #</div>
+              <div class="field-pair">
+                <div class="field-item"><div class="field-label">Start</div><input class="ci start" data-i="${i}" data-f="wjStart" value="${t.wjStart}" placeholder="—"></div>
+                <div class="field-item"><div class="field-label">End</div><input class="ci" data-i="${i}" data-f="wjEnd" value="${t.wjEnd}" placeholder="enter"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-pane" data-pane="notes">
+          <textarea class="notes-input" data-i="${i}" placeholder="Add notes for ${t.name}…">${t.notes||''}</textarea>
+        </div>`;
+    }
+    wrap.appendChild(div);
+  });
+
+  if(!readonly){
+    // After-last insert button
+    const ins = document.createElement('div');
+    ins.className = 'insert-row';
+    ins.style.marginTop = '4px';
+    ins.innerHTML = `<div class="insert-line"></div><button class="insert-btn" onclick="addTask(-1)">+ add task at end</button><div class="insert-line"></div>`;
+    wrap.appendChild(ins);
+
+    // Wire up inputs — both 'input' and 'change' so edits are captured immediately on any device
+    wrap.querySelectorAll('input.ci').forEach(inp=>{
+      ['input','change'].forEach(ev=>inp.addEventListener(ev, e=>{
+        TASKS[+e.target.dataset.i][e.target.dataset.f] = e.target.value;
+      }));
+    });
+    wrap.querySelectorAll('input.task-name-input').forEach(inp=>{
+      ['input','change'].forEach(ev=>inp.addEventListener(ev, e=>{
+        TASKS[+e.target.dataset.i].name = e.target.value||'Unnamed';
+      }));
+    });
+    wrap.querySelectorAll('textarea.notes-input').forEach(ta=>{
+      ['input','change'].forEach(ev=>ta.addEventListener(ev, e=>{
+        TASKS[+e.target.dataset.i].notes = e.target.value;
+      }));
+    });
+  }
+}
+
+function switchTab(btn, pane){
+  const card = btn.closest('.task-card');
+  card.querySelectorAll('.card-tab').forEach(t=>t.classList.remove('active'));
+  card.querySelectorAll('.card-pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  card.querySelector('[data-pane="'+pane+'"]').classList.add('active');
+}
+
+function addTask(beforeIndex){
+  const newTask = {name:'New task', stStart:'', stEnd:'', wjStart:'', wjEnd:''};
+  if(beforeIndex === -1){
+    TASKS.push(newTask);
+  } else {
+    TASKS.splice(beforeIndex, 0, newTask);
+  }
+  renderCards(TASKS, false);
+  // Focus the new task name input
+  setTimeout(()=>{
+    const idx = beforeIndex === -1 ? TASKS.length-1 : beforeIndex;
+    const inputs = document.querySelectorAll('input.task-name-input');
+    if(inputs[idx]) { inputs[idx].focus(); inputs[idx].select(); }
+  }, 50);
+}
+
+function deleteTask(i){
+  if(TASKS.length <= 1){ alert('Must have at least one task.'); return; }
+  if(!confirm('Remove "'+TASKS[i].name+'"?')) return;
+  TASKS.splice(i, 1);
+  renderCards(TASKS, false);
+}
+
+// ── Download ──────────────────────────────────────────────────
+function downloadDoc(){
+  // Sync any open textareas into TASKS before generating
+  document.querySelectorAll('textarea.notes-input').forEach(ta=>{
+    TASKS[+ta.dataset.i].notes = ta.value;
+  });
+  const gn = document.getElementById('generalNotes');
+  if(gn) generalNotes = gn.value;
+
+  const activeTasks = viewIndex===-1 ? TASKS : dayLog[viewIndex].tasks;
+  const prevStr = viewIndex===-1 ? fmtNice(prevDate) : dayLog[viewIndex].prevDate;
+  const currStr = viewIndex===-1 ? fmtNice(currDate) : dayLog[viewIndex].date;
+  const hasNotes = activeTasks.some(t=>t.notes && t.notes.trim());
+
+  const tdStyle = 'padding:8px 10px;border:1px solid #ccc;';
+  const rows = activeTasks.map((t,i)=>{
+    const bg = i%2===0 ? '#ffffff' : '#f0f6fc';
+    return `<tr style="background:${bg}">
+      <td style="${tdStyle}font-weight:600;">${t.name}</td>
+      <td style="${tdStyle}text-align:center;font-family:Courier New;">${t.stStart||'—'}</td>
+      <td style="${tdStyle}text-align:center;font-family:Courier New;">${t.stEnd||'—'}</td>
+      <td style="${tdStyle}text-align:center;font-family:Courier New;">${t.wjStart||'—'}</td>
+      <td style="${tdStyle}text-align:center;font-family:Courier New;">${t.wjEnd||'—'}</td>
+      ${hasNotes ? '<td style="'+tdStyle+'font-size:12px;color:#333;">'+( (t.notes||'').split('\n').join('<br>') )+'</td>' : ''}
+    </tr>`;
+  }).join('');
+
+  const notesHeader = hasNotes ? '<td rowspan="2" style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #ccc;vertical-align:middle;">Notes</td>' : '';
+  const genNotesHtml = generalNotes.trim() ? `
+    <h3 style="color:#1a3a5c;margin-top:28px;margin-bottom:8px;font-family:Arial;">General Notes</h3>
+    <div style="border:1px solid #ccc;border-radius:4px;padding:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#333;">${generalNotes}</div>` : '';
+
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+  body{font-family:Arial,sans-serif;margin:40px;}
+  h1{color:#1a3a5c;font-size:24px;margin-bottom:4px;}
+  h2{color:#333;font-size:18px;font-weight:normal;margin-bottom:4px;}
+  .dates{color:#555;font-size:13px;margin-bottom:24px;}
+  table{border-collapse:collapse;width:100%;}
+  .hdr td{background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #ccc;text-align:center;}
+  .sub td{background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #ccc;text-align:center;}
+  .footer{color:#999;font-size:11px;margin-top:16px;}
+</style>
+</head><body>
+<h1>PARSONS</h1>
+<h2>Pipeline Progress Report</h2>
+<div class="dates">Previous date: ${prevStr} &nbsp;|&nbsp; Current date: ${currStr}</div>
+<table>
+  <tr class="hdr">
+    <td rowspan="2" style="vertical-align:middle;text-align:left;">Task</td>
+    <td colspan="2">Station</td>
+    <td colspan="2">Weld / Joint #</td>
+    ${notesHeader}
+  </tr>
+  <tr class="sub">
+    <td>Start</td><td>End</td><td>Start</td><td>End</td>
+  </tr>
+  ${rows}
+</table>
+${genNotesHtml}
+<div class="footer">Generated: ${new Date().toLocaleString()}</div>
+</body></html>`;
+
+  const blob = new Blob([html], {type:'application/msword'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'Parsons_Pipeline_'+fmtISO(viewIndex===-1?currDate:new Date())+'.doc';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ── Init ──────────────────────────────────────────────────────
+initDates();
+renderCards(TASKS, false);
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(()=>console.log('SW registered'))
+      .catch(e=>console.log('SW error',e));
+  });
+}
+</script>
+</body>
+</html>
