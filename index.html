@@ -614,15 +614,22 @@ ${photosHtml}
 <div class="footer">Generated: ${new Date().toLocaleString()}</div>
 </body></html>`;
 
-  const blob = new Blob([html], {type:'text/html'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'Parsons_Pipeline_'+fmtISO(viewIndex===-1?currDate:new Date())+'.html';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  // iPhone Safari doesn't support blob download — open in new tab instead
+  // User can then Share → Print or Share → Save to Files
+  const win = window.open('', '_blank');
+  if(win){
+    win.document.write(html);
+    win.document.close();
+    // Show save instructions banner inside the report
+    const banner = win.document.createElement('div');
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#1a3a5c;color:#f59e0b;font-family:Arial;font-size:13px;padding:10px 16px;text-align:center;z-index:9999;';
+    banner.innerHTML = '📄 To save: tap the <strong>Share</strong> button → <strong>Print</strong> (then pinch to zoom for PDF) or <strong>Save to Files</strong>';
+    win.document.body.insertBefore(banner, win.document.body.firstChild);
+  } else {
+    // Fallback if popup blocked — data URI
+    const encoded = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+    window.location.href = encoded;
+  }
 }
 
 // ── Persistence ───────────────────────────────────────────────
