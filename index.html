@@ -334,6 +334,7 @@ function saveDayAndAdvance(){
   viewIndex = -1;
   updateDateDisplay();
   renderCards(TASKS, false);
+  saveState();
   // Flash moved rows
   if(moved.length){
     document.querySelectorAll('.task-card').forEach((el,i)=>{
@@ -495,6 +496,7 @@ function handlePhoto(event, i){
   reader.onload = function(e){
     TASKS[i].photo = e.target.result; // base64 data URL
     renderCards(TASKS, false);
+    saveState();
     // Switch to photo tab on the updated card
     setTimeout(()=>{
       const cards = document.querySelectorAll('.task-card');
@@ -515,6 +517,7 @@ function addTask(beforeIndex){
     TASKS.splice(beforeIndex, 0, newTask);
   }
   renderCards(TASKS, false);
+  saveState();
   // Focus the new task name input
   setTimeout(()=>{
     const idx = beforeIndex === -1 ? TASKS.length-1 : beforeIndex;
@@ -528,6 +531,7 @@ function deleteTask(i){
   if(!confirm('Remove "'+TASKS[i].name+'"?')) return;
   TASKS.splice(i, 1);
   renderCards(TASKS, false);
+  saveState();
 }
 
 // ── Download ──────────────────────────────────────────────────
@@ -578,14 +582,16 @@ function downloadDoc(){
   const html = `<!DOCTYPE html>
 <html><head><meta charset="UTF-8">
 <style>
-  body{font-family:Arial,sans-serif;margin:40px;}
-  h1{color:#1a3a5c;font-size:24px;margin-bottom:4px;}
-  h2{color:#333;font-size:18px;font-weight:normal;margin-bottom:4px;}
-  .dates{color:#555;font-size:13px;margin-bottom:24px;}
-  table{border-collapse:collapse;width:100%;}
-  .hdr td{background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #ccc;text-align:center;}
-  .sub td{background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #ccc;text-align:center;}
-  .footer{color:#999;font-size:11px;margin-top:16px;}
+  body{font-family:Arial,sans-serif;margin:40px;max-width:900px;}
+  h1{color:#1a3a5c;font-size:26px;margin-bottom:4px;}
+  h2{color:#333;font-size:17px;font-weight:normal;margin-bottom:4px;}
+  .dates{color:#555;font-size:13px;margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid #1a3a5c;}
+  table{border-collapse:collapse;width:100%;margin-bottom:8px;}
+  .hdr td{background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:9px 12px;border:1px solid #999;text-align:center;}
+  .sub td{background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:7px 12px;border:1px solid #999;text-align:center;}
+  .footer{color:#999;font-size:11px;margin-top:24px;padding-top:12px;border-top:1px solid #eee;}
+  h3{color:#1a3a5c;margin-top:28px;margin-bottom:10px;}
+  @media print{body{margin:20px;}h3{page-break-before:auto;}}
 </style>
 </head><body>
 <h1>PARSONS</h1>
@@ -608,20 +614,81 @@ ${photosHtml}
 <div class="footer">Generated: ${new Date().toLocaleString()}</div>
 </body></html>`;
 
-  const blob = new Blob([html], {type:'application/msword'});
+  const blob = new Blob([html], {type:'text/html'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'Parsons_Pipeline_'+fmtISO(viewIndex===-1?currDate:new Date())+'.doc';
+  a.download = 'Parsons_Pipeline_'+fmtISO(viewIndex===-1?currDate:new Date())+'.html';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
+// ── Persistence ───────────────────────────────────────────────
+const STORAGE_KEY = 'parsons_pipeline_v1';
+
+function saveState(){
+  try {
+    // Sync any open inputs before saving
+    document.querySelectorAll('input.ci').forEach(inp=>{
+      if(inp.dataset.i !== undefined) TASKS[+inp.dataset.i][inp.dataset.f] = inp.value;
+    });
+    document.querySelectorAll('input.task-name-input').forEach(inp=>{
+      if(inp.dataset.i !== undefined) TASKS[+inp.dataset.i].name = inp.value||'Unnamed';
+    });
+    document.querySelectorAll('textarea.notes-input').forEach(ta=>{
+      if(ta.dataset.i !== undefined) TASKS[+ta.dataset.i].notes = ta.value;
+    });
+    const gn = document.getElementById('generalNotes');
+    if(gn) generalNotes = gn.value;
+
+    const state = {
+      TASKS,
+      dayLog,
+      generalNotes,
+      currDate: fmtISO(currDate),
+      prevDate: fmtISO(prevDate),
+      viewIndex
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch(e){ console.warn('Save failed:', e); }
+}
+
+function loadState(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return false;
+    const state = JSON.parse(raw);
+    if(state.TASKS) TASKS.length=0, state.TASKS.forEach(t=>TASKS.push(t));
+    if(state.dayLog) dayLog.length=0, state.dayLog.forEach(d=>dayLog.push(d));
+    if(state.generalNotes !== undefined) generalNotes = state.generalNotes;
+    if(state.currDate) currDate = localMid(new Date(state.currDate));
+    if(state.prevDate) prevDate = localMid(new Date(state.prevDate));
+    if(state.viewIndex !== undefined) viewIndex = state.viewIndex;
+    return true;
+  } catch(e){ console.warn('Load failed:', e); return false; }
+}
+
+// Auto-save every 10 seconds and on page hide
+setInterval(saveState, 10000);
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') saveState(); });
+window.addEventListener('pagehide', saveState);
+
 // ── Init ──────────────────────────────────────────────────────
-initDates();
-renderCards(TASKS, false);
+const restored = loadState();
+if(!restored){
+  initDates();
+} else {
+  updateDateDisplay();
+  const gn = document.getElementById('generalNotes');
+  if(gn) gn.value = generalNotes;
+}
+if(viewIndex === -1){
+  renderCards(TASKS, false);
+} else {
+  renderCards(dayLog[viewIndex].tasks, true);
+}
 </script>
 <script>
 if('serviceWorker' in navigator){
