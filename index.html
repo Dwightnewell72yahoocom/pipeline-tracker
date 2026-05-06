@@ -205,7 +205,7 @@ textarea.general-notes-input::placeholder { color: var(--steel); }
   <div class="report-toolbar">
     <span class="report-toolbar-title">Pipeline Report</span>
     <button class="report-close-btn" onclick="closeReport()">X Close</button>
-    <button class="report-print-btn" onclick="window.print()">Print / Save PDF</button>
+    <button class="report-print-btn" onclick="shareTip()">Share / Save PDF</button>
   </div>
   <div class="report-body" id="reportBody"></div>
 </div>
@@ -518,6 +518,10 @@ function handlePhoto(event, i) {
     img.src = e.target.result;
   };
   reader.readAsDataURL(file);
+}
+
+function shareTip() {
+  alert('To save as PDF:\n\n1. Tap the Share button (box with arrow) at the bottom of Safari\n2. Tap "Print"\n3. Pinch outward on the preview to convert to PDF\n4. Tap the Share button again to save');
 }
 
 function showReport() {
