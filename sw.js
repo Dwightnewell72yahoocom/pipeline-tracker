@@ -1,4 +1,4 @@
-const CACHE = 'parsons-pipeline-v1';
+const CACHE = 'parsons-pipeline-v3';
 const ASSETS = [
   './index.html',
   './manifest.json',
