@@ -316,9 +316,21 @@ function saveAndAdvance() {
   dayLog.push(snapshot);
   var moved = [];
   TASKS.forEach(function(t,i) {
-    if (t.stEnd || t.wjEnd) moved.push(i);
-    t.stStart = t.stEnd; t.stEnd = '';
-    t.wjStart = t.wjEnd; t.wjEnd = '';
+    var hasEnd = t.stEnd || t.wjEnd;
+    if (hasEnd) {
+      // Only shift end->start if end values exist
+      moved.push(i);
+      t.stStart = t.stEnd; t.stEnd = '';
+      t.wjStart = t.wjEnd; t.wjEnd = '';
+    } else {
+      // No end values — keep existing starts, just clear ends
+      t.stEnd = '';
+      t.wjEnd = '';
+    }
+    // Never carry photos forward — each day gets fresh photos
+    t.photo = '';
+    // Clear notes for new day
+    t.notes = '';
   });
   prevDate = localMid(currDate);
   currDate = addDays(currDate,1);
