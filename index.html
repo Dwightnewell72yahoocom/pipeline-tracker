@@ -11,6 +11,8 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -205,7 +207,7 @@ textarea.general-notes-input::placeholder { color: var(--steel); }
   <div class="report-toolbar">
     <span class="report-toolbar-title">Pipeline Report</span>
     <button class="report-close-btn" onclick="closeReport()">X Close</button>
-    <button class="report-print-btn" id="reportActionBtn" onclick="reportAction()">&#8595; Save Report</button>
+    <button class="report-print-btn" id="reportActionBtn" onclick="reportAction()">&#8595; Save PDF</button>
   </div>
   <div class="report-body" id="reportBody"></div>
 </div>
@@ -521,30 +523,127 @@ function handlePhoto(event, i) {
 }
 
 function reportAction() {
-  // On iPhone/iPad use Web Share API
-  if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
-    var activeTasks = viewIndex === -1 ? TASKS : dayLog[viewIndex].tasks;
-    var prevStr = viewIndex === -1 ? fmtNice(prevDate) : dayLog[viewIndex].prevDate;
-    var currStr = viewIndex === -1 ? fmtNice(currDate) : dayLog[viewIndex].date;
-    var text = 'PARSONS Pipeline Progress Report\n';
-    text += 'Previous: ' + prevStr + '  |  Current: ' + currStr + '\n\n';
-    activeTasks.forEach(function(t) {
-      text += t.name + '\n';
-      text += '  Station  Start: ' + (t.stStart||'--') + '  End: ' + (t.stEnd||'--') + '\n';
-      text += '  Weld/Jt  Start: ' + (t.wjStart||'--') + '  End: ' + (t.wjEnd||'--') + '\n';
-      if (t.notes) text += '  Notes: ' + t.notes + '\n';
-      text += '\n';
-    });
-    if (generalNotes.trim()) text += 'General Notes:\n' + generalNotes + '\n';
-    text += '\nGenerated: ' + new Date().toLocaleString();
-    if (navigator.share) {
-      navigator.share({ title: 'Parsons Pipeline Report', text: text })
-        .catch(function(e){ console.log('Share cancelled', e); });
+  syncLiveInputs();
+  var activeTasks = viewIndex === -1 ? TASKS : dayLog[viewIndex].tasks;
+  var prevStr = viewIndex === -1 ? fmtNice(prevDate) : dayLog[viewIndex].prevDate;
+  var currStr = viewIndex === -1 ? fmtNice(currDate) : dayLog[viewIndex].date;
+  var gn = viewIndex === -1 ? generalNotes : (dayLog[viewIndex].generalNotes || '');
+  var hasNotes = activeTasks.some(function(t){ return t.notes && t.notes.trim(); });
+
+  var doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  var pageW = doc.internal.pageSize.getWidth();
+  var margin = 15;
+  var y = margin;
+
+  // Header
+  doc.setFillColor(26, 58, 92);
+  doc.rect(0, 0, pageW, 28, 'F');
+  doc.setTextColor(245, 158, 11);
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.text('PARSONS', margin, 12);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Pipeline Progress Report', margin, 20);
+  doc.setTextColor(200, 220, 240);
+  doc.setFontSize(9);
+  doc.text('Previous: ' + prevStr + '   |   Current: ' + currStr, margin, 26);
+  y = 36;
+
+  // Main table
+  var hasNotesCols = hasNotes;
+  var head = [['Task', 'St. Start', 'St. End', 'Wj. Start', 'Wj. End']];
+  if (hasNotesCols) head[0].push('Notes');
+
+  var body = activeTasks.map(function(t) {
+    var row = [t.name, t.stStart||'--', t.stEnd||'--', t.wjStart||'--', t.wjEnd||'--'];
+    if (hasNotesCols) row.push(t.notes||'');
+    return row;
+  });
+
+  doc.autoTable({
+    startY: y,
+    head: head,
+    body: body,
+    margin: { left: margin, right: margin },
+    styles: { fontSize: 9, cellPadding: 3, valign: 'middle' },
+    headStyles: { fillColor: [26,58,92], textColor: [245,158,11], fontStyle: 'bold', halign: 'center' },
+    columnStyles: {
+      0: { fontStyle: 'bold', halign: 'left', cellWidth: hasNotesCols ? 28 : 36 },
+      1: { halign: 'center', cellWidth: 22 },
+      2: { halign: 'center', cellWidth: 22 },
+      3: { halign: 'center', cellWidth: 22 },
+      4: { halign: 'center', cellWidth: 22 },
+      5: { halign: 'left', cellWidth: hasNotesCols ? 44 : 0 }
+    },
+    alternateRowStyles: { fillColor: [240, 246, 252] },
+    didParseCell: function(data) {
+      if (data.row.index % 2 === 0 && data.section === 'body') {
+        data.cell.styles.fillColor = [255,255,255];
+      }
     }
-  } else {
-    // PC / laptop / Android — use print dialog which allows Save as PDF
-    window.print();
+  });
+
+  y = doc.lastAutoTable.finalY + 8;
+
+  // General notes
+  if (gn.trim()) {
+    if (y > 240) { doc.addPage(); y = margin; }
+    doc.setTextColor(26,58,92);
+    doc.setFontSize(11);
+    doc.setFont('helvetica','bold');
+    doc.text('General Notes', margin, y);
+    y += 6;
+    doc.setTextColor(60,60,60);
+    doc.setFontSize(9);
+    doc.setFont('helvetica','normal');
+    var gnLines = doc.splitTextToSize(gn, pageW - margin*2);
+    doc.text(gnLines, margin, y);
+    y += gnLines.length * 5 + 8;
   }
+
+  // Site photos — add each on its own section
+  var photoTasks = activeTasks.filter(function(t){ return t.photo; });
+  if (photoTasks.length > 0) {
+    if (y > 200) { doc.addPage(); y = margin; }
+    doc.setTextColor(26,58,92);
+    doc.setFontSize(11);
+    doc.setFont('helvetica','bold');
+    doc.text('Site Photos', margin, y);
+    y += 8;
+
+    photoTasks.forEach(function(t) {
+      if (y > 220) { doc.addPage(); y = margin; }
+      // Task name above photo
+      doc.setTextColor(26,58,92);
+      doc.setFontSize(10);
+      doc.setFont('helvetica','bold');
+      doc.text(t.name, margin, y);
+      y += 5;
+      // Add image
+      try {
+        var imgW = pageW - margin*2;
+        var imgH = 80; // max height in mm
+        doc.addImage(t.photo, 'JPEG', margin, y, imgW, imgH, '', 'FAST');
+        y += imgH + 10;
+      } catch(e) {
+        doc.setTextColor(150,150,150);
+        doc.setFontSize(8);
+        doc.text('[Photo could not be embedded]', margin, y);
+        y += 8;
+      }
+    });
+  }
+
+  // Footer
+  doc.setTextColor(150,150,150);
+  doc.setFontSize(8);
+  doc.setFont('helvetica','normal');
+  doc.text('Generated: ' + new Date().toLocaleString(), margin, doc.internal.pageSize.getHeight() - 8);
+
+  // Save
+  var filename = 'Parsons_Pipeline_' + fmtISO(viewIndex===-1?currDate:new Date()) + '.pdf';
+  doc.save(filename);
 }
 
 function showReport() {
