@@ -216,6 +216,14 @@ textarea.general-notes-input::placeholder { color: var(--steel); }
     <button onclick="generatePDF('photos')" style="width:100%;margin-bottom:20px;padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#e8f0f8;font-family:'Sora',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;">
       &#128247; Photos Only<br><span style="font-size:11px;font-weight:400;color:#7a9ab8;">Site photos with task labels</span>
     </button>
+    <div style="height:1px;background:rgba(255,255,255,0.08);margin-bottom:14px;"></div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:#7a9ab8;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.1em;">Copy to clipboard (paste into Word)</div>
+    <button onclick="copyToClipboard('full')" style="width:100%;margin-bottom:8px;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#e8f0f8;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:left;">
+      &#128203; Copy Full Report<br><span style="font-size:11px;font-weight:400;color:#7a9ab8;">Full table + all notes — paste into Word</span>
+    </button>
+    <button onclick="copyToClipboard('data')" style="width:100%;margin-bottom:14px;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#e8f0f8;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:left;">
+      &#128196; Copy Data &amp; Notes Only<br><span style="font-size:11px;font-weight:400;color:#7a9ab8;">Table + notes + general notes — paste into Word</span>
+    </button>
     <button onclick="closePdfModal()" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#7a9ab8;font-family:'Sora',sans-serif;font-size:13px;cursor:pointer;">Cancel</button>
   </div>
 </div>
@@ -408,7 +416,7 @@ function renderCards(tasks, readonly) {
               '</div>'+
             '</div>'+
             '<div class="field-group">'+
-              '<div class="field-group-title">Weld / Joint #</div>'+
+              '<div class="field-group-title">Pipe Count</div>'+
               '<div class="field-pair">'+
                 '<div class="field-item"><div class="field-label">Start</div><div class="ci-ro start'+(t.wjStart?'':' empty')+'">'+esc(t.wjStart||'--')+'</div></div>'+
                 '<div class="field-item"><div class="field-label">End</div><div class="ci-ro'+(t.wjEnd?'':' empty')+'">'+esc(t.wjEnd||'--')+'</div></div>'+
@@ -444,7 +452,7 @@ function renderCards(tasks, readonly) {
               '</div>'+
             '</div>'+
             '<div class="field-group">'+
-              '<div class="field-group-title">Weld / Joint #</div>'+
+              '<div class="field-group-title">Pipe Count</div>'+
               '<div class="field-pair">'+
                 '<div class="field-item"><div class="field-label">Start</div><input class="ci start" data-i="'+i+'" data-f="wjStart" value="'+esc(t.wjStart)+'" placeholder="--"></div>'+
                 '<div class="field-item"><div class="field-label">End</div><input class="ci" data-i="'+i+'" data-f="wjEnd" value="'+esc(t.wjEnd)+'" placeholder="enter"></div>'+
@@ -559,6 +567,85 @@ function reportAction() {
   modal.style.display = 'flex';
 }
 
+function copyToClipboard(mode) {
+  closePdfModal();
+  syncLiveInputs();
+  var activeTasks = viewIndex === -1 ? TASKS : dayLog[viewIndex].tasks;
+  var prevStr = viewIndex === -1 ? fmtNice(prevDate) : dayLog[viewIndex].prevDate;
+  var currStr = viewIndex === -1 ? fmtNice(currDate) : dayLog[viewIndex].date;
+  var gn = viewIndex === -1 ? generalNotes : (dayLog[viewIndex].generalNotes || '');
+  var hasNotes = activeTasks.some(function(t){ return t.notes && t.notes.trim(); });
+
+  // Build rich HTML table that pastes properly into Word
+  var notesHdr = hasNotes ? '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;">Notes</td>' : '';
+
+  var rows = activeTasks.map(function(t, i) {
+    var bg = i % 2 === 0 ? '#ffffff' : '#eef4fb';
+    var noteCell = hasNotes
+      ? '<td style="padding:8px 10px;border:1px solid #ccc;font-size:11pt;color:#333;vertical-align:top;">' + (t.notes||'') + '</td>'
+      : '';
+    return '<tr style="background:' + bg + ';">' +
+      '<td style="padding:8px 10px;border:1px solid #ccc;font-weight:bold;font-size:11pt;">' + t.name + '</td>' +
+      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">' + (t.stStart||'--') + '</td>' +
+      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">' + (t.stEnd||'--') + '</td>' +
+      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">' + (t.wjStart||'--') + '</td>' +
+      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">' + (t.wjEnd||'--') + '</td>' +
+      noteCell +
+      '</tr>';
+  }).join('');
+
+  var gnHtml = (gn.trim())
+    ? '<p style="margin-top:16pt;"><strong style="color:#1a3a5c;font-size:13pt;">General Notes</strong></p>' +
+      '<p style="font-size:11pt;color:#333;white-space:pre-wrap;">' + gn + '</p>'
+    : '';
+
+  var html =
+    '<div style="font-family:Arial,sans-serif;">' +
+    '<p style="font-size:18pt;font-weight:bold;color:#1a3a5c;margin-bottom:2pt;">PARSONS</p>' +
+    '<p style="font-size:13pt;color:#333;margin-bottom:2pt;">Pipeline Progress Report</p>' +
+    '<p style="font-size:10pt;color:#555;border-bottom:2px solid #1a3a5c;padding-bottom:6pt;margin-bottom:12pt;">' +
+      'Previous date: <strong>' + prevStr + '</strong> &nbsp;|&nbsp; Current date: <strong>' + currStr + '</strong>' +
+    '</p>' +
+    '<table style="border-collapse:collapse;width:100%;">' +
+      '<tr>' +
+        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;font-size:12pt;" rowspan="2">Task</td>' +
+        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;" colspan="2">Station</td>' +
+        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;" colspan="2">Pipe Count</td>' +
+        notesHdr +
+      '</tr>' +
+      '<tr>' +
+        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">Start</td>' +
+        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">End</td>' +
+        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">Start</td>' +
+        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">End</td>' +
+      '</tr>' +
+      rows +
+    '</table>' +
+    gnHtml +
+    '<p style="font-size:9pt;color:#999;margin-top:16pt;border-top:1px solid #eee;padding-top:6pt;">Generated: ' + new Date().toLocaleString() + '</p>' +
+    '</div>';
+
+  // Use Clipboard API with HTML
+  try {
+    var blob = new Blob([html], { type: 'text/html' });
+    var item = new ClipboardItem({ 'text/html': blob });
+    navigator.clipboard.write([item]).then(function() {
+      alert('Copied! Now open Word and press Ctrl+V (or Cmd+V on Mac) to paste the formatted table.');
+    }).catch(function(e) {
+      // Fallback for older browsers
+      var ta = document.createElement('textarea');
+      ta.value = 'PARSONS Pipeline Progress Report\nPrevious: ' + prevStr + ' | Current: ' + currStr;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      alert('Copied as text. Paste into Word with Ctrl+V.');
+    });
+  } catch(e) {
+    alert('Copy not supported on this device. Please use Save PDF instead.');
+  }
+}
+
 function closePdfModal() {
   document.getElementById('pdfModal').style.display = 'none';
 }
@@ -605,7 +692,7 @@ function generatePDF(mode) {
   // DATA & NOTES section
   function addDataSection() {
     y = 36;
-    var head = [['Task', 'St. Start', 'St. End', 'Wj. Start', 'Wj. End']];
+    var head = [['Task', 'Sta Start', 'Sta End', 'PC Start', 'PC End']];
     if (hasNotes) head[0].push('Notes');
     var body = activeTasks.map(function(t) {
       var row = [t.name, t.stStart||'--', t.stEnd||'--', t.wjStart||'--', t.wjEnd||'--'];
@@ -756,7 +843,7 @@ function showReport() {
       '<tr>'+
         '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:left;font-size:13px;vertical-align:middle;" rowspan="2">Task</td>'+
         '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:center;font-size:13px;" colspan="2">Station</td>'+
-        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:center;font-size:13px;" colspan="2">Weld / Joint #</td>'+
+        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:center;font-size:13px;" colspan="2">Pipe Count</td>'+
         notesHdr+
       '</tr>'+
       '<tr>'+
