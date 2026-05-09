@@ -738,40 +738,78 @@ function generatePDF(mode) {
     }
   }
 
-  // PHOTOS section
+  // PHOTOS section — 4 per page in 2x2 grid
   function addPhotosSection() {
     if (photoTasks.length === 0) {
+      if (mode === 'photos') { y = 36; }
       doc.setTextColor(150,150,150);
       doc.setFontSize(10);
+      doc.setFont('helvetica','normal');
       doc.text('No photos taken for this date.', margin, y + 10);
       return;
     }
-    if (mode === 'photos') {
-      y = 36;
-    }
+    if (mode === 'photos') { y = 36; }
     if (y > 200) { doc.addPage(); addFooter(); y = margin; }
+
     doc.setTextColor(26,58,92);
     doc.setFontSize(11);
     doc.setFont('helvetica','bold');
     doc.text('Site Photos', margin, y);
     y += 8;
-    photoTasks.forEach(function(t) {
-      if (y > 220) { doc.addPage(); addFooter(); y = margin; }
+
+    // Grid layout: 2 columns, 2 rows = 4 per page
+    var cols = 2;
+    var gutter = 6; // gap between photos
+    var cellW = (pageW - margin*2 - gutter) / 2;
+    var labelH = 6;  // height reserved for task name label
+    var imgH = 55;   // photo height in mm
+    var cellH = labelH + imgH + 4; // total cell height
+
+    photoTasks.forEach(function(t, idx) {
+      var col = idx % cols;
+      var rowInPage = Math.floor(idx / cols) % 2;
+      // New page every 4 photos (2 cols x 2 rows)
+      if (idx > 0 && idx % 4 === 0) {
+        doc.addPage();
+        addFooter();
+        y = margin;
+        doc.setTextColor(26,58,92);
+        doc.setFontSize(11);
+        doc.setFont('helvetica','bold');
+        doc.text('Site Photos (continued)', margin, y);
+        y += 8;
+      }
+      var x = margin + col * (cellW + gutter);
+      var cellY = y + rowInPage * (cellH + gutter);
+
+      // Task name label above photo
       doc.setTextColor(26,58,92);
-      doc.setFontSize(10);
+      doc.setFontSize(9);
       doc.setFont('helvetica','bold');
-      doc.text(t.name, margin, y);
-      y += 5;
+      doc.text(t.name, x, cellY + 4, { maxWidth: cellW });
+
+      // Photo below label
       try {
-        var imgW = pageW - margin*2;
-        var imgH = 85;
-        doc.addImage(t.photo, 'JPEG', margin, y, imgW, imgH, '', 'FAST');
-        y += imgH + 10;
+        doc.addImage(t.photo, 'JPEG', x, cellY + labelH, cellW, imgH, '', 'FAST');
       } catch(e) {
         doc.setTextColor(150,150,150);
         doc.setFontSize(8);
-        doc.text('[Photo could not be embedded]', margin, y);
-        y += 8;
+        doc.setFont('helvetica','normal');
+        doc.text('[Photo unavailable]', x, cellY + labelH + imgH/2);
+      }
+
+      // After placing bottom-right photo of a row pair, advance y
+      if (col === 1 || idx === photoTasks.length - 1) {
+        if (col === 0) {
+          // odd last photo on left column — still advance y past this row
+          y = y + (rowInPage + 1) * (cellH + gutter);
+        }
+      }
+      // Advance y after completing a full row pair (4 photos) or last photo
+      if ((idx + 1) % 4 === 0) {
+        y = margin + 16; // reset for new page (already added page above)
+      } else if (idx === photoTasks.length - 1) {
+        y += (rowInPage + 1) * (cellH + gutter) + 4;
       }
     });
   }
@@ -826,9 +864,9 @@ function showReport() {
     : '';
 
   var photosHtml = activeTasks.filter(function(t){ return t.photo; }).map(function(t) {
-    return '<div style="margin-bottom:28px;page-break-inside:avoid;">'+
-      '<div style="font-size:20px;font-weight:700;color:#1a3a5c;margin-bottom:10px;font-family:Arial,sans-serif;">'+esc(t.name)+'</div>'+
-      '<img src="'+t.photo+'" alt="'+esc(t.name)+'" style="max-width:100%;border-radius:6px;border:1px solid #ccc;display:block;">'+
+    return '<div style="page-break-inside:avoid;">'+
+      '<div style="font-size:13px;font-weight:700;color:#1a3a5c;margin-bottom:6px;font-family:Arial,sans-serif;">'+esc(t.name)+'</div>'+
+      '<img src="'+t.photo+'" alt="'+esc(t.name)+'" style="width:100%;border-radius:6px;border:1px solid #ccc;display:block;">'+
       '</div>';
   }).join('');
 
@@ -858,7 +896,7 @@ function showReport() {
       ? '<div style="margin-bottom:24px;"><h3 style="color:#1a3a5c;font-size:15px;margin-bottom:8px;">General Notes</h3><div style="border:1px solid #ccc;border-radius:4px;padding:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#333;">'+esc(gn)+'</div></div>'
       : '')+
     (photosHtml
-      ? '<div><h3 style="color:#1a3a5c;font-size:15px;margin-bottom:16px;">Site Photos</h3>'+photosHtml+'</div>'
+      ? '<div><h3 style="color:#1a3a5c;font-size:15px;margin-bottom:16px;">Site Photos</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+photosHtml+'</div></div>'
       : '')+
     '<div style="color:#999;font-size:11px;margin-top:24px;padding-top:12px;border-top:1px solid #eee;">Generated: '+new Date().toLocaleString()+'</div>'+
     '</div>';
