@@ -29,6 +29,90 @@
   --font: 'Sora', sans-serif;
   --mono: 'DM Mono', monospace;
 }
+
+/* Sunlight mode overrides */
+body.sun {
+  --navy: #f0f4f8;
+  --navy2: #ffffff;
+  --steel: #dbeafe;
+  --accent: #f59e0b;
+  --muted: #444444;
+  --text: #1a3a5c;
+  --text2: #1a3a5c;
+  --green: #15803d;
+  --card-bg: #ffffff;
+  --border: #1a3a5c;
+  background: #f0f4f8;
+}
+body.sun::before { display: none; }
+body.sun .header { background: #ffffff; border-bottom: 3px solid #1a3a5c; }
+body.sun .header::after { display: none; }
+body.sun .header-eyebrow { color: #b45309; }
+body.sun .header h1 { color: #1a3a5c; }
+body.sun .header-sub { color: #444; }
+body.sun .date-stepper { background: #dbeafe; border: 2px solid #1a3a5c; }
+body.sun .step-btn { color: #1a3a5c; font-weight: 900; }
+body.sun .step-btn:active { background: rgba(26,58,92,0.12); }
+body.sun .step-sep { background: #1a3a5c; width: 2px; }
+body.sun .date-display { color: #1a3a5c; font-weight: 700; }
+body.sun .date-section { background: #fff; border: 2px solid #1a3a5c; }
+body.sun .section-divider { background: #1a3a5c; height: 2px; }
+body.sun .btn { background: #1a3a5c; color: #f59e0b; border: none; }
+body.sun .mode-bar { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+body.sun .task-card { background: #fff; border: 2px solid #1a3a5c; }
+body.sun .task-header { background: #1a3a5c; }
+body.sun .task-name-static { color: #fff; }
+body.sun input.task-name-input { color: #fff; }
+body.sun input.task-name-input:focus { border-bottom-color: #f59e0b; }
+body.sun .del-btn { color: rgba(255,255,255,0.7); }
+body.sun .card-tabs { background: #e8f0f8; border-bottom: 2px solid #1a3a5c; }
+body.sun .card-tab { color: #444; font-weight: 700; }
+body.sun .card-tab.active { color: #1a3a5c; border-bottom-color: #f59e0b; background: #fff; }
+body.sun .field-group { border-right: 1px solid #cbd5e1; }
+body.sun .field-group-title { color: #1a3a5c; }
+body.sun .field-label { color: #444; font-weight: 700; }
+body.sun input.ci { background: #f0f6ff; border: 2px solid #1a3a5c; color: #1a3a5c; font-weight: 700; }
+body.sun input.ci.start { background: #e8f0f8; color: #1a3a5c; }
+body.sun input.ci:focus { background: #fff; border-color: #f59e0b; }
+body.sun .ci-ro { color: #1a3a5c; border: 2px solid #1a3a5c; }
+body.sun .ci-ro.start { color: #444; }
+body.sun .ci-ro.empty { color: #94a3b8; border-color: #cbd5e1; }
+body.sun textarea.notes-input { color: #1a3a5c; }
+body.sun textarea.notes-input::placeholder { color: #94a3b8; }
+body.sun .notes-ro { color: #1a3a5c; }
+body.sun .insert-line { background: #1a3a5c; }
+body.sun .insert-btn { color: #1a3a5c; border-color: rgba(26,58,92,0.4); background: rgba(26,58,92,0.06); }
+body.sun .general-notes-card { background: #fff; border: 2px solid #1a3a5c; }
+body.sun .general-notes-header { background: #1a3a5c; }
+body.sun textarea.general-notes-input { color: #1a3a5c; }
+body.sun .add-task-btn { color: #1a3a5c; border-color: rgba(26,58,92,0.4); background: rgba(26,58,92,0.06); }
+body.sun .section-label { color: #1a3a5c; }
+
+/* Sun toggle button */
+.sun-toggle {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+  background: #1a3a5c;
+  border: none;
+  border-radius: 99px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #f59e0b;
+  cursor: pointer;
+  font-family: var(--font);
+  touch-action: manipulation;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+body.sun .sun-toggle {
+  background: #f59e0b;
+  color: #1a3a5c;
+}
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body { font-family: var(--font); background: var(--navy); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(245,158,11,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,158,11,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
@@ -149,10 +233,132 @@ textarea.general-notes-input::placeholder { color: var(--steel); }
 .photo-section-label { font-weight: 600; color: #1a3a5c; font-size: 13px; margin-bottom: 6px; font-family: Arial; }
 .photo-section img { max-width: 100%; border-radius: 4px; border: 1px solid #ccc; display: block; }
 .report-footer { color: #999; font-size: 11px; margin-top: 20px; padding-top: 10px; border-top: 1px solid #eee; }
+
+/* Sunlight mode */
+body.sun { background: #f5f7fa; }
+body.sun .header { background: #ffffff; border-bottom: 3px solid #1a3a5c; }
+body.sun .header-eyebrow { color: #b45309; }
+body.sun .header h1 { color: #1a3a5c; }
+body.sun .header-sub { color: #444; }
+body.sun .header::after { background: linear-gradient(90deg, transparent, #f59e0b, transparent); }
+body.sun body::before { display: none; }
+body.sun .date-section { background: #fff; border: 2px solid #1a3a5c; }
+body.sun .date-stepper { background: #dbeafe; border: 2px solid #1a3a5c; }
+body.sun .step-btn { color: #1a3a5c; font-weight: 700; }
+body.sun .step-sep { background: #1a3a5c; }
+body.sun .date-display { color: #1a3a5c; font-weight: 700; }
+body.sun .section-divider { background: #1a3a5c; }
+body.sun .btn { background: #1a3a5c; color: #f59e0b; border-color: #1a3a5c; }
+body.sun .mode-bar { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
+body.sun .section-label { color: #1a3a5c; }
+body.sun .add-task-btn { background: #fff; border-color: #1a3a5c; color: #1a3a5c; }
+body.sun .task-card { background: #fff; border: 2px solid #1a3a5c; }
+body.sun .task-header { background: #1a3a5c; }
+body.sun .task-name-static { color: #fff; }
+body.sun input.task-name-input { color: #fff; }
+body.sun .card-tabs { background: #f0f4f8; border-bottom: 2px solid #1a3a5c; }
+body.sun .card-tab { color: #555; }
+body.sun .card-tab.active { color: #1a3a5c; border-bottom-color: #f59e0b; background: #fff; }
+body.sun .field-group { border-right: 2px solid #e0e8f0; }
+body.sun .field-group-title { color: #1a3a5c; }
+body.sun .field-label { color: #444; font-weight: 700; }
+body.sun input.ci { background: #eff6ff; border: 2px solid #1a3a5c; color: #1a3a5c; font-weight: 700; }
+body.sun input.ci.start { background: #f0f4f8; color: #1a3a5c; border-color: #1a3a5c; }
+body.sun input.ci:focus { background: #dbeafe; border-color: #f59e0b; color: #1a3a5c; }
+body.sun .ci-ro { border: 2px solid #1a3a5c; color: #1a3a5c; font-weight: 700; }
+body.sun .ci-ro.start { color: #444; border-color: #bbb; }
+body.sun .ci-ro.empty { color: #999; border-color: #bbb; }
+body.sun textarea.notes-input { color: #1a3a5c; background: #fffbeb; }
+body.sun .notes-ro { color: #1a3a5c; }
+body.sun .insert-btn { background: #fff; border-color: #1a3a5c; color: #1a3a5c; }
+body.sun .insert-line { background: #1a3a5c; }
+body.sun .general-notes-card { background: #fff; border: 2px solid #1a3a5c; }
+body.sun .general-notes-header { background: #1a3a5c; }
+body.sun textarea.general-notes-input { color: #1a3a5c; }
+body.sun .del-btn { color: #1a3a5c; }
+body.sun .camera-btn { background: #fff; border-color: #1a3a5c; color: #1a3a5c; }
+body.sun .photo-retake-btn { background: #f0f4f8; color: #1a3a5c; border-color: #1a3a5c; }
+
+/* Sun toggle button */
+.sun-toggle { position: fixed; bottom: 20px; right: 16px; z-index: 1000; background: #1a3a5c; border: none; border-radius: 50%; width: 52px; height: 52px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3); touch-action: manipulation; transition: background 0.2s; }
+body.sun .sun-toggle { background: #f59e0b; }
 @media print { .report-toolbar { display: none !important; } }
+
+/* Sunlight mode */
+body.sun .app { background: #ffffff; }
+body.sun { background: #ffffff; }
+body.sun::before { display: none; }
+body.sun .header { background: #ffffff; border-bottom: 3px solid #f59e0b; }
+body.sun .header::after { display: none; }
+body.sun .header-eyebrow { color: #b45309; }
+body.sun .header h1 { color: #000000; }
+body.sun .header-sub { color: #333333; }
+body.sun .date-section { background: #fff; border: 2px solid #000; }
+body.sun .date-stepper { background: #f0f0f0; border: 2px solid #000; }
+body.sun .step-btn { color: #000; font-weight: 900; }
+body.sun .step-btn:active { background: rgba(0,0,0,0.1); }
+body.sun .step-sep { background: #000; }
+body.sun .date-display { color: #000; font-weight: 700; }
+body.sun .section-divider { background: #000; }
+body.sun .btn { background: #000000; color: #f59e0b; border-color: #000; }
+body.sun .mode-bar { background: rgba(0,0,0,0.06); border-color: #000; color: #000; }
+body.sun .section-label { color: #000; }
+body.sun .add-task-btn { background: rgba(0,0,0,0.06); border-color: #000; color: #000; }
+body.sun .task-card { background: #fff; border: 2px solid #000; }
+body.sun .task-header { background: #000000; }
+body.sun .task-name-static { color: #ffffff; }
+body.sun input.task-name-input { color: #ffffff; }
+body.sun .del-btn { color: #ffffff; }
+body.sun .card-tabs { background: #f5f5f5; border-bottom: 2px solid #000; }
+body.sun .card-tab { color: #555; font-weight: 700; }
+body.sun .card-tab.active { color: #000; border-bottom-color: #f59e0b; background: #fff; }
+body.sun .field-group { border-right: 2px solid #ddd; }
+body.sun .field-group-title { color: #000; }
+body.sun .field-label { color: #333; font-weight: 700; }
+body.sun input.ci { background: #f0f6ff; border: 2px solid #000; color: #000; font-weight: 700; }
+body.sun input.ci.start { background: #e8eef8; color: #000; }
+body.sun input.ci:focus { background: #fff; border-color: #f59e0b; color: #000; }
+body.sun .ci-ro { background: #f0f6ff; border: 2px solid #000; color: #000; font-weight: 700; }
+body.sun .ci-ro.start { background: #e8eef8; color: #333; }
+body.sun .ci-ro.empty { color: #999; }
+body.sun textarea.notes-input { color: #000; background: #fafafa; }
+body.sun .notes-ro { color: #000; }
+body.sun .photo-empty-icon { opacity: 0.5; }
+body.sun .photo-empty-txt { color: #333; }
+body.sun .camera-btn { background: rgba(0,0,0,0.08); border-color: #000; color: #000; }
+body.sun .insert-btn { background: rgba(0,0,0,0.06); border-color: #000; color: #000; }
+body.sun .insert-line { background: #ccc; }
+body.sun .general-notes-card { background: #fff; border: 2px solid #000; }
+body.sun .general-notes-header { background: #000; }
+body.sun .general-notes-header .task-name-static { color: #fff; }
+body.sun textarea.general-notes-input { color: #000; }
+body.sun .sun-btn { background: #000; color: #f59e0b; }
+
+/* Sun toggle button */
+.sun-btn {
+  position: fixed;
+  top: 14px;
+  right: 16px;
+  z-index: 1000;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(245,158,11,0.15);
+  color: #f59e0b;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  transition: background 0.2s;
+}
+.sun-btn:active { transform: scale(0.93); }
 </style>
 </head>
 <body>
+<button class="sun-toggle" onclick="toggleSun()" id="sunBtn">&#9728; Sunlight</button>
 <div class="app">
 
   <div class="header">
@@ -160,6 +366,8 @@ textarea.general-notes-input::placeholder { color: var(--steel); }
     <h1>Pipeline Progress</h1>
     <div class="header-sub">Transmission Line Tracker v3.0</div>
   </div>
+
+  <button class="sun-btn" id="sunBtn" onclick="toggleSun()" title="Toggle sunlight mode">&#9728;</button>
 
   <div style="height:16px"></div>
 
@@ -200,7 +408,10 @@ textarea.general-notes-input::placeholder { color: var(--steel); }
     <textarea class="general-notes-input" id="generalNotesEl" placeholder="Enter general site notes, observations, issues..."></textarea>
   </div>
 
+  <div style="height:70px"></div>
 </div>
+
+<button class="sun-toggle" id="sunToggle" onclick="toggleSun()" title="Toggle sunlight mode">&#9728;</button>
 
 <!-- PDF Options Modal -->
 <div id="pdfModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:center;justify-content:center;">
@@ -952,6 +1163,34 @@ document.getElementById('generalNotesEl').addEventListener('input', function(e) 
   debounceSave();
 });
 
+// Sunlight mode
+function toggleSun() {
+  var isSun = document.body.classList.toggle('sun');
+  document.getElementById('sunBtn').innerHTML = isSun ? '&#9790;' : '&#9728;';
+  try { localStorage.setItem('parsons_sun', isSun ? '1' : '0'); } catch(e){}
+}
+function loadSunMode() {
+  try {
+    if (localStorage.getItem('parsons_sun') === '1') {
+      document.body.classList.add('sun');
+      document.getElementById('sunBtn').innerHTML = '&#9790;';
+    }
+  } catch(e){}
+}
+
+// Sunlight mode
+function toggleSun() {
+  var isSun = document.body.classList.toggle('sun');
+  localStorage.setItem('sunMode', isSun ? '1' : '0');
+}
+
+// Sunlight mode
+function toggleSun() {
+  var isSun = document.body.classList.toggle('sun');
+  document.getElementById('sunBtn').innerHTML = isSun ? '&#9790; Night' : '&#9728; Sunlight';
+  try { localStorage.setItem('parsons_sun', isSun ? '1' : '0'); } catch(e){}
+}
+
 // Init
 var restored = loadState();
 if (!restored) {
@@ -960,11 +1199,23 @@ if (!restored) {
   updateDateDisplay();
   document.getElementById('generalNotesEl').value = generalNotes;
 }
+// Restore sunlight preference
+try {
+  if (localStorage.getItem('parsons_sun') === '1') {
+    document.body.classList.add('sun');
+    document.getElementById('sunBtn').innerHTML = '&#9790; Night';
+  }
+} catch(e){}
+// Restore sun mode preference
+if (localStorage.getItem('sunMode') === '1') {
+  document.body.classList.add('sun');
+}
 if (viewIndex === -1) {
   renderCards(TASKS, false);
 } else {
   renderCards(dayLog[viewIndex].tasks, true);
 }
+loadSunMode();
 </script>
 <script>
 if ('serviceWorker' in navigator) {
