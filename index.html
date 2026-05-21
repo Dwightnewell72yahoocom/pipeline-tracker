@@ -11,363 +11,190 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --navy: #0a1628;
-  --navy2: #0f2040;
-  --steel: #1a3a5c;
-  --accent: #f59e0b;
-  --muted: #7a9ab8;
-  --text: #e8f0f8;
-  --text2: #a0c0d8;
-  --green: #22c55e;
-  --card-bg: #0f2040;
-  --border: rgba(255,255,255,0.08);
-  --font: 'Sora', sans-serif;
-  --mono: 'DM Mono', monospace;
+  --navy:#0a1628; --navy2:#0f2040; --steel:#1a3a5c;
+  --accent:#f59e0b; --muted:#7a9ab8; --text:#e8f0f8;
+  --text2:#a0c0d8; --green:#22c55e; --card-bg:#0f2040;
+  --border:rgba(255,255,255,0.08);
+  --font:'Sora',sans-serif; --mono:'DM Mono',monospace;
 }
-
-/* Sunlight mode overrides */
 body.sun {
-  --navy: #f0f4f8;
-  --navy2: #ffffff;
-  --steel: #dbeafe;
-  --accent: #f59e0b;
-  --muted: #444444;
-  --text: #1a3a5c;
-  --text2: #1a3a5c;
-  --green: #15803d;
-  --card-bg: #ffffff;
-  --border: #1a3a5c;
-  background: #f0f4f8;
+  --navy:#f0f4f8; --navy2:#ffffff; --steel:#dbeafe;
+  --accent:#f59e0b; --muted:#444444; --text:#1a3a5c;
+  --text2:#1a3a5c; --green:#15803d; --card-bg:#ffffff;
+  --border:#1a3a5c; background:#f0f4f8;
 }
-body.sun::before { display: none; }
-body.sun .header { background: #ffffff; border-bottom: 3px solid #1a3a5c; }
-body.sun .header::after { display: none; }
-body.sun .header-eyebrow { color: #b45309; }
-body.sun .header h1 { color: #1a3a5c; }
-body.sun .header-sub { color: #444; }
-body.sun .date-stepper { background: #dbeafe; border: 2px solid #1a3a5c; }
-body.sun .step-btn { color: #1a3a5c; font-weight: 900; }
-body.sun .step-btn:active { background: rgba(26,58,92,0.12); }
-body.sun .step-sep { background: #1a3a5c; width: 2px; }
-body.sun .date-display { color: #1a3a5c; font-weight: 700; }
-body.sun .date-section { background: #fff; border: 2px solid #1a3a5c; }
-body.sun .section-divider { background: #1a3a5c; height: 2px; }
-body.sun .btn { background: #1a3a5c; color: #f59e0b; border: none; }
-body.sun .mode-bar { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
-body.sun .task-card { background: #fff; border: 2px solid #1a3a5c; }
-body.sun .task-header { background: #1a3a5c; }
-body.sun .task-name-static { color: #fff; }
-body.sun input.task-name-input { color: #fff; }
-body.sun input.task-name-input:focus { border-bottom-color: #f59e0b; }
-body.sun .del-btn { color: rgba(255,255,255,0.7); }
-body.sun .card-tabs { background: #e8f0f8; border-bottom: 2px solid #1a3a5c; }
-body.sun .card-tab { color: #444; font-weight: 700; }
-body.sun .card-tab.active { color: #1a3a5c; border-bottom-color: #f59e0b; background: #fff; }
-body.sun .field-group { border-right: 1px solid #cbd5e1; }
-body.sun .field-group-title { color: #1a3a5c; }
-body.sun .field-label { color: #444; font-weight: 700; }
-body.sun input.ci { background: #f0f6ff; border: 2px solid #1a3a5c; color: #1a3a5c; font-weight: 700; }
-body.sun input.ci.start { background: #e8f0f8; color: #1a3a5c; }
-body.sun input.ci:focus { background: #fff; border-color: #f59e0b; }
-body.sun .ci-ro { color: #1a3a5c; border: 2px solid #1a3a5c; }
-body.sun .ci-ro.start { color: #444; }
-body.sun .ci-ro.empty { color: #94a3b8; border-color: #cbd5e1; }
-body.sun textarea.notes-input { color: #1a3a5c; }
-body.sun textarea.notes-input::placeholder { color: #94a3b8; }
-body.sun .notes-ro { color: #1a3a5c; }
-body.sun .insert-line { background: #1a3a5c; }
-body.sun .insert-btn { color: #1a3a5c; border-color: rgba(26,58,92,0.4); background: rgba(26,58,92,0.06); }
-body.sun .general-notes-card { background: #fff; border: 2px solid #1a3a5c; }
-body.sun .general-notes-header { background: #1a3a5c; }
-body.sun textarea.general-notes-input { color: #1a3a5c; }
-body.sun .add-task-btn { color: #1a3a5c; border-color: rgba(26,58,92,0.4); background: rgba(26,58,92,0.06); }
-body.sun .section-label { color: #1a3a5c; }
+body.sun::before { display:none; }
+body.sun .header { background:#ffffff; border-bottom:3px solid #1a3a5c; }
+body.sun .header::after { display:none; }
+body.sun .header-eyebrow { color:#b45309; }
+body.sun .header h1 { color:#1a3a5c; }
+body.sun .header-sub { color:#444; }
+body.sun .date-stepper { background:#dbeafe; border:2px solid #1a3a5c; }
+body.sun .step-btn { color:#1a3a5c; font-weight:900; }
+body.sun .step-btn:active { background:rgba(26,58,92,0.12); }
+body.sun .step-sep { background:#1a3a5c; width:2px; }
+body.sun .date-display { color:#1a3a5c; font-weight:700; }
+body.sun .date-section { background:#fff; border:2px solid #1a3a5c; }
+body.sun .section-divider { background:#1a3a5c; height:2px; }
+body.sun .btn { background:#1a3a5c; color:#f59e0b; border:none; }
+body.sun .mode-bar { background:#fef3c7; border-color:#f59e0b; color:#92400e; }
+body.sun .task-card { background:#fff; border:2px solid #1a3a5c; }
+body.sun .task-header { background:#1a3a5c; }
+body.sun .task-name-static { color:#fff; }
+body.sun input.task-name-input { color:#fff; }
+body.sun input.task-name-input:focus { border-bottom-color:#f59e0b; }
+body.sun .del-btn { color:rgba(255,255,255,0.7); }
+body.sun .card-tabs { background:#e8f0f8; border-bottom:2px solid #1a3a5c; }
+body.sun .card-tab { color:#444; font-weight:700; }
+body.sun .card-tab.active { color:#1a3a5c; border-bottom-color:#f59e0b; background:#fff; }
+body.sun .field-group { border-right:1px solid #cbd5e1; }
+body.sun .field-group-title { color:#1a3a5c; }
+body.sun .field-label { color:#444; font-weight:700; }
+body.sun input.ci { background:#f0f6ff; border:2px solid #1a3a5c; color:#1a3a5c; font-weight:700; }
+body.sun input.ci.start { background:#e8f0f8; color:#1a3a5c; }
+body.sun input.ci:focus { background:#fff; border-color:#f59e0b; }
+body.sun .ci-ro { color:#1a3a5c; border:2px solid #1a3a5c; }
+body.sun .ci-ro.start { color:#444; }
+body.sun .ci-ro.empty { color:#94a3b8; border-color:#cbd5e1; }
+body.sun textarea.notes-input { color:#1a3a5c; }
+body.sun textarea.notes-input::placeholder { color:#94a3b8; }
+body.sun .notes-ro { color:#1a3a5c; }
+body.sun .insert-line { background:#1a3a5c; }
+body.sun .insert-btn { color:#1a3a5c; border-color:rgba(26,58,92,0.4); background:rgba(26,58,92,0.06); }
+body.sun .general-notes-card { background:#fff; border:2px solid #1a3a5c; }
+body.sun .general-notes-header { background:#1a3a5c; }
+body.sun textarea.general-notes-input { color:#1a3a5c; }
+body.sun .add-task-btn { color:#1a3a5c; border-color:rgba(26,58,92,0.4); background:rgba(26,58,92,0.06); }
+body.sun .section-label { color:#1a3a5c; }
+body.sun .camera-btn { color:#1a3a5c; border-color:rgba(26,58,92,0.4); background:rgba(26,58,92,0.06); }
 
-/* Sun toggle button */
-.sun-toggle {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  z-index: 1000;
-  background: #1a3a5c;
-  border: none;
-  border-radius: 99px;
-  padding: 7px 14px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #f59e0b;
-  cursor: pointer;
-  font-family: var(--font);
-  touch-action: manipulation;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-body.sun .sun-toggle {
-  background: #f59e0b;
-  color: #1a3a5c;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body { font-family: var(--font); background: var(--navy); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(245,158,11,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,158,11,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
-.app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 0 80px; }
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+body { font-family:var(--font); background:var(--navy); color:var(--text); min-height:100vh; overflow-x:hidden; }
+body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(245,158,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(245,158,11,0.03) 1px,transparent 1px); background-size:40px 40px; pointer-events:none; z-index:0; }
+.app { position:relative; z-index:1; max-width:480px; margin:0 auto; padding:0 0 80px; }
 
-/* Header */
-.header { background: linear-gradient(160deg, var(--navy2) 0%, var(--steel) 100%); padding: 56px 20px 24px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
-.header::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent); }
-.header-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; margin-bottom: 6px; font-family: var(--mono); }
-.header h1 { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.2; }
-.header-sub { font-size: 12px; color: var(--muted); margin-top: 4px; font-family: var(--mono); }
+.sun-toggle { position:fixed; top:12px; right:12px; z-index:1000; background:#1a3a5c; border:none; border-radius:99px; padding:7px 14px; font-size:13px; font-weight:700; color:#f59e0b; cursor:pointer; font-family:var(--font); touch-action:manipulation; box-shadow:0 2px 8px rgba(0,0,0,0.3); display:flex; align-items:center; gap:6px; }
+body.sun .sun-toggle { background:#f59e0b; color:#1a3a5c; }
 
-/* Date */
-.date-section { margin: 16px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-.date-inner { padding: 14px 16px; }
-.date-stepper { display: flex; align-items: stretch; background: var(--steel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; height: 52px; }
-.step-btn { width: 56px; background: transparent; border: none; color: var(--accent); font-size: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; touch-action: manipulation; }
-.step-btn:active { background: rgba(245,158,11,0.22); }
-.step-sep { width: 1px; background: var(--border); flex-shrink: 0; }
-.date-display { flex: 1; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 13px; color: var(--text); user-select: none; text-align: center; }
-.section-divider { height: 1px; background: var(--border); }
-.btn-row { padding: 14px 16px; background: rgba(0,0,0,0.15); }
-.btn { width: 100%; font-family: var(--font); font-size: 14px; font-weight: 600; padding: 14px; border-radius: 10px; border: 1px solid rgba(110,231,183,0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; touch-action: manipulation; background: linear-gradient(135deg, #065f46, #047857); color: #6ee7b7; }
-.btn:active { opacity: 0.85; transform: scale(0.98); }
+.header { background:linear-gradient(160deg,var(--navy2) 0%,var(--steel) 100%); padding:56px 20px 24px; border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
+.header::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,var(--accent),transparent); }
+.header-eyebrow { font-size:10px; font-weight:600; letter-spacing:0.15em; color:var(--accent); text-transform:uppercase; margin-bottom:6px; font-family:var(--mono); }
+.header h1 { font-size:22px; font-weight:700; color:var(--text); line-height:1.2; }
+.header-sub { font-size:12px; color:var(--muted); margin-top:4px; font-family:var(--mono); }
 
-/* Mode bar */
-.mode-bar { display: none; margin: 0 16px; padding: 8px 14px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 10px; font-family: var(--mono); font-size: 11px; color: var(--accent); text-align: center; }
-.mode-bar.visible { display: block; }
+.date-section { margin:16px; background:var(--card-bg); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+.date-inner { padding:14px 16px; }
+.date-stepper { display:flex; align-items:stretch; background:var(--steel); border:1px solid var(--border); border-radius:10px; overflow:hidden; height:52px; }
+.step-btn { width:56px; background:transparent; border:none; color:var(--accent); font-size:30px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; touch-action:manipulation; }
+.step-btn:active { background:rgba(245,158,11,0.22); }
+.step-sep { width:1px; background:var(--border); flex-shrink:0; }
+.date-display { flex:1; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:13px; color:var(--text); user-select:none; text-align:center; }
+.section-divider { height:1px; background:var(--border); }
+.btn-row { padding:14px 16px; background:rgba(0,0,0,0.15); }
+.btn { width:100%; font-family:var(--font); font-size:14px; font-weight:600; padding:14px; border-radius:10px; border:1px solid rgba(110,231,183,0.2); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; touch-action:manipulation; background:linear-gradient(135deg,#065f46,#047857); color:#6ee7b7; }
+.btn:active { opacity:0.85; transform:scale(0.98); }
 
-/* Section label */
-.section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; font-family: var(--mono); padding: 0 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
-.add-task-btn { font-family: var(--mono); font-size: 11px; padding: 4px 12px; border-radius: 6px; border: 1px solid rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); color: var(--accent); cursor: pointer; touch-action: manipulation; text-transform: none; letter-spacing: 0; }
+.mode-bar { display:none; margin:0 16px; padding:8px 14px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2); border-radius:10px; font-family:var(--mono); font-size:11px; color:var(--accent); text-align:center; }
+.mode-bar.visible { display:block; }
 
-/* Cards */
-.cards { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
-.task-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-.task-card.flash { animation: cardFlash 0.8s ease; }
-@keyframes cardFlash { 0% { border-color: var(--green); box-shadow: 0 0 0 1px var(--green); } 100% { border-color: var(--border); box-shadow: none; } }
-.task-header { padding: 10px 14px; background: linear-gradient(90deg, var(--steel), var(--navy2)); display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
-.task-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-.task-name-static { font-size: 13px; font-weight: 600; color: var(--text); }
-input.task-name-input { background: transparent; border: none; border-bottom: 1px solid transparent; color: var(--text); font-family: var(--font); font-size: 13px; font-weight: 600; flex: 1; outline: none; padding: 0; min-width: 0; }
-input.task-name-input:focus { border-bottom-color: var(--accent); }
-.del-btn { margin-left: auto; background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 0 4px; touch-action: manipulation; flex-shrink: 0; }
-.del-btn:active { color: #ef4444; }
+.section-label { font-size:10px; font-weight:600; letter-spacing:0.15em; color:var(--accent); text-transform:uppercase; font-family:var(--mono); padding:0 16px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; }
+.add-task-btn { font-family:var(--mono); font-size:11px; padding:4px 12px; border-radius:6px; border:1px solid rgba(245,158,11,0.3); background:rgba(245,158,11,0.08); color:var(--accent); cursor:pointer; touch-action:manipulation; text-transform:none; letter-spacing:0; }
 
-/* Tabs */
-.card-tabs { display: flex; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.15); }
-.card-tab { flex: 1; padding: 8px 4px; font-size: 11px; font-weight: 600; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); text-align: center; cursor: pointer; border: none; background: none; touch-action: manipulation; border-bottom: 2px solid transparent; }
-.card-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-.card-pane { display: none; }
-.card-pane.active { display: block; }
+.cards { padding:0 16px; display:flex; flex-direction:column; gap:10px; }
+.task-card { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+.task-card.flash { animation:cardFlash 0.8s ease; }
+@keyframes cardFlash { 0% { border-color:var(--green); box-shadow:0 0 0 1px var(--green); } 100% { border-color:var(--border); box-shadow:none; } }
+.task-header { padding:10px 14px; background:linear-gradient(90deg,var(--steel),var(--navy2)); display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border); }
+.task-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+.task-name-static { font-size:13px; font-weight:600; color:var(--text); }
+input.task-name-input { background:transparent; border:none; border-bottom:1px solid transparent; color:var(--text); font-family:var(--font); font-size:13px; font-weight:600; flex:1; outline:none; padding:0; min-width:0; }
+input.task-name-input:focus { border-bottom-color:var(--accent); }
+.del-btn { margin-left:auto; background:none; border:none; color:var(--muted); font-size:16px; cursor:pointer; padding:0 4px; touch-action:manipulation; flex-shrink:0; }
+.del-btn:active { color:#ef4444; }
 
-/* Fields */
-.fields { display: grid; grid-template-columns: 1fr 1fr; }
-.field-group { padding: 12px 14px; border-right: 1px solid var(--border); }
-.field-group:last-child { border-right: none; }
-.field-group-title { font-size: 10px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; font-family: var(--mono); }
-.field-pair { display: flex; flex-direction: column; gap: 8px; }
-.field-item { display: flex; flex-direction: column; gap: 3px; }
-.field-label { font-size: 10px; color: var(--muted); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
-input.ci { width: 100%; font-size: 15px; font-family: var(--mono); border: 1px solid var(--border); border-radius: 7px; padding: 9px 10px; background: var(--navy); color: var(--text); -webkit-appearance: none; }
-input.ci.start { background: rgba(0,0,0,0.3); color: var(--text2); }
-input.ci:focus { outline: none; border-color: var(--accent); color: var(--text); background: var(--navy2); }
-.ci-ro { font-size: 15px; font-family: var(--mono); border: 1px solid var(--border); border-radius: 7px; padding: 9px 10px; color: var(--text2); min-height: 38px; display: block; }
-.ci-ro.start { color: var(--muted); }
-.ci-ro.empty { color: var(--steel); }
+.card-tabs { display:flex; border-bottom:1px solid var(--border); background:rgba(0,0,0,0.15); }
+.card-tab { flex:1; padding:8px 4px; font-size:11px; font-weight:600; font-family:var(--mono); text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); text-align:center; cursor:pointer; border:none; background:none; touch-action:manipulation; border-bottom:2px solid transparent; }
+.card-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.card-pane { display:none; }
+.card-pane.active { display:block; }
 
-/* Notes */
-textarea.notes-input { width: 100%; min-height: 90px; font-size: 13px; font-family: var(--font); padding: 12px 14px; background: transparent; border: none; color: var(--text); resize: none; outline: none; line-height: 1.5; }
-textarea.notes-input::placeholder { color: var(--steel); }
-.notes-ro { font-size: 13px; padding: 12px 14px; color: var(--text2); line-height: 1.5; min-height: 50px; white-space: pre-wrap; }
-.notes-ro.empty { color: var(--steel); font-style: italic; }
+.fields { display:grid; grid-template-columns:1fr 1fr; }
+.field-group { padding:12px 14px; border-right:1px solid var(--border); }
+.field-group:last-child { border-right:none; }
+.field-group-title { font-size:10px; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:10px; font-family:var(--mono); }
+.field-pair { display:flex; flex-direction:column; gap:8px; }
+.field-item { display:flex; flex-direction:column; gap:3px; }
+.field-label { font-size:10px; color:var(--muted); font-family:var(--mono); text-transform:uppercase; letter-spacing:0.06em; }
+input.ci { width:100%; font-size:15px; font-family:var(--mono); border:1px solid var(--border); border-radius:7px; padding:9px 10px; background:var(--navy); color:var(--text); -webkit-appearance:none; }
+input.ci.start { background:rgba(0,0,0,0.3); color:var(--text2); }
+input.ci:focus { outline:none; border-color:var(--accent); color:var(--text); background:var(--navy2); }
+.ci-ro { font-size:15px; font-family:var(--mono); border:1px solid var(--border); border-radius:7px; padding:9px 10px; color:var(--text2); min-height:38px; display:block; }
+.ci-ro.start { color:var(--muted); }
+.ci-ro.empty { color:var(--steel); }
 
-/* Photo */
-.photo-pane-inner { padding: 12px 14px; }
-.photo-thumb { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); display: block; }
-.photo-retake-btn { margin-top: 8px; width: 100%; font-family: var(--font); font-size: 12px; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--steel); color: var(--text2); cursor: pointer; touch-action: manipulation; }
-.photo-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 0; }
-.photo-empty-icon { font-size: 34px; opacity: 0.35; }
-.photo-empty-txt { font-size: 11px; color: var(--muted); font-family: var(--mono); }
-.camera-btn { font-family: var(--font); font-size: 13px; font-weight: 600; padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); color: var(--accent); cursor: pointer; touch-action: manipulation; }
-.camera-btn:active { background: rgba(245,158,11,0.2); }
-.thumb-badge { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-left: 4px; vertical-align: middle; }
+textarea.notes-input { width:100%; min-height:90px; font-size:13px; font-family:var(--font); padding:12px 14px; background:transparent; border:none; color:var(--text); resize:none; outline:none; line-height:1.5; }
+textarea.notes-input::placeholder { color:var(--steel); }
+.notes-ro { font-size:13px; padding:12px 14px; color:var(--text2); line-height:1.5; min-height:50px; white-space:pre-wrap; }
+.notes-ro.empty { color:var(--steel); font-style:italic; }
 
-/* Insert row */
-.insert-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
-.insert-line { flex: 1; height: 1px; background: var(--border); }
-.insert-btn { font-size: 11px; font-family: var(--mono); padding: 3px 12px; border-radius: 99px; border: 1px solid rgba(245,158,11,0.25); background: rgba(245,158,11,0.06); color: var(--accent); cursor: pointer; white-space: nowrap; touch-action: manipulation; flex-shrink: 0; }
+.photo-pane-inner { padding:12px 14px; }
+.photo-thumb { width:100%; max-height:200px; object-fit:cover; border-radius:8px; border:1px solid var(--border); display:block; }
+.photo-retake-btn { margin-top:8px; width:100%; font-family:var(--font); font-size:12px; padding:8px; border-radius:8px; border:1px solid var(--border); background:var(--steel); color:var(--text2); cursor:pointer; touch-action:manipulation; }
+.photo-empty { display:flex; flex-direction:column; align-items:center; gap:10px; padding:20px 0; }
+.photo-empty-icon { font-size:34px; opacity:0.35; }
+.photo-empty-txt { font-size:11px; color:var(--muted); font-family:var(--mono); }
+.camera-btn { font-family:var(--font); font-size:13px; font-weight:600; padding:10px 20px; border-radius:10px; border:1px solid rgba(245,158,11,0.3); background:rgba(245,158,11,0.08); color:var(--accent); cursor:pointer; touch-action:manipulation; }
+.camera-btn:active { background:rgba(245,158,11,0.2); }
+.thumb-badge { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--green); margin-left:4px; vertical-align:middle; }
 
-/* General notes */
-.general-notes-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin: 0 16px; }
-.general-notes-header { padding: 10px 14px; background: linear-gradient(90deg, var(--steel), var(--navy2)); display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
-textarea.general-notes-input { width: 100%; min-height: 120px; font-size: 13px; font-family: var(--font); padding: 14px; background: transparent; border: none; color: var(--text); resize: none; outline: none; line-height: 1.6; }
-textarea.general-notes-input::placeholder { color: var(--steel); }
+.insert-row { display:flex; align-items:center; gap:8px; padding:4px 0; }
+.insert-line { flex:1; height:1px; background:var(--border); }
+.insert-btn { font-size:11px; font-family:var(--mono); padding:3px 12px; border-radius:99px; border:1px solid rgba(245,158,11,0.25); background:rgba(245,158,11,0.06); color:var(--accent); cursor:pointer; white-space:nowrap; touch-action:manipulation; flex-shrink:0; }
 
-/* Report overlay */
-.report-overlay { display: none; position: fixed; inset: 0; background: #fff; z-index: 9999; flex-direction: column; }
-.report-overlay.open { display: flex; }
-.report-toolbar { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: #1a3a5c; flex-shrink: 0; }
-.report-toolbar-title { color: #f59e0b; font-size: 13px; font-weight: 600; flex: 1; font-family: monospace; }
-.report-close-btn { background: none; border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 13px; padding: 7px 14px; border-radius: 8px; cursor: pointer; touch-action: manipulation; }
-.report-print-btn { background: #f59e0b; border: none; color: #1a3a5c; font-size: 13px; font-weight: 700; padding: 7px 16px; border-radius: 8px; cursor: pointer; touch-action: manipulation; }
-.report-body { flex: 1; overflow-y: auto; padding: 24px 20px; color: #111; font-family: Arial, sans-serif; }
-.report-body h1 { color: #1a3a5c; font-size: 22px; margin-bottom: 4px; }
-.report-body h2 { color: #333; font-size: 16px; font-weight: normal; margin-bottom: 4px; }
-.report-dates { color: #555; font-size: 12px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #1a3a5c; }
-.report-body table { border-collapse: collapse; width: 100%; margin-bottom: 8px; }
-.r-hdr { background: #1a3a5c; color: #f59e0b; font-weight: bold; padding: 8px 10px; border: 1px solid #999; text-align: center; font-size: 13px; }
-.r-sub { background: #d6e4f0; color: #1a3a5c; font-weight: bold; padding: 6px 10px; border: 1px solid #999; text-align: center; font-size: 12px; }
-.r-data { padding: 7px 10px; border: 1px solid #ccc; font-size: 13px; }
-.r-name { font-weight: 600; }
-.r-val { text-align: center; font-family: 'Courier New', monospace; }
-.r-note { font-size: 12px; color: #333; }
-.report-body h3 { color: #1a3a5c; margin-top: 24px; margin-bottom: 8px; font-size: 15px; }
-.notes-box { border: 1px solid #ccc; border-radius: 4px; padding: 12px; font-size: 13px; line-height: 1.6; white-space: pre-wrap; color: #333; }
-.photo-section { margin-bottom: 20px; }
-.photo-section-label { font-weight: 600; color: #1a3a5c; font-size: 13px; margin-bottom: 6px; font-family: Arial; }
-.photo-section img { max-width: 100%; border-radius: 4px; border: 1px solid #ccc; display: block; }
-.report-footer { color: #999; font-size: 11px; margin-top: 20px; padding-top: 10px; border-top: 1px solid #eee; }
+.general-notes-card { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin:0 16px; }
+.general-notes-header { padding:10px 14px; background:linear-gradient(90deg,var(--steel),var(--navy2)); display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border); }
+textarea.general-notes-input { width:100%; min-height:120px; font-size:13px; font-family:var(--font); padding:14px; background:transparent; border:none; color:var(--text); resize:none; outline:none; line-height:1.6; }
+textarea.general-notes-input::placeholder { color:var(--steel); }
 
-/* Sunlight mode */
-body.sun { background: #f5f7fa; }
-body.sun .header { background: #ffffff; border-bottom: 3px solid #1a3a5c; }
-body.sun .header-eyebrow { color: #b45309; }
-body.sun .header h1 { color: #1a3a5c; }
-body.sun .header-sub { color: #444; }
-body.sun .header::after { background: linear-gradient(90deg, transparent, #f59e0b, transparent); }
-body.sun body::before { display: none; }
-body.sun .date-section { background: #fff; border: 2px solid #1a3a5c; }
-body.sun .date-stepper { background: #dbeafe; border: 2px solid #1a3a5c; }
-body.sun .step-btn { color: #1a3a5c; font-weight: 700; }
-body.sun .step-sep { background: #1a3a5c; }
-body.sun .date-display { color: #1a3a5c; font-weight: 700; }
-body.sun .section-divider { background: #1a3a5c; }
-body.sun .btn { background: #1a3a5c; color: #f59e0b; border-color: #1a3a5c; }
-body.sun .mode-bar { background: #fef3c7; border-color: #f59e0b; color: #92400e; }
-body.sun .section-label { color: #1a3a5c; }
-body.sun .add-task-btn { background: #fff; border-color: #1a3a5c; color: #1a3a5c; }
-body.sun .task-card { background: #fff; border: 2px solid #1a3a5c; }
-body.sun .task-header { background: #1a3a5c; }
-body.sun .task-name-static { color: #fff; }
-body.sun input.task-name-input { color: #fff; }
-body.sun .card-tabs { background: #f0f4f8; border-bottom: 2px solid #1a3a5c; }
-body.sun .card-tab { color: #555; }
-body.sun .card-tab.active { color: #1a3a5c; border-bottom-color: #f59e0b; background: #fff; }
-body.sun .field-group { border-right: 2px solid #e0e8f0; }
-body.sun .field-group-title { color: #1a3a5c; }
-body.sun .field-label { color: #444; font-weight: 700; }
-body.sun input.ci { background: #eff6ff; border: 2px solid #1a3a5c; color: #1a3a5c; font-weight: 700; }
-body.sun input.ci.start { background: #f0f4f8; color: #1a3a5c; border-color: #1a3a5c; }
-body.sun input.ci:focus { background: #dbeafe; border-color: #f59e0b; color: #1a3a5c; }
-body.sun .ci-ro { border: 2px solid #1a3a5c; color: #1a3a5c; font-weight: 700; }
-body.sun .ci-ro.start { color: #444; border-color: #bbb; }
-body.sun .ci-ro.empty { color: #999; border-color: #bbb; }
-body.sun textarea.notes-input { color: #1a3a5c; background: #fffbeb; }
-body.sun .notes-ro { color: #1a3a5c; }
-body.sun .insert-btn { background: #fff; border-color: #1a3a5c; color: #1a3a5c; }
-body.sun .insert-line { background: #1a3a5c; }
-body.sun .general-notes-card { background: #fff; border: 2px solid #1a3a5c; }
-body.sun .general-notes-header { background: #1a3a5c; }
-body.sun textarea.general-notes-input { color: #1a3a5c; }
-body.sun .del-btn { color: #1a3a5c; }
-body.sun .camera-btn { background: #fff; border-color: #1a3a5c; color: #1a3a5c; }
-body.sun .photo-retake-btn { background: #f0f4f8; color: #1a3a5c; border-color: #1a3a5c; }
+.report-overlay { display:none; position:fixed; inset:0; background:#fff; z-index:9999; flex-direction:column; }
+.report-overlay.open { display:flex; }
+.report-toolbar { display:flex; align-items:center; gap:10px; padding:14px 16px; background:#1a3a5c; flex-shrink:0; }
+.report-toolbar-title { color:#f59e0b; font-size:13px; font-weight:600; flex:1; font-family:monospace; }
+.report-close-btn { background:none; border:1px solid rgba(255,255,255,0.25); color:#fff; font-size:13px; padding:7px 14px; border-radius:8px; cursor:pointer; touch-action:manipulation; }
+.report-save-btn { background:#f59e0b; border:none; color:#1a3a5c; font-size:13px; font-weight:700; padding:7px 16px; border-radius:8px; cursor:pointer; touch-action:manipulation; }
+.report-body { flex:1; overflow-y:auto; padding:24px 20px; color:#111; font-family:Arial,sans-serif; }
+.report-footer-txt { color:#999; font-size:11px; margin-top:20px; padding-top:10px; border-top:1px solid #eee; }
+@media print { .report-toolbar { display:none !important; } }
 
-/* Sun toggle button */
-.sun-toggle { position: fixed; bottom: 20px; right: 16px; z-index: 1000; background: #1a3a5c; border: none; border-radius: 50%; width: 52px; height: 52px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3); touch-action: manipulation; transition: background 0.2s; }
-body.sun .sun-toggle { background: #f59e0b; }
-@media print { .report-toolbar { display: none !important; } }
-
-/* Sunlight mode */
-body.sun .app { background: #ffffff; }
-body.sun { background: #ffffff; }
-body.sun::before { display: none; }
-body.sun .header { background: #ffffff; border-bottom: 3px solid #f59e0b; }
-body.sun .header::after { display: none; }
-body.sun .header-eyebrow { color: #b45309; }
-body.sun .header h1 { color: #000000; }
-body.sun .header-sub { color: #333333; }
-body.sun .date-section { background: #fff; border: 2px solid #000; }
-body.sun .date-stepper { background: #f0f0f0; border: 2px solid #000; }
-body.sun .step-btn { color: #000; font-weight: 900; }
-body.sun .step-btn:active { background: rgba(0,0,0,0.1); }
-body.sun .step-sep { background: #000; }
-body.sun .date-display { color: #000; font-weight: 700; }
-body.sun .section-divider { background: #000; }
-body.sun .btn { background: #000000; color: #f59e0b; border-color: #000; }
-body.sun .mode-bar { background: rgba(0,0,0,0.06); border-color: #000; color: #000; }
-body.sun .section-label { color: #000; }
-body.sun .add-task-btn { background: rgba(0,0,0,0.06); border-color: #000; color: #000; }
-body.sun .task-card { background: #fff; border: 2px solid #000; }
-body.sun .task-header { background: #000000; }
-body.sun .task-name-static { color: #ffffff; }
-body.sun input.task-name-input { color: #ffffff; }
-body.sun .del-btn { color: #ffffff; }
-body.sun .card-tabs { background: #f5f5f5; border-bottom: 2px solid #000; }
-body.sun .card-tab { color: #555; font-weight: 700; }
-body.sun .card-tab.active { color: #000; border-bottom-color: #f59e0b; background: #fff; }
-body.sun .field-group { border-right: 2px solid #ddd; }
-body.sun .field-group-title { color: #000; }
-body.sun .field-label { color: #333; font-weight: 700; }
-body.sun input.ci { background: #f0f6ff; border: 2px solid #000; color: #000; font-weight: 700; }
-body.sun input.ci.start { background: #e8eef8; color: #000; }
-body.sun input.ci:focus { background: #fff; border-color: #f59e0b; color: #000; }
-body.sun .ci-ro { background: #f0f6ff; border: 2px solid #000; color: #000; font-weight: 700; }
-body.sun .ci-ro.start { background: #e8eef8; color: #333; }
-body.sun .ci-ro.empty { color: #999; }
-body.sun textarea.notes-input { color: #000; background: #fafafa; }
-body.sun .notes-ro { color: #000; }
-body.sun .photo-empty-icon { opacity: 0.5; }
-body.sun .photo-empty-txt { color: #333; }
-body.sun .camera-btn { background: rgba(0,0,0,0.08); border-color: #000; color: #000; }
-body.sun .insert-btn { background: rgba(0,0,0,0.06); border-color: #000; color: #000; }
-body.sun .insert-line { background: #ccc; }
-body.sun .general-notes-card { background: #fff; border: 2px solid #000; }
-body.sun .general-notes-header { background: #000; }
-body.sun .general-notes-header .task-name-static { color: #fff; }
-body.sun textarea.general-notes-input { color: #000; }
-body.sun .sun-btn { background: #000; color: #f59e0b; }
-
-/* Sun toggle button */
-.sun-btn {
-  position: fixed;
-  top: 14px;
-  right: 16px;
-  z-index: 1000;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(245,158,11,0.15);
-  color: #f59e0b;
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  touch-action: manipulation;
-  transition: background 0.2s;
-}
-.sun-btn:active { transform: scale(0.93); }
+/* PDF Modal */
+#pdfModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:99999; align-items:center; justify-content:center; }
+#pdfModal.open { display:flex; }
+.pdf-modal-box { background:#0f2040; border:1px solid rgba(255,255,255,0.12); border-radius:18px; padding:28px 24px; max-width:320px; width:90%; margin:auto; }
+.pdf-modal-title { font-family:var(--font); font-size:16px; font-weight:700; color:#e8f0f8; margin-bottom:4px; }
+.pdf-modal-sub { font-family:var(--mono); font-size:11px; color:#7a9ab8; margin-bottom:16px; }
+.pdf-modal-divider { height:1px; background:rgba(255,255,255,0.08); margin:14px 0; }
+.pdf-modal-section-label { font-family:var(--mono); font-size:10px; color:#7a9ab8; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.1em; }
+.pdf-btn { width:100%; margin-bottom:10px; padding:14px; border-radius:10px; border:1px solid rgba(245,158,11,0.3); background:rgba(245,158,11,0.08); color:#f59e0b; font-family:var(--font); font-size:13px; font-weight:600; cursor:pointer; text-align:left; touch-action:manipulation; }
+.pdf-btn-plain { width:100%; margin-bottom:10px; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.04); color:#e8f0f8; font-family:var(--font); font-size:12px; font-weight:600; cursor:pointer; text-align:left; touch-action:manipulation; }
+.pdf-btn-sub { font-size:11px; font-weight:400; color:#7a9ab8; display:block; margin-top:2px; }
+.pdf-cancel-btn { width:100%; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:transparent; color:#7a9ab8; font-family:var(--font); font-size:13px; cursor:pointer; touch-action:manipulation; }
 </style>
 </head>
 <body>
-<button class="sun-toggle" onclick="toggleSun()" id="sunBtn">&#9728; Sunlight</button>
-<div class="app">
 
+<button class="sun-toggle" id="sunBtn" onclick="toggleSun()">&#9728; Sunlight</button>
+
+<div class="app">
   <div class="header">
     <div class="header-eyebrow">Parsons / Field Report</div>
     <h1>Pipeline Progress</h1>
-    <div class="header-sub">Transmission Line Tracker v3.0</div>
+    <div class="header-sub">Transmission Line Tracker</div>
   </div>
-
-  <button class="sun-btn" id="sunBtn" onclick="toggleSun()" title="Toggle sunlight mode">&#9728;</button>
 
   <div style="height:16px"></div>
 
@@ -407,36 +234,6 @@ body.sun .sun-btn { background: #000; color: #f59e0b; }
     </div>
     <textarea class="general-notes-input" id="generalNotesEl" placeholder="Enter general site notes, observations, issues..."></textarea>
   </div>
-
-  <div style="height:70px"></div>
-</div>
-
-<button class="sun-toggle" id="sunToggle" onclick="toggleSun()" title="Toggle sunlight mode">&#9728;</button>
-
-<!-- PDF Options Modal -->
-<div id="pdfModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:center;justify-content:center;">
-  <div style="background:#0f2040;border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:28px 24px;max-width:320px;width:90%;margin:auto;">
-    <div style="font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:#e8f0f8;margin-bottom:6px;">Save Report as PDF</div>
-    <div style="font-family:'DM Mono',monospace;font-size:11px;color:#7a9ab8;margin-bottom:20px;">Choose what to include</div>
-    <button onclick="generatePDF('full')" style="width:100%;margin-bottom:10px;padding:14px;border-radius:10px;border:1px solid rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);color:#f59e0b;font-family:'Sora',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;">
-      &#128196; Full Report<br><span style="font-size:11px;font-weight:400;color:#7a9ab8;">Data + Notes + Photos in one PDF</span>
-    </button>
-    <button onclick="generatePDF('data')" style="width:100%;margin-bottom:10px;padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#e8f0f8;font-family:'Sora',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;">
-      &#128203; Data &amp; Notes Only<br><span style="font-size:11px;font-weight:400;color:#7a9ab8;">Progress table and notes, no photos</span>
-    </button>
-    <button onclick="generatePDF('photos')" style="width:100%;margin-bottom:20px;padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#e8f0f8;font-family:'Sora',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;">
-      &#128247; Photos Only<br><span style="font-size:11px;font-weight:400;color:#7a9ab8;">Site photos with task labels</span>
-    </button>
-    <div style="height:1px;background:rgba(255,255,255,0.08);margin-bottom:14px;"></div>
-    <div style="font-family:'DM Mono',monospace;font-size:10px;color:#7a9ab8;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.1em;">Copy to clipboard (paste into Word)</div>
-    <button onclick="copyToClipboard('full')" style="width:100%;margin-bottom:8px;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#e8f0f8;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:left;">
-      &#128203; Copy Full Report<br><span style="font-size:11px;font-weight:400;color:#7a9ab8;">Full table + all notes — paste into Word</span>
-    </button>
-    <button onclick="copyToClipboard('data')" style="width:100%;margin-bottom:14px;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#e8f0f8;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:left;">
-      &#128196; Copy Data &amp; Notes Only<br><span style="font-size:11px;font-weight:400;color:#7a9ab8;">Table + notes + general notes — paste into Word</span>
-    </button>
-    <button onclick="closePdfModal()" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#7a9ab8;font-family:'Sora',sans-serif;font-size:13px;cursor:pointer;">Cancel</button>
-  </div>
 </div>
 
 <!-- Report overlay -->
@@ -444,9 +241,41 @@ body.sun .sun-btn { background: #000; color: #f59e0b; }
   <div class="report-toolbar">
     <span class="report-toolbar-title">Pipeline Report</span>
     <button class="report-close-btn" onclick="closeReport()">X Close</button>
-    <button class="report-print-btn" id="reportActionBtn" onclick="reportAction()">&#8595; Save PDF</button>
+    <button class="report-save-btn" onclick="reportAction()">&#8595; Save PDF</button>
   </div>
   <div class="report-body" id="reportBody"></div>
+</div>
+
+<!-- PDF Options Modal -->
+<div id="pdfModal">
+  <div class="pdf-modal-box">
+    <div class="pdf-modal-title">Save Report as PDF</div>
+    <div class="pdf-modal-sub">Choose what to include</div>
+    <button class="pdf-btn" onclick="generatePDF('full')">
+      &#128196; Full Report
+      <span class="pdf-btn-sub">Data + Notes + Photos in one PDF</span>
+    </button>
+    <button class="pdf-btn-plain" onclick="generatePDF('data')">
+      &#128203; Data &amp; Notes Only
+      <span class="pdf-btn-sub">Progress table and notes, no photos</span>
+    </button>
+    <button class="pdf-btn-plain" onclick="generatePDF('photos')">
+      &#128247; Photos Only
+      <span class="pdf-btn-sub">Site photos with task labels</span>
+    </button>
+    <div class="pdf-modal-divider"></div>
+    <div class="pdf-modal-section-label">Copy to clipboard (paste into Word)</div>
+    <button class="pdf-btn-plain" onclick="copyToClipboard('full')">
+      &#128203; Copy Full Report
+      <span class="pdf-btn-sub">Full table + all notes - paste into Word</span>
+    </button>
+    <button class="pdf-btn-plain" onclick="copyToClipboard('data')">
+      &#128196; Copy Data &amp; Notes Only
+      <span class="pdf-btn-sub">Table + notes + general notes - paste into Word</span>
+    </button>
+    <div class="pdf-modal-divider"></div>
+    <button class="pdf-cancel-btn" onclick="closePdfModal()">Cancel</button>
+  </div>
 </div>
 
 <script>
@@ -465,20 +294,20 @@ var viewIndex = -1;
 var generalNotes = '';
 var currDate, prevDate;
 
-// Date helpers
+// DATE HELPERS
 function localMid(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
-function addDays(d,n) { var r=localMid(d); r.setDate(r.getDate()+n); return r; }
-function pad(n) { return String(n).padStart(2,'0'); }
-function fmtISO(d) { return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function addDays(d, n) { var r = localMid(d); r.setDate(r.getDate() + n); return r; }
+function pad(n) { return String(n).padStart(2, '0'); }
+function fmtISO(d) { return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
 function fmtNice(d) {
-  var D=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  var M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return D[d.getDay()]+' '+d.getDate()+' '+M[d.getMonth()]+' '+d.getFullYear();
+  var D = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return D[d.getDay()] + ' ' + d.getDate() + ' ' + M[d.getMonth()] + ' ' + d.getFullYear();
 }
 
 function initDates() {
   currDate = localMid(new Date());
-  prevDate = addDays(currDate,-1);
+  prevDate = addDays(currDate, -1);
   updateDateDisplay();
 }
 
@@ -494,6 +323,7 @@ function updateDateDisplay() {
   }
 }
 
+// DATE STEPPER
 function stepDate(delta) {
   if (viewIndex === -1) {
     if (delta === 1) {
@@ -504,8 +334,8 @@ function stepDate(delta) {
         updateDateDisplay();
         renderCards(dayLog[viewIndex].tasks, true);
       } else {
-        currDate = addDays(currDate,-1);
-        prevDate = addDays(currDate,-1);
+        currDate = addDays(currDate, -1);
+        prevDate = addDays(currDate, -1);
         updateDateDisplay();
       }
     }
@@ -515,7 +345,7 @@ function stepDate(delta) {
       updateDateDisplay();
       renderCards(dayLog[viewIndex].tasks, true);
     } else if (delta === 1) {
-      if (viewIndex < dayLog.length-1) {
+      if (viewIndex < dayLog.length - 1) {
         viewIndex++;
         updateDateDisplay();
         renderCards(dayLog[viewIndex].tasks, true);
@@ -528,6 +358,7 @@ function stepDate(delta) {
   }
 }
 
+// SYNC INPUTS
 function syncLiveInputs() {
   document.querySelectorAll('input.ci').forEach(function(inp) {
     if (inp.dataset.i !== undefined) TASKS[+inp.dataset.i][inp.dataset.f] = inp.value;
@@ -542,40 +373,51 @@ function syncLiveInputs() {
   if (gn) generalNotes = gn.value;
 }
 
+// SAVE AND ADVANCE
 function saveAndAdvance() {
   syncLiveInputs();
+  // Save snapshot of current day
   var snapshot = {
     prevDate: fmtNice(prevDate),
     date: fmtNice(currDate),
     generalNotes: generalNotes,
-    tasks: TASKS.map(function(t){ return {name:t.name,stStart:t.stStart,stEnd:t.stEnd,wjStart:t.wjStart,wjEnd:t.wjEnd,notes:t.notes,photo:t.photo}; })
+    tasks: TASKS.map(function(t) {
+      return {
+        name: t.name, stStart: t.stStart, stEnd: t.stEnd,
+        wjStart: t.wjStart, wjEnd: t.wjEnd, notes: t.notes, photo: t.photo
+      };
+    })
   };
   dayLog.push(snapshot);
+
+  // Shift end values to start for next day
   var moved = [];
-  TASKS.forEach(function(t,i) {
+  TASKS.forEach(function(t, i) {
     var hasEnd = t.stEnd || t.wjEnd;
     if (hasEnd) {
-      // Only shift end->start if end values exist
       moved.push(i);
-      t.stStart = t.stEnd; t.stEnd = '';
-      t.wjStart = t.wjEnd; t.wjEnd = '';
+      t.stStart = t.stEnd;
+      t.stEnd = '';
+      t.wjStart = t.wjEnd;
+      t.wjEnd = '';
     } else {
-      // No end values — keep existing starts, just clear ends
+      // Keep existing starts intact, just clear ends
       t.stEnd = '';
       t.wjEnd = '';
     }
-    // Never carry photos forward — each day gets fresh photos
+    // Clear photo and notes for new day
     t.photo = '';
-    // Clear notes for new day
     t.notes = '';
   });
+
   prevDate = localMid(currDate);
-  currDate = addDays(currDate,1);
+  currDate = addDays(currDate, 1);
   viewIndex = -1;
   updateDateDisplay();
   renderCards(TASKS, false);
+
   if (moved.length) {
-    document.querySelectorAll('.task-card').forEach(function(el,i) {
+    document.querySelectorAll('.task-card').forEach(function(el, i) {
       if (moved.indexOf(i) !== -1) {
         el.classList.add('flash');
         setTimeout(function(){ el.classList.remove('flash'); }, 900);
@@ -589,11 +431,12 @@ function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// RENDER CARDS
 function renderCards(tasks, readonly) {
   var wrap = document.getElementById('cards');
   wrap.innerHTML = '';
 
-  tasks.forEach(function(t,i) {
+  tasks.forEach(function(t, i) {
     if (!readonly) {
       var ins = document.createElement('div');
       ins.className = 'insert-row';
@@ -606,10 +449,9 @@ function renderCards(tasks, readonly) {
     var badge = t.photo ? '<span class="thumb-badge"></span>' : '';
 
     if (readonly) {
-      var photoHtml = t.photo
+      var ph = t.photo
         ? '<div class="photo-pane-inner"><img class="photo-thumb" src="'+t.photo+'" alt="'+esc(t.name)+'"></div>'
         : '<div class="photo-pane-inner"><div class="photo-empty"><div class="photo-empty-icon">&#128247;</div><div class="photo-empty-txt">No photo</div></div></div>';
-
       div.innerHTML =
         '<div class="task-header"><div class="task-dot"></div><span class="task-name-static">'+esc(t.name)+'</span></div>'+
         '<div class="card-tabs">'+
@@ -617,31 +459,22 @@ function renderCards(tasks, readonly) {
           '<button class="card-tab" onclick="switchTab(this,\'notes\')">Notes</button>'+
           '<button class="card-tab" onclick="switchTab(this,\'photo\')">Photo'+badge+'</button>'+
         '</div>'+
-        '<div class="card-pane active" data-pane="data">'+
-          '<div class="fields">'+
-            '<div class="field-group">'+
-              '<div class="field-group-title">Station</div>'+
-              '<div class="field-pair">'+
-                '<div class="field-item"><div class="field-label">Start</div><div class="ci-ro start'+(t.stStart?'':' empty')+'">'+esc(t.stStart||'--')+'</div></div>'+
-                '<div class="field-item"><div class="field-label">End</div><div class="ci-ro'+(t.stEnd?'':' empty')+'">'+esc(t.stEnd||'--')+'</div></div>'+
-              '</div>'+
-            '</div>'+
-            '<div class="field-group">'+
-              '<div class="field-group-title">Pipe Count</div>'+
-              '<div class="field-pair">'+
-                '<div class="field-item"><div class="field-label">Start</div><div class="ci-ro start'+(t.wjStart?'':' empty')+'">'+esc(t.wjStart||'--')+'</div></div>'+
-                '<div class="field-item"><div class="field-label">End</div><div class="ci-ro'+(t.wjEnd?'':' empty')+'">'+esc(t.wjEnd||'--')+'</div></div>'+
-              '</div>'+
-            '</div>'+
-          '</div>'+
-        '</div>'+
+        '<div class="card-pane active" data-pane="data"><div class="fields">'+
+          '<div class="field-group"><div class="field-group-title">Station</div><div class="field-pair">'+
+            '<div class="field-item"><div class="field-label">Start</div><div class="ci-ro start'+(t.stStart?'':' empty')+'">'+esc(t.stStart||'--')+'</div></div>'+
+            '<div class="field-item"><div class="field-label">End</div><div class="ci-ro'+(t.stEnd?'':' empty')+'">'+esc(t.stEnd||'--')+'</div></div>'+
+          '</div></div>'+
+          '<div class="field-group"><div class="field-group-title">Pipe Count</div><div class="field-pair">'+
+            '<div class="field-item"><div class="field-label">Start</div><div class="ci-ro start'+(t.wjStart?'':' empty')+'">'+esc(t.wjStart||'--')+'</div></div>'+
+            '<div class="field-item"><div class="field-label">End</div><div class="ci-ro'+(t.wjEnd?'':' empty')+'">'+esc(t.wjEnd||'--')+'</div></div>'+
+          '</div></div>'+
+        '</div></div>'+
         '<div class="card-pane" data-pane="notes"><div class="notes-ro'+(t.notes?'':' empty')+'">'+esc(t.notes||'No notes.')+'</div></div>'+
-        '<div class="card-pane" data-pane="photo">'+photoHtml+'</div>';
+        '<div class="card-pane" data-pane="photo">'+ph+'</div>';
     } else {
-      var photoHtml2 = t.photo
+      var ph2 = t.photo
         ? '<div class="photo-pane-inner"><img class="photo-thumb" src="'+t.photo+'" alt="'+esc(t.name)+'"><button class="photo-retake-btn" onclick="triggerCamera('+i+')">Retake Photo</button></div>'
         : '<div class="photo-pane-inner"><div class="photo-empty"><div class="photo-empty-icon">&#128247;</div><div class="photo-empty-txt">No photo yet</div><button class="camera-btn" onclick="triggerCamera('+i+')">&#128247; Take Photo</button></div></div>';
-
       div.innerHTML =
         '<div class="task-header">'+
           '<div class="task-dot"></div>'+
@@ -653,29 +486,20 @@ function renderCards(tasks, readonly) {
           '<button class="card-tab" onclick="switchTab(this,\'notes\')">Notes</button>'+
           '<button class="card-tab" onclick="switchTab(this,\'photo\')">Photo'+badge+'</button>'+
         '</div>'+
-        '<div class="card-pane active" data-pane="data">'+
-          '<div class="fields">'+
-            '<div class="field-group">'+
-              '<div class="field-group-title">Station</div>'+
-              '<div class="field-pair">'+
-                '<div class="field-item"><div class="field-label">Start</div><input class="ci start" data-i="'+i+'" data-f="stStart" value="'+esc(t.stStart)+'" placeholder="--"></div>'+
-                '<div class="field-item"><div class="field-label">End</div><input class="ci" data-i="'+i+'" data-f="stEnd" value="'+esc(t.stEnd)+'" placeholder="enter"></div>'+
-              '</div>'+
-            '</div>'+
-            '<div class="field-group">'+
-              '<div class="field-group-title">Pipe Count</div>'+
-              '<div class="field-pair">'+
-                '<div class="field-item"><div class="field-label">Start</div><input class="ci start" data-i="'+i+'" data-f="wjStart" value="'+esc(t.wjStart)+'" placeholder="--"></div>'+
-                '<div class="field-item"><div class="field-label">End</div><input class="ci" data-i="'+i+'" data-f="wjEnd" value="'+esc(t.wjEnd)+'" placeholder="enter"></div>'+
-              '</div>'+
-            '</div>'+
-          '</div>'+
-        '</div>'+
+        '<div class="card-pane active" data-pane="data"><div class="fields">'+
+          '<div class="field-group"><div class="field-group-title">Station</div><div class="field-pair">'+
+            '<div class="field-item"><div class="field-label">Start</div><input class="ci start" data-i="'+i+'" data-f="stStart" value="'+esc(t.stStart)+'" placeholder="--"></div>'+
+            '<div class="field-item"><div class="field-label">End</div><input class="ci" data-i="'+i+'" data-f="stEnd" value="'+esc(t.stEnd)+'" placeholder="enter"></div>'+
+          '</div></div>'+
+          '<div class="field-group"><div class="field-group-title">Pipe Count</div><div class="field-pair">'+
+            '<div class="field-item"><div class="field-label">Start</div><input class="ci start" data-i="'+i+'" data-f="wjStart" value="'+esc(t.wjStart)+'" placeholder="--"></div>'+
+            '<div class="field-item"><div class="field-label">End</div><input class="ci" data-i="'+i+'" data-f="wjEnd" value="'+esc(t.wjEnd)+'" placeholder="enter"></div>'+
+          '</div></div>'+
+        '</div></div>'+
         '<div class="card-pane" data-pane="notes"><textarea class="notes-input" data-i="'+i+'" placeholder="Notes for '+esc(t.name)+'...">'+esc(t.notes)+'</textarea></div>'+
-        '<div class="card-pane" data-pane="photo">'+photoHtml2+'</div>'+
+        '<div class="card-pane" data-pane="photo">'+ph2+'</div>'+
         '<input type="file" accept="image/*" capture="environment" id="cam-'+i+'" style="display:none" onchange="handlePhoto(event,'+i+')">';
     }
-
     wrap.appendChild(div);
   });
 
@@ -707,6 +531,7 @@ function renderCards(tasks, readonly) {
   }
 }
 
+// TABS
 function switchTab(btn, pane) {
   var card = btn.closest('.task-card');
   card.querySelectorAll('.card-tab').forEach(function(t){ t.classList.remove('active'); });
@@ -715,12 +540,13 @@ function switchTab(btn, pane) {
   card.querySelector('[data-pane="'+pane+'"]').classList.add('active');
 }
 
+// TASK MANAGEMENT
 function addTask(beforeIndex) {
   syncLiveInputs();
   var newTask = blankTask('New task');
-  if (beforeIndex === -1) { TASKS.push(newTask); } else { TASKS.splice(beforeIndex,0,newTask); }
+  if (beforeIndex === -1) { TASKS.push(newTask); } else { TASKS.splice(beforeIndex, 0, newTask); }
   renderCards(TASKS, false);
-  var idx = beforeIndex === -1 ? TASKS.length-1 : beforeIndex;
+  var idx = beforeIndex === -1 ? TASKS.length - 1 : beforeIndex;
   setTimeout(function() {
     var inputs = document.querySelectorAll('input.task-name-input');
     if (inputs[idx]) { inputs[idx].focus(); inputs[idx].select(); }
@@ -730,15 +556,16 @@ function addTask(beforeIndex) {
 
 function deleteTask(i) {
   if (TASKS.length <= 1) { alert('Must have at least one task.'); return; }
-  if (!confirm('Remove "'+TASKS[i].name+'"?')) return;
+  if (!confirm('Remove "' + TASKS[i].name + '"?')) return;
   syncLiveInputs();
-  TASKS.splice(i,1);
+  TASKS.splice(i, 1);
   renderCards(TASKS, false);
   saveState();
 }
 
+// CAMERA
 function triggerCamera(i) {
-  var inp = document.getElementById('cam-'+i);
+  var inp = document.getElementById('cam-' + i);
   if (inp) inp.click();
 }
 
@@ -750,12 +577,12 @@ function handlePhoto(event, i) {
     var img = new Image();
     img.onload = function() {
       var canvas = document.createElement('canvas');
-      var MAX = 800;
-      var scale = Math.min(MAX/img.width, MAX/img.height, 1);
+      var MAX = 600;
+      var scale = Math.min(MAX / img.width, MAX / img.height, 1);
       canvas.width = Math.round(img.width * scale);
       canvas.height = Math.round(img.height * scale);
       canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      TASKS[i].photo = canvas.toDataURL('image/jpeg', 0.7);
+      TASKS[i].photo = canvas.toDataURL('image/jpeg', 0.6);
       renderCards(TASKS, false);
       setTimeout(function() {
         var cards = document.querySelectorAll('.task-card');
@@ -771,282 +598,7 @@ function handlePhoto(event, i) {
   reader.readAsDataURL(file);
 }
 
-function reportAction() {
-  syncLiveInputs();
-  // Show PDF options modal
-  var modal = document.getElementById('pdfModal');
-  modal.style.display = 'flex';
-}
-
-function copyToClipboard(mode) {
-  closePdfModal();
-  syncLiveInputs();
-  var activeTasks = viewIndex === -1 ? TASKS : dayLog[viewIndex].tasks;
-  var prevStr = viewIndex === -1 ? fmtNice(prevDate) : dayLog[viewIndex].prevDate;
-  var currStr = viewIndex === -1 ? fmtNice(currDate) : dayLog[viewIndex].date;
-  var gn = viewIndex === -1 ? generalNotes : (dayLog[viewIndex].generalNotes || '');
-  var hasNotes = activeTasks.some(function(t){ return t.notes && t.notes.trim(); });
-
-  // Build rich HTML table that pastes properly into Word
-  var notesHdr = hasNotes ? '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;">Notes</td>' : '';
-
-  var rows = activeTasks.map(function(t, i) {
-    var bg = i % 2 === 0 ? '#ffffff' : '#eef4fb';
-    var noteCell = hasNotes
-      ? '<td style="padding:8px 10px;border:1px solid #ccc;font-size:11pt;color:#333;vertical-align:top;">' + (t.notes||'') + '</td>'
-      : '';
-    return '<tr style="background:' + bg + ';">' +
-      '<td style="padding:8px 10px;border:1px solid #ccc;font-weight:bold;font-size:11pt;">' + t.name + '</td>' +
-      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">' + (t.stStart||'--') + '</td>' +
-      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">' + (t.stEnd||'--') + '</td>' +
-      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">' + (t.wjStart||'--') + '</td>' +
-      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">' + (t.wjEnd||'--') + '</td>' +
-      noteCell +
-      '</tr>';
-  }).join('');
-
-  var gnHtml = (gn.trim())
-    ? '<p style="margin-top:16pt;"><strong style="color:#1a3a5c;font-size:13pt;">General Notes</strong></p>' +
-      '<p style="font-size:11pt;color:#333;white-space:pre-wrap;">' + gn + '</p>'
-    : '';
-
-  var html =
-    '<div style="font-family:Arial,sans-serif;">' +
-    '<p style="font-size:18pt;font-weight:bold;color:#1a3a5c;margin-bottom:2pt;">PARSONS</p>' +
-    '<p style="font-size:13pt;color:#333;margin-bottom:2pt;">Pipeline Progress Report</p>' +
-    '<p style="font-size:10pt;color:#555;border-bottom:2px solid #1a3a5c;padding-bottom:6pt;margin-bottom:12pt;">' +
-      'Previous date: <strong>' + prevStr + '</strong> &nbsp;|&nbsp; Current date: <strong>' + currStr + '</strong>' +
-    '</p>' +
-    '<table style="border-collapse:collapse;width:100%;">' +
-      '<tr>' +
-        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;font-size:12pt;" rowspan="2">Task</td>' +
-        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;" colspan="2">Station</td>' +
-        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;" colspan="2">Pipe Count</td>' +
-        notesHdr +
-      '</tr>' +
-      '<tr>' +
-        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">Start</td>' +
-        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">End</td>' +
-        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">Start</td>' +
-        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">End</td>' +
-      '</tr>' +
-      rows +
-    '</table>' +
-    gnHtml +
-    '<p style="font-size:9pt;color:#999;margin-top:16pt;border-top:1px solid #eee;padding-top:6pt;">Generated: ' + new Date().toLocaleString() + '</p>' +
-    '</div>';
-
-  // Use Clipboard API with HTML
-  try {
-    var blob = new Blob([html], { type: 'text/html' });
-    var item = new ClipboardItem({ 'text/html': blob });
-    navigator.clipboard.write([item]).then(function() {
-      alert('Copied! Now open Word and press Ctrl+V (or Cmd+V on Mac) to paste the formatted table.');
-    }).catch(function(e) {
-      // Fallback for older browsers
-      var ta = document.createElement('textarea');
-      ta.value = 'PARSONS Pipeline Progress Report\nPrevious: ' + prevStr + ' | Current: ' + currStr;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      alert('Copied as text. Paste into Word with Ctrl+V.');
-    });
-  } catch(e) {
-    alert('Copy not supported on this device. Please use Save PDF instead.');
-  }
-}
-
-function closePdfModal() {
-  document.getElementById('pdfModal').style.display = 'none';
-}
-
-function generatePDF(mode) {
-  closePdfModal();
-  var activeTasks = viewIndex === -1 ? TASKS : dayLog[viewIndex].tasks;
-  var prevStr = viewIndex === -1 ? fmtNice(prevDate) : dayLog[viewIndex].prevDate;
-  var currStr = viewIndex === -1 ? fmtNice(currDate) : dayLog[viewIndex].date;
-  var gn = viewIndex === -1 ? generalNotes : (dayLog[viewIndex].generalNotes || '');
-  var hasNotes = activeTasks.some(function(t){ return t.notes && t.notes.trim(); });
-  var photoTasks = activeTasks.filter(function(t){ return t.photo; });
-
-  var doc = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  var pageW = doc.internal.pageSize.getWidth();
-  var pageH = doc.internal.pageSize.getHeight();
-  var margin = 15;
-  var y = margin;
-
-  // Shared header function
-  function addHeader(subtitle) {
-    doc.setFillColor(26, 58, 92);
-    doc.rect(0, 0, pageW, 28, 'F');
-    doc.setTextColor(245, 158, 11);
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text('PARSONS', margin, 12);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'normal');
-    doc.text(subtitle, margin, 20);
-    doc.setTextColor(200, 220, 240);
-    doc.setFontSize(9);
-    doc.text('Previous: ' + prevStr + '   |   Current: ' + currStr, margin, 26);
-  }
-
-  // Shared footer function
-  function addFooter() {
-    doc.setTextColor(150,150,150);
-    doc.setFontSize(8);
-    doc.setFont('helvetica','normal');
-    doc.text('Generated: ' + new Date().toLocaleString(), margin, pageH - 8);
-  }
-
-  // DATA & NOTES section
-  function addDataSection() {
-    y = 36;
-    var head = [['Task', 'Sta Start', 'Sta End', 'PC Start', 'PC End']];
-    if (hasNotes) head[0].push('Notes');
-    var body = activeTasks.map(function(t) {
-      var row = [t.name, t.stStart||'--', t.stEnd||'--', t.wjStart||'--', t.wjEnd||'--'];
-      if (hasNotes) row.push(t.notes||'');
-      return row;
-    });
-    doc.autoTable({
-      startY: y,
-      head: head,
-      body: body,
-      margin: { left: margin, right: margin },
-      styles: { fontSize: 9, cellPadding: 3, valign: 'middle' },
-      headStyles: { fillColor: [26,58,92], textColor: [245,158,11], fontStyle: 'bold', halign: 'center' },
-      columnStyles: {
-        0: { fontStyle: 'bold', halign: 'left', cellWidth: hasNotes ? 28 : 36 },
-        1: { halign: 'center', cellWidth: 22 },
-        2: { halign: 'center', cellWidth: 22 },
-        3: { halign: 'center', cellWidth: 22 },
-        4: { halign: 'center', cellWidth: 22 },
-        5: { halign: 'left', cellWidth: hasNotes ? 44 : 0 }
-      },
-      alternateRowStyles: { fillColor: [240,246,252] },
-      didParseCell: function(data) {
-        if (data.row.index % 2 === 0 && data.section === 'body') {
-          data.cell.styles.fillColor = [255,255,255];
-        }
-      }
-    });
-    y = doc.lastAutoTable.finalY + 8;
-    if (gn.trim()) {
-      if (y > 240) { doc.addPage(); addFooter(); y = margin; }
-      doc.setTextColor(26,58,92);
-      doc.setFontSize(11);
-      doc.setFont('helvetica','bold');
-      doc.text('General Notes', margin, y);
-      y += 6;
-      doc.setTextColor(60,60,60);
-      doc.setFontSize(9);
-      doc.setFont('helvetica','normal');
-      var gnLines = doc.splitTextToSize(gn, pageW - margin*2);
-      doc.text(gnLines, margin, y);
-      y += gnLines.length * 5 + 8;
-    }
-  }
-
-  // PHOTOS section — 4 per page in 2x2 grid
-  function addPhotosSection() {
-    if (photoTasks.length === 0) {
-      if (mode === 'photos') { y = 36; }
-      doc.setTextColor(150,150,150);
-      doc.setFontSize(10);
-      doc.setFont('helvetica','normal');
-      doc.text('No photos taken for this date.', margin, y + 10);
-      return;
-    }
-    if (mode === 'photos') { y = 36; }
-    if (y > 200) { doc.addPage(); addFooter(); y = margin; }
-
-    doc.setTextColor(26,58,92);
-    doc.setFontSize(11);
-    doc.setFont('helvetica','bold');
-    doc.text('Site Photos', margin, y);
-    y += 8;
-
-    // Grid layout: 2 columns, 2 rows = 4 per page
-    var cols = 2;
-    var gutter = 6; // gap between photos
-    var cellW = (pageW - margin*2 - gutter) / 2;
-    var labelH = 6;  // height reserved for task name label
-    var imgH = 55;   // photo height in mm
-    var cellH = labelH + imgH + 4; // total cell height
-
-    photoTasks.forEach(function(t, idx) {
-      var col = idx % cols;
-      var rowInPage = Math.floor(idx / cols) % 2;
-      // New page every 4 photos (2 cols x 2 rows)
-      if (idx > 0 && idx % 4 === 0) {
-        doc.addPage();
-        addFooter();
-        y = margin;
-        doc.setTextColor(26,58,92);
-        doc.setFontSize(11);
-        doc.setFont('helvetica','bold');
-        doc.text('Site Photos (continued)', margin, y);
-        y += 8;
-      }
-      var x = margin + col * (cellW + gutter);
-      var cellY = y + rowInPage * (cellH + gutter);
-
-      // Task name label above photo
-      doc.setTextColor(26,58,92);
-      doc.setFontSize(9);
-      doc.setFont('helvetica','bold');
-      doc.text(t.name, x, cellY + 4, { maxWidth: cellW });
-
-      // Photo below label
-      try {
-        doc.addImage(t.photo, 'JPEG', x, cellY + labelH, cellW, imgH, '', 'FAST');
-      } catch(e) {
-        doc.setTextColor(150,150,150);
-        doc.setFontSize(8);
-        doc.setFont('helvetica','normal');
-        doc.text('[Photo unavailable]', x, cellY + labelH + imgH/2);
-      }
-
-      // After placing bottom-right photo of a row pair, advance y
-      if (col === 1 || idx === photoTasks.length - 1) {
-        if (col === 0) {
-          // odd last photo on left column — still advance y past this row
-          y = y + (rowInPage + 1) * (cellH + gutter);
-        }
-      }
-      // Advance y after completing a full row pair (4 photos) or last photo
-      if ((idx + 1) % 4 === 0) {
-        y = margin + 16; // reset for new page (already added page above)
-      } else if (idx === photoTasks.length - 1) {
-        y += (rowInPage + 1) * (cellH + gutter) + 4;
-      }
-    });
-  }
-
-  // Build PDF based on mode
-  if (mode === 'full') {
-    addHeader('Pipeline Progress Report — Full');
-    addDataSection();
-    addPhotosSection();
-    addFooter();
-    doc.save('Parsons_Pipeline_Full_' + fmtISO(currDate) + '.pdf');
-
-  } else if (mode === 'data') {
-    addHeader('Pipeline Progress Report — Data & Notes');
-    addDataSection();
-    addFooter();
-    doc.save('Parsons_Pipeline_Data_' + fmtISO(currDate) + '.pdf');
-
-  } else if (mode === 'photos') {
-    addHeader('Pipeline Progress Report — Site Photos');
-    addPhotosSection();
-    addFooter();
-    doc.save('Parsons_Pipeline_Photos_' + fmtISO(currDate) + '.pdf');
-  }
-}
-
+// REPORT
 function showReport() {
   syncLiveInputs();
   var activeTasks = viewIndex === -1 ? TASKS : dayLog[viewIndex].tasks;
@@ -1055,42 +607,33 @@ function showReport() {
   var gn = viewIndex === -1 ? generalNotes : (dayLog[viewIndex].generalNotes || '');
   var hasNotes = activeTasks.some(function(t){ return t.notes && t.notes.trim(); });
 
-  var rows = activeTasks.map(function(t,i) {
-    var bg = i%2===0 ? '#ffffff' : '#eef4fb';
-    var noteCell = hasNotes
-      ? '<td style="padding:10px 12px;border:1px solid #ccc;font-size:12px;color:#333;vertical-align:top;line-height:1.5;">'+esc(t.notes||'')+'</td>'
-      : '';
+  var rows = activeTasks.map(function(t, i) {
+    var bg = i % 2 === 0 ? '#ffffff' : '#eef4fb';
+    var noteCell = hasNotes ? '<td style="padding:10px 12px;border:1px solid #ccc;font-size:12px;color:#333;vertical-align:top;line-height:1.5;">'+esc(t.notes||'')+'</td>' : '';
     return '<tr style="background:'+bg+'">'+
-      '<td style="padding:10px 12px;border:1px solid #ccc;font-weight:600;font-size:13px;vertical-align:middle;">'+esc(t.name)+'</td>'+
-      '<td style="padding:10px 12px;border:1px solid #ccc;text-align:center;font-family:Courier New,monospace;font-size:13px;vertical-align:middle;">'+esc(t.stStart||'--')+'</td>'+
-      '<td style="padding:10px 12px;border:1px solid #ccc;text-align:center;font-family:Courier New,monospace;font-size:13px;vertical-align:middle;">'+esc(t.stEnd||'--')+'</td>'+
-      '<td style="padding:10px 12px;border:1px solid #ccc;text-align:center;font-family:Courier New,monospace;font-size:13px;vertical-align:middle;">'+esc(t.wjStart||'--')+'</td>'+
-      '<td style="padding:10px 12px;border:1px solid #ccc;text-align:center;font-family:Courier New,monospace;font-size:13px;vertical-align:middle;">'+esc(t.wjEnd||'--')+'</td>'+
-      noteCell+
-      '</tr>';
+      '<td style="padding:10px 12px;border:1px solid #ccc;font-weight:600;font-size:13px;">'+esc(t.name)+'</td>'+
+      '<td style="padding:10px 12px;border:1px solid #ccc;text-align:center;font-family:Courier New,monospace;font-size:13px;">'+esc(t.stStart||'--')+'</td>'+
+      '<td style="padding:10px 12px;border:1px solid #ccc;text-align:center;font-family:Courier New,monospace;font-size:13px;">'+esc(t.stEnd||'--')+'</td>'+
+      '<td style="padding:10px 12px;border:1px solid #ccc;text-align:center;font-family:Courier New,monospace;font-size:13px;">'+esc(t.wjStart||'--')+'</td>'+
+      '<td style="padding:10px 12px;border:1px solid #ccc;text-align:center;font-family:Courier New,monospace;font-size:13px;">'+esc(t.wjEnd||'--')+'</td>'+
+      noteCell+'</tr>';
   }).join('');
 
-  var notesHdr = hasNotes
-    ? '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:center;font-size:13px;vertical-align:middle;" rowspan="2">Notes</td>'
-    : '';
+  var notesHdr = hasNotes ? '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:center;font-size:13px;vertical-align:middle;" rowspan="2">Notes</td>' : '';
 
   var photosHtml = activeTasks.filter(function(t){ return t.photo; }).map(function(t) {
-    return '<div style="page-break-inside:avoid;">'+
-      '<div style="font-size:13px;font-weight:700;color:#1a3a5c;margin-bottom:6px;font-family:Arial,sans-serif;">'+esc(t.name)+'</div>'+
-      '<img src="'+t.photo+'" alt="'+esc(t.name)+'" style="width:100%;border-radius:6px;border:1px solid #ccc;display:block;">'+
-      '</div>';
+    return '<div style="page-break-inside:avoid;"><div style="font-size:13px;font-weight:700;color:#1a3a5c;margin-bottom:6px;">'+esc(t.name)+'</div>'+
+      '<img src="'+t.photo+'" style="width:100%;border-radius:6px;border:1px solid #ccc;display:block;"></div>';
   }).join('');
 
   document.getElementById('reportBody').innerHTML =
     '<div style="font-family:Arial,sans-serif;max-width:900px;margin:0 auto;">'+
     '<h1 style="color:#1a3a5c;font-size:28px;margin-bottom:4px;">PARSONS</h1>'+
     '<h2 style="color:#333;font-size:18px;font-weight:normal;margin-bottom:8px;">Pipeline Progress Report</h2>'+
-    '<div style="color:#555;font-size:13px;margin-bottom:24px;padding-bottom:12px;border-bottom:3px solid #1a3a5c;">'+
-      'Previous date: <strong>'+prevStr+'</strong> &nbsp;&nbsp;|&nbsp;&nbsp; Current date: <strong>'+currStr+'</strong>'+
-    '</div>'+
+    '<div style="color:#555;font-size:13px;margin-bottom:24px;padding-bottom:12px;border-bottom:3px solid #1a3a5c;">Previous date: <strong>'+prevStr+'</strong> &nbsp;|&nbsp; Current date: <strong>'+currStr+'</strong></div>'+
     '<table style="border-collapse:collapse;width:100%;margin-bottom:24px;">'+
       '<tr>'+
-        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:left;font-size:13px;vertical-align:middle;" rowspan="2">Task</td>'+
+        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:left;font-size:13px;" rowspan="2">Task</td>'+
         '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:center;font-size:13px;" colspan="2">Station</td>'+
         '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:center;font-size:13px;" colspan="2">Pipe Count</td>'+
         notesHdr+
@@ -1100,17 +643,11 @@ function showReport() {
         '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:8px 12px;border:1px solid #999;text-align:center;font-size:12px;">End</td>'+
         '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:8px 12px;border:1px solid #999;text-align:center;font-size:12px;">Start</td>'+
         '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:8px 12px;border:1px solid #999;text-align:center;font-size:12px;">End</td>'+
-      '</tr>'+
-      rows+
+      '</tr>'+rows+
     '</table>'+
-    (gn.trim()
-      ? '<div style="margin-bottom:24px;"><h3 style="color:#1a3a5c;font-size:15px;margin-bottom:8px;">General Notes</h3><div style="border:1px solid #ccc;border-radius:4px;padding:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#333;">'+esc(gn)+'</div></div>'
-      : '')+
-    (photosHtml
-      ? '<div><h3 style="color:#1a3a5c;font-size:15px;margin-bottom:16px;">Site Photos</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+photosHtml+'</div></div>'
-      : '')+
-    '<div style="color:#999;font-size:11px;margin-top:24px;padding-top:12px;border-top:1px solid #eee;">Generated: '+new Date().toLocaleString()+'</div>'+
-    '</div>';
+    (gn.trim() ? '<div style="margin-bottom:24px;"><h3 style="color:#1a3a5c;font-size:15px;margin-bottom:8px;">General Notes</h3><div style="border:1px solid #ccc;border-radius:4px;padding:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#333;">'+esc(gn)+'</div></div>' : '')+
+    (photosHtml ? '<div><h3 style="color:#1a3a5c;font-size:15px;margin-bottom:16px;">Site Photos</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+photosHtml+'</div></div>' : '')+
+    '<div class="report-footer-txt">Generated: '+new Date().toLocaleString()+'</div></div>';
 
   document.getElementById('reportOverlay').classList.add('open');
 }
@@ -1119,8 +656,208 @@ function closeReport() {
   document.getElementById('reportOverlay').classList.remove('open');
 }
 
-// Persistence
-var STORAGE_KEY = 'parsons_v2';
+function reportAction() {
+  syncLiveInputs();
+  document.getElementById('pdfModal').classList.add('open');
+}
+
+function closePdfModal() {
+  document.getElementById('pdfModal').classList.remove('open');
+}
+
+// COPY TO CLIPBOARD
+function copyToClipboard(mode) {
+  closePdfModal();
+  closeReport();
+  syncLiveInputs();
+  var activeTasks = viewIndex === -1 ? TASKS : dayLog[viewIndex].tasks;
+  var prevStr = viewIndex === -1 ? fmtNice(prevDate) : dayLog[viewIndex].prevDate;
+  var currStr = viewIndex === -1 ? fmtNice(currDate) : dayLog[viewIndex].date;
+  var gn = viewIndex === -1 ? generalNotes : (dayLog[viewIndex].generalNotes || '');
+  var hasNotes = activeTasks.some(function(t){ return t.notes && t.notes.trim(); });
+  var notesHdr = hasNotes ? '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;" rowspan="2">Notes</td>' : '';
+
+  var rows = activeTasks.map(function(t, i) {
+    var bg = i % 2 === 0 ? '#ffffff' : '#eef4fb';
+    var noteCell = hasNotes ? '<td style="padding:8px 10px;border:1px solid #ccc;font-size:11pt;color:#333;">'+(t.notes||'')+'</td>' : '';
+    return '<tr style="background:'+bg+';">'+
+      '<td style="padding:8px 10px;border:1px solid #ccc;font-weight:bold;font-size:11pt;">'+t.name+'</td>'+
+      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">'+( t.stStart||'--')+'</td>'+
+      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">'+( t.stEnd||'--')+'</td>'+
+      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">'+( t.wjStart||'--')+'</td>'+
+      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">'+( t.wjEnd||'--')+'</td>'+
+      noteCell+'</tr>';
+  }).join('');
+
+  var gnHtml = gn.trim()
+    ? '<p style="margin-top:16pt;"><strong style="color:#1a3a5c;font-size:13pt;">General Notes</strong></p><p style="font-size:11pt;color:#333;white-space:pre-wrap;">'+gn+'</p>'
+    : '';
+
+  var html =
+    '<div style="font-family:Arial,sans-serif;">'+
+    '<p style="font-size:18pt;font-weight:bold;color:#1a3a5c;margin-bottom:2pt;">PARSONS</p>'+
+    '<p style="font-size:13pt;color:#333;margin-bottom:2pt;">Pipeline Progress Report</p>'+
+    '<p style="font-size:10pt;color:#555;border-bottom:2px solid #1a3a5c;padding-bottom:6pt;margin-bottom:12pt;">Previous date: <strong>'+prevStr+'</strong> | Current date: <strong>'+currStr+'</strong></p>'+
+    '<table style="border-collapse:collapse;width:100%;">'+
+      '<tr>'+
+        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;font-size:12pt;" rowspan="2">Task</td>'+
+        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;" colspan="2">Station</td>'+
+        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;" colspan="2">Pipe Count</td>'+
+        notesHdr+
+      '</tr>'+
+      '<tr>'+
+        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">Start</td>'+
+        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">End</td>'+
+        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">Start</td>'+
+        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">End</td>'+
+      '</tr>'+rows+
+    '</table>'+gnHtml+
+    '<p style="font-size:9pt;color:#999;margin-top:16pt;border-top:1px solid #eee;padding-top:6pt;">Generated: '+new Date().toLocaleString()+'</p>'+
+    '</div>';
+
+  try {
+    var blob = new Blob([html], {type: 'text/html'});
+    var item = new ClipboardItem({'text/html': blob});
+    navigator.clipboard.write([item]).then(function() {
+      alert('Copied! Open Word and press Ctrl+V (or Cmd+V on Mac) to paste the formatted table.');
+    }).catch(function() {
+      alert('Copy not supported on this device. Please use Save PDF instead.');
+    });
+  } catch(e) {
+    alert('Copy not supported on this device. Please use Save PDF instead.');
+  }
+}
+
+// GENERATE PDF
+function generatePDF(mode) {
+  closePdfModal();
+  closeReport();
+  syncLiveInputs();
+  var activeTasks = viewIndex === -1 ? TASKS : dayLog[viewIndex].tasks;
+  var prevStr = viewIndex === -1 ? fmtNice(prevDate) : dayLog[viewIndex].prevDate;
+  var currStr = viewIndex === -1 ? fmtNice(currDate) : dayLog[viewIndex].date;
+  var gn = viewIndex === -1 ? generalNotes : (dayLog[viewIndex].generalNotes || '');
+  var hasNotes = activeTasks.some(function(t){ return t.notes && t.notes.trim(); });
+  var photoTasks = activeTasks.filter(function(t){ return t.photo; });
+
+  var doc = new window.jspdf.jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
+  var pageW = doc.internal.pageSize.getWidth();
+  var pageH = doc.internal.pageSize.getHeight();
+  var margin = 15;
+  var y = margin;
+
+  function addHeader(subtitle) {
+    doc.setFillColor(26, 58, 92);
+    doc.rect(0, 0, pageW, 28, 'F');
+    doc.setTextColor(245, 158, 11);
+    doc.setFontSize(20); doc.setFont('helvetica', 'bold');
+    doc.text('PARSONS', margin, 12);
+    doc.setFontSize(11); doc.setFont('helvetica', 'normal');
+    doc.text(subtitle, margin, 20);
+    doc.setTextColor(200, 220, 240);
+    doc.setFontSize(9);
+    doc.text('Previous: ' + prevStr + '   |   Current: ' + currStr, margin, 26);
+  }
+
+  function addFooter() {
+    doc.setTextColor(150, 150, 150);
+    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+    doc.text('Generated: ' + new Date().toLocaleString(), margin, pageH - 8);
+  }
+
+  function addDataSection() {
+    y = 36;
+    var head = [['Task', 'Sta Start', 'Sta End', 'PC Start', 'PC End']];
+    if (hasNotes) head[0].push('Notes');
+    var body = activeTasks.map(function(t) {
+      var row = [t.name, t.stStart||'--', t.stEnd||'--', t.wjStart||'--', t.wjEnd||'--'];
+      if (hasNotes) row.push(t.notes || '');
+      return row;
+    });
+    doc.autoTable({
+      startY: y, head: head, body: body,
+      margin: {left: margin, right: margin},
+      styles: {fontSize: 9, cellPadding: 3, valign: 'middle'},
+      headStyles: {fillColor:[26,58,92], textColor:[245,158,11], fontStyle:'bold', halign:'center'},
+      columnStyles: {
+        0: {fontStyle:'bold', halign:'left', cellWidth: hasNotes ? 28 : 36},
+        1: {halign:'center', cellWidth:22}, 2: {halign:'center', cellWidth:22},
+        3: {halign:'center', cellWidth:22}, 4: {halign:'center', cellWidth:22},
+        5: {halign:'left', cellWidth: hasNotes ? 44 : 0}
+      },
+      alternateRowStyles: {fillColor:[240,246,252]},
+      didParseCell: function(data) {
+        if (data.row.index % 2 === 0 && data.section === 'body') data.cell.styles.fillColor = [255,255,255];
+      }
+    });
+    y = doc.lastAutoTable.finalY + 8;
+    if (gn.trim()) {
+      if (y > 240) { doc.addPage(); addFooter(); y = margin; }
+      doc.setTextColor(26,58,92); doc.setFontSize(11); doc.setFont('helvetica','bold');
+      doc.text('General Notes', margin, y); y += 6;
+      doc.setTextColor(60,60,60); doc.setFontSize(9); doc.setFont('helvetica','normal');
+      var gnLines = doc.splitTextToSize(gn, pageW - margin * 2);
+      doc.text(gnLines, margin, y);
+      y += gnLines.length * 5 + 8;
+    }
+  }
+
+  function addPhotosSection() {
+    if (photoTasks.length === 0) {
+      if (mode === 'photos') y = 36;
+      doc.setTextColor(150,150,150); doc.setFontSize(10); doc.setFont('helvetica','normal');
+      doc.text('No photos taken for this date.', margin, y + 10);
+      return;
+    }
+    if (mode === 'photos') y = 36;
+    if (y > 200) { doc.addPage(); addFooter(); y = margin; }
+    doc.setTextColor(26,58,92); doc.setFontSize(11); doc.setFont('helvetica','bold');
+    doc.text('Site Photos', margin, y); y += 8;
+
+    var cols = 2, gutter = 6;
+    var cellW = (pageW - margin * 2 - gutter) / 2;
+    var labelH = 6, imgH = 55, cellH = labelH + imgH + 4;
+
+    photoTasks.forEach(function(t, idx) {
+      var col = idx % cols;
+      var rowInPage = Math.floor(idx / cols) % 2;
+      if (idx > 0 && idx % 4 === 0) {
+        doc.addPage(); addFooter(); y = margin;
+        doc.setTextColor(26,58,92); doc.setFontSize(11); doc.setFont('helvetica','bold');
+        doc.text('Site Photos (continued)', margin, y); y += 8;
+      }
+      var x = margin + col * (cellW + gutter);
+      var cellY = y + rowInPage * (cellH + gutter);
+      doc.setTextColor(26,58,92); doc.setFontSize(9); doc.setFont('helvetica','bold');
+      doc.text(t.name, x, cellY + 4, {maxWidth: cellW});
+      try {
+        doc.addImage(t.photo, 'JPEG', x, cellY + labelH, cellW, imgH, '', 'FAST');
+      } catch(e) {
+        doc.setTextColor(150,150,150); doc.setFontSize(8); doc.setFont('helvetica','normal');
+        doc.text('[Photo unavailable]', x, cellY + labelH + imgH / 2);
+      }
+      if ((idx + 1) % 4 === 0) { y = margin + 16; }
+      else if (idx === photoTasks.length - 1) { y += (rowInPage + 1) * (cellH + gutter) + 4; }
+    });
+  }
+
+  if (mode === 'full') {
+    addHeader('Pipeline Progress Report - Full');
+    addDataSection(); addPhotosSection(); addFooter();
+    doc.save('Parsons_Pipeline_Full_' + fmtISO(currDate) + '.pdf');
+  } else if (mode === 'data') {
+    addHeader('Pipeline Progress Report - Data & Notes');
+    addDataSection(); addFooter();
+    doc.save('Parsons_Pipeline_Data_' + fmtISO(currDate) + '.pdf');
+  } else if (mode === 'photos') {
+    addHeader('Pipeline Progress Report - Site Photos');
+    addPhotosSection(); addFooter();
+    doc.save('Parsons_Pipeline_Photos_' + fmtISO(currDate) + '.pdf');
+  }
+}
+
+// PERSISTENCE - photos stored separately to avoid size limits
+var STORAGE_KEY = 'parsons_v3';
 var saveTimer = null;
 
 function debounceSave() {
@@ -1131,10 +868,30 @@ function debounceSave() {
 function saveState() {
   try {
     syncLiveInputs();
+    // Save task data WITHOUT photos (keeps main save small and reliable)
+    var taskData = TASKS.map(function(t) {
+      return {name:t.name, stStart:t.stStart, stEnd:t.stEnd, wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes};
+    });
+    // Save day log WITHOUT photos
+    var dayLogData = dayLog.map(function(d) {
+      return {
+        prevDate: d.prevDate, date: d.date, generalNotes: d.generalNotes || '',
+        tasks: d.tasks.map(function(t) {
+          return {name:t.name, stStart:t.stStart, stEnd:t.stEnd, wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes};
+        })
+      };
+    });
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      TASKS: TASKS, dayLog: dayLog, generalNotes: generalNotes,
+      TASKS: taskData, dayLog: dayLogData, generalNotes: generalNotes,
       currDate: fmtISO(currDate), prevDate: fmtISO(prevDate), viewIndex: viewIndex
     }));
+    // Save each photo separately
+    TASKS.forEach(function(t, i) {
+      try {
+        if (t.photo) { localStorage.setItem(STORAGE_KEY + '_p_' + i, t.photo); }
+        else { localStorage.removeItem(STORAGE_KEY + '_p_' + i); }
+      } catch(e) { console.warn('Photo save failed task', i); }
+    });
   } catch(e) { console.warn('Save failed', e); }
 }
 
@@ -1143,55 +900,53 @@ function loadState() {
     var raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return false;
     var s = JSON.parse(raw);
-    if (s.TASKS) { TASKS.length=0; s.TASKS.forEach(function(t){ TASKS.push(t); }); }
-    if (s.dayLog) { dayLog.length=0; s.dayLog.forEach(function(d){ dayLog.push(d); }); }
+    if (s.TASKS) {
+      TASKS.length = 0;
+      s.TASKS.forEach(function(t, i) {
+        var photo = '';
+        try { photo = localStorage.getItem(STORAGE_KEY + '_p_' + i) || ''; } catch(e) {}
+        TASKS.push({name:t.name, stStart:t.stStart, stEnd:t.stEnd, wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:photo});
+      });
+    }
+    if (s.dayLog) {
+      dayLog.length = 0;
+      s.dayLog.forEach(function(d) {
+        dayLog.push({
+          prevDate: d.prevDate, date: d.date, generalNotes: d.generalNotes || '',
+          tasks: d.tasks.map(function(t) {
+            return {name:t.name, stStart:t.stStart, stEnd:t.stEnd, wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:''};
+          })
+        });
+      });
+    }
     if (s.generalNotes !== undefined) generalNotes = s.generalNotes;
     if (s.currDate) currDate = localMid(new Date(s.currDate));
     if (s.prevDate) prevDate = localMid(new Date(s.prevDate));
     if (s.viewIndex !== undefined) viewIndex = s.viewIndex;
     return true;
-  } catch(e) { return false; }
+  } catch(e) { console.warn('Load failed', e); return false; }
 }
 
+// Save when app goes to background - critical for iPhone
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState === 'hidden') saveState();
 });
 window.addEventListener('pagehide', saveState);
+window.addEventListener('beforeunload', saveState);
 
 document.getElementById('generalNotesEl').addEventListener('input', function(e) {
   generalNotes = e.target.value;
   debounceSave();
 });
 
-// Sunlight mode
-function toggleSun() {
-  var isSun = document.body.classList.toggle('sun');
-  document.getElementById('sunBtn').innerHTML = isSun ? '&#9790;' : '&#9728;';
-  try { localStorage.setItem('parsons_sun', isSun ? '1' : '0'); } catch(e){}
-}
-function loadSunMode() {
-  try {
-    if (localStorage.getItem('parsons_sun') === '1') {
-      document.body.classList.add('sun');
-      document.getElementById('sunBtn').innerHTML = '&#9790;';
-    }
-  } catch(e){}
-}
-
-// Sunlight mode
-function toggleSun() {
-  var isSun = document.body.classList.toggle('sun');
-  localStorage.setItem('sunMode', isSun ? '1' : '0');
-}
-
-// Sunlight mode
+// SUNLIGHT MODE
 function toggleSun() {
   var isSun = document.body.classList.toggle('sun');
   document.getElementById('sunBtn').innerHTML = isSun ? '&#9790; Night' : '&#9728; Sunlight';
-  try { localStorage.setItem('parsons_sun', isSun ? '1' : '0'); } catch(e){}
+  try { localStorage.setItem('parsons_sun', isSun ? '1' : '0'); } catch(e) {}
 }
 
-// Init
+// INIT
 var restored = loadState();
 if (!restored) {
   initDates();
@@ -1199,28 +954,22 @@ if (!restored) {
   updateDateDisplay();
   document.getElementById('generalNotesEl').value = generalNotes;
 }
+if (viewIndex === -1) { renderCards(TASKS, false); }
+else { renderCards(dayLog[viewIndex].tasks, true); }
+
 // Restore sunlight preference
 try {
   if (localStorage.getItem('parsons_sun') === '1') {
     document.body.classList.add('sun');
     document.getElementById('sunBtn').innerHTML = '&#9790; Night';
   }
-} catch(e){}
-// Restore sun mode preference
-if (localStorage.getItem('sunMode') === '1') {
-  document.body.classList.add('sun');
-}
-if (viewIndex === -1) {
-  renderCards(TASKS, false);
-} else {
-  renderCards(dayLog[viewIndex].tasks, true);
-}
-loadSunMode();
+} catch(e) {}
 </script>
+
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('./sw.js').catch(function(e){ console.log('SW error',e); });
+    navigator.serviceWorker.register('./sw.js').catch(function(e){ console.log('SW error', e); });
   });
 }
 </script>
