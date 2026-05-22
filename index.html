@@ -866,7 +866,7 @@ function generatePDF(mode) {
 }
 
 // PERSISTENCE - photos stored separately to avoid size limits
-var STORAGE_KEY = 'parsons_v3';
+var STORAGE_KEY = 'parsons_v4';
 var saveTimer = null;
 
 function setSaveStatus(status, msg) {
@@ -882,15 +882,34 @@ function debounceSave() {
   saveTimer = setTimeout(saveState, 300);
 }
 
+function cleanOldStorage() {
+  // Remove any old version keys and stale photo keys
+  var keysToRemove = [];
+  for (var i = 0; i < localStorage.length; i++) {
+    var k = localStorage.key(i);
+    if (k && (k.indexOf('parsons_v1') === 0 || k.indexOf('parsons_v2') === 0 || k.indexOf('parsons_v3') === 0)) {
+      keysToRemove.push(k);
+    }
+  }
+  keysToRemove.forEach(function(k){ try { localStorage.removeItem(k); } catch(e){} });
+  // Remove stale photo slots beyond current task count
+  for (var j = TASKS.length; j < 20; j++) {
+    try { localStorage.removeItem(STORAGE_KEY + '_p_' + j); } catch(e) {}
+  }
+}
+
 function saveState() {
   try {
     syncLiveInputs();
-    // Save task data WITHOUT photos (keeps main save small and reliable)
+    // Clean old storage first to free space
+    cleanOldStorage();
+    // Save task data WITHOUT photos
     var taskData = TASKS.map(function(t) {
       return {name:t.name, stStart:t.stStart, stEnd:t.stEnd, wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes};
     });
-    // Save day log WITHOUT photos
-    var dayLogData = dayLog.map(function(d) {
+    // Save day log WITHOUT photos (only keep last 14 days to save space)
+    var recentLog = dayLog.slice(-14);
+    var dayLogData = recentLog.map(function(d) {
       return {
         prevDate: d.prevDate, date: d.date, generalNotes: d.generalNotes || '',
         tasks: d.tasks.map(function(t) {
@@ -902,12 +921,19 @@ function saveState() {
       TASKS: taskData, dayLog: dayLogData, generalNotes: generalNotes,
       currDate: fmtISO(currDate), prevDate: fmtISO(prevDate), viewIndex: viewIndex
     }));
-    // Save each photo separately
+    // Save each photo separately - compress aggressively if needed
     TASKS.forEach(function(t, i) {
       try {
-        if (t.photo) { localStorage.setItem(STORAGE_KEY + '_p_' + i, t.photo); }
-        else { localStorage.removeItem(STORAGE_KEY + '_p_' + i); }
-      } catch(e) { console.warn('Photo save failed task', i); }
+        if (t.photo) {
+          localStorage.setItem(STORAGE_KEY + '_p_' + i, t.photo);
+        } else {
+          localStorage.removeItem(STORAGE_KEY + '_p_' + i);
+        }
+      } catch(e) {
+        // If photo save fails due to quota, remove it and continue
+        try { localStorage.removeItem(STORAGE_KEY + '_p_' + i); } catch(e2) {}
+        console.warn('Photo save failed task', i, '- skipped');
+      }
     });
     var t = new Date();
     var h = t.getHours(), mi = String(t.getMinutes()).padStart(2,'0');
@@ -923,7 +949,12 @@ function saveState() {
 
 function loadState() {
   try {
+    // Try new key first, fall back to old keys if needed
     var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      // Try to migrate from old versions
+      raw = localStorage.getItem('parsons_v3') || localStorage.getItem('parsons_v2') || localStorage.getItem('parsons_v1');
+    }
     if (!raw) return false;
     var s = JSON.parse(raw);
     if (s.TASKS) {
@@ -973,6 +1004,7 @@ function toggleSun() {
 }
 
 // INIT
+try { cleanOldStorage(); } catch(e) {}
 var restored = loadState();
 if (!restored) {
   initDates();
