@@ -331,11 +331,26 @@ function updateDateDisplay() {
 }
 
 // DATE STEPPER
+function hasAnyEndData() {
+  return TASKS.some(function(t){ return t.stEnd || t.wjEnd; });
+}
+
 function stepDate(delta) {
   if (viewIndex === -1) {
     if (delta === 1) {
-      saveAndAdvance();
+      // Only advance if there is actual end data entered
+      // If no ends entered, just move the date forward without saving
+      if (hasAnyEndData()) {
+        saveAndAdvance();
+      } else {
+        // No ends - just slide date forward freely (user exploring dates)
+        currDate = addDays(currDate, 1);
+        prevDate = addDays(currDate, -1);
+        updateDateDisplay();
+        saveState();
+      }
     } else {
+      // Stepping back from live view
       if (dayLog.length > 0) {
         viewIndex = dayLog.length - 1;
         updateDateDisplay();
@@ -344,6 +359,7 @@ function stepDate(delta) {
         currDate = addDays(currDate, -1);
         prevDate = addDays(currDate, -1);
         updateDateDisplay();
+        saveState();
       }
     }
   } else {
@@ -357,6 +373,7 @@ function stepDate(delta) {
         updateDateDisplay();
         renderCards(dayLog[viewIndex].tasks, true);
       } else {
+        // Returning to live editable view from history
         viewIndex = -1;
         updateDateDisplay();
         renderCards(TASKS, false);
