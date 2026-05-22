@@ -338,24 +338,25 @@ function hasAnyEndData() {
 function stepDate(delta) {
   if (viewIndex === -1) {
     if (delta === 1) {
-      // Only advance if there is actual end data entered
-      // If no ends entered, just move the date forward without saving
+      // Only do a full advance if end data exists
       if (hasAnyEndData()) {
         saveAndAdvance();
       } else {
-        // No ends - just slide date forward freely (user exploring dates)
+        // No ends entered - just nudge date forward, stay editable
         currDate = addDays(currDate, 1);
         prevDate = addDays(currDate, -1);
         updateDateDisplay();
         saveState();
       }
     } else {
-      // Stepping back from live view
+      // Tapping MINUS on live view - go into history if available
+      // but ALWAYS stay editable when coming back with +
       if (dayLog.length > 0) {
         viewIndex = dayLog.length - 1;
         updateDateDisplay();
         renderCards(dayLog[viewIndex].tasks, true);
       } else {
+        // No history - just nudge date back, stay editable
         currDate = addDays(currDate, -1);
         prevDate = addDays(currDate, -1);
         updateDateDisplay();
@@ -363,17 +364,24 @@ function stepDate(delta) {
       }
     }
   } else {
-    if (delta === -1 && viewIndex > 0) {
-      viewIndex--;
-      updateDateDisplay();
-      renderCards(dayLog[viewIndex].tasks, true);
-    } else if (delta === 1) {
+    // In history view
+    if (delta === -1) {
+      if (viewIndex > 0) {
+        // Go further back in history
+        viewIndex--;
+        updateDateDisplay();
+        renderCards(dayLog[viewIndex].tasks, true);
+      }
+      // Already at oldest - do nothing
+    } else {
+      // Tapping PLUS in history view
       if (viewIndex < dayLog.length - 1) {
+        // Go forward in history
         viewIndex++;
         updateDateDisplay();
         renderCards(dayLog[viewIndex].tasks, true);
       } else {
-        // Returning to live editable view from history
+        // At most recent history entry - return to LIVE editable view
         viewIndex = -1;
         updateDateDisplay();
         renderCards(TASKS, false);
