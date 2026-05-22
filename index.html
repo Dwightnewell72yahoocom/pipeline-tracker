@@ -81,6 +81,11 @@ body::before { content:''; position:fixed; inset:0; background-image:linear-grad
 .sun-toggle { position:fixed; top:12px; right:12px; z-index:1000; background:#1a3a5c; border:none; border-radius:99px; padding:7px 14px; font-size:13px; font-weight:700; color:#f59e0b; cursor:pointer; font-family:var(--font); touch-action:manipulation; box-shadow:0 2px 8px rgba(0,0,0,0.3); display:flex; align-items:center; gap:6px; }
 body.sun .sun-toggle { background:#f59e0b; color:#1a3a5c; }
 
+.save-bar { position:fixed; bottom:0; left:0; right:0; z-index:999; display:flex; align-items:center; justify-content:center; padding:8px 16px; font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:0.05em; transition:background 0.3s; }
+.save-bar.saved { background:rgba(21,128,61,0.92); color:#bbf7d0; }
+.save-bar.saving { background:rgba(180,83,9,0.92); color:#fef3c7; }
+.save-bar.error { background:rgba(185,28,28,0.92); color:#fee2e2; }
+
 .header { background:linear-gradient(160deg,var(--navy2) 0%,var(--steel) 100%); padding:56px 20px 24px; border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
 .header::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,var(--accent),transparent); }
 .header-eyebrow { font-size:10px; font-weight:600; letter-spacing:0.15em; color:var(--accent); text-transform:uppercase; margin-bottom:6px; font-family:var(--mono); }
@@ -235,6 +240,8 @@ textarea.general-notes-input::placeholder { color:var(--steel); }
     <textarea class="general-notes-input" id="generalNotesEl" placeholder="Enter general site notes, observations, issues..."></textarea>
   </div>
 </div>
+
+<div class="save-bar saved" id="saveBar">&#10003; Saved</div>
 
 <!-- Report overlay -->
 <div class="report-overlay" id="reportOverlay">
@@ -415,6 +422,7 @@ function saveAndAdvance() {
   viewIndex = -1;
   updateDateDisplay();
   renderCards(TASKS, false);
+  saveState();
 
   if (moved.length) {
     document.querySelectorAll('.task-card').forEach(function(el, i) {
@@ -658,6 +666,7 @@ function closeReport() {
 
 function reportAction() {
   syncLiveInputs();
+  saveState();
   document.getElementById('pdfModal').classList.add('open');
 }
 
@@ -860,9 +869,17 @@ function generatePDF(mode) {
 var STORAGE_KEY = 'parsons_v3';
 var saveTimer = null;
 
+function setSaveStatus(status, msg) {
+  var bar = document.getElementById('saveBar');
+  if (!bar) return;
+  bar.className = 'save-bar ' + status;
+  bar.innerHTML = msg;
+}
+
 function debounceSave() {
+  setSaveStatus('saving', '&#8635; Saving...');
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveState, 1500);
+  saveTimer = setTimeout(saveState, 300);
 }
 
 function saveState() {
@@ -892,7 +909,16 @@ function saveState() {
         else { localStorage.removeItem(STORAGE_KEY + '_p_' + i); }
       } catch(e) { console.warn('Photo save failed task', i); }
     });
-  } catch(e) { console.warn('Save failed', e); }
+    var t = new Date();
+    var h = t.getHours(), mi = String(t.getMinutes()).padStart(2,'0');
+    var ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+    setSaveStatus('saved', '&#10003; Saved ' + h + ':' + mi + ' ' + ap);
+  } catch(e) {
+    console.warn('Save failed', e);
+    setSaveStatus('error', '&#9888; Save failed - tap to retry');
+    var bar = document.getElementById('saveBar');
+    if (bar) bar.onclick = function(){ saveState(); this.onclick = null; };
+  }
 }
 
 function loadState() {
