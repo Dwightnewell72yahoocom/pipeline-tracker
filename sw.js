@@ -1,4 +1,4 @@
-const CACHE = 'parsons-pipeline-v6';
+const CACHE = 'parsons-pipeline-v7';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', function(e) {
   e.waitUntil(caches.open(CACHE).then(function(cache) { return cache.addAll(ASSETS); }));
