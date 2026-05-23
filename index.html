@@ -354,38 +354,25 @@ function stepDate(delta) {
       if (hasAnyEndData()) {
         saveAndAdvance();
       }
-      // No ends entered - ignore the tap, stay on today editable
+      // No ends entered - ignore tap, stay on today editable
     } else {
-      // Tapping MINUS on live view - browse into history
+      // Arrow left - show previous day if it exists
       if (dayLog.length > 0) {
-        viewIndex = dayLog.length - 1;
+        viewIndex = 0;
         updateDateDisplay();
-        renderCards(dayLog[viewIndex].tasks, true);
+        renderCards(dayLog[0].tasks, true);
       }
-      // No history yet - do nothing
+      // No previous day yet - do nothing
     }
   } else {
-    // In history view
-    if (delta === -1) {
-      if (viewIndex > 0) {
-        viewIndex--;
-        updateDateDisplay();
-        renderCards(dayLog[viewIndex].tasks, true);
-      }
-      // Already at oldest entry - do nothing
-    } else {
-      // Tapping PLUS in history
-      if (viewIndex < dayLog.length - 1) {
-        viewIndex++;
-        updateDateDisplay();
-        renderCards(dayLog[viewIndex].tasks, true);
-      } else {
-        // Return to live editable today
-        viewIndex = -1;
-        updateDateDisplay();
-        renderCards(TASKS, false);
-      }
+    // In history view (previous day)
+    if (delta === 1) {
+      // Arrow right - return to today editable
+      viewIndex = -1;
+      updateDateDisplay();
+      renderCards(TASKS, false);
     }
+    // Arrow left from history - do nothing (only 1 history entry)
   }
 }
 
@@ -419,6 +406,8 @@ function saveAndAdvance() {
       };
     })
   };
+  // Keep only the most recent snapshot (previous day only)
+  dayLog.length = 0;
   dayLog.push(snapshot);
 
   // Shift end values to start for next day
@@ -989,15 +978,15 @@ function loadState() {
         TASKS.push({name:t.name, stStart:t.stStart, stEnd:t.stEnd, wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:photo});
       });
     }
-    if (s.dayLog) {
+    if (s.dayLog && s.dayLog.length > 0) {
       dayLog.length = 0;
-      s.dayLog.forEach(function(d) {
-        dayLog.push({
-          prevDate: d.prevDate, date: d.date, generalNotes: d.generalNotes || '',
-          tasks: d.tasks.map(function(t) {
-            return {name:t.name, stStart:t.stStart, stEnd:t.stEnd, wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:''};
-          })
-        });
+      // Only keep the most recent entry (previous day)
+      var lastEntry = s.dayLog[s.dayLog.length - 1];
+      dayLog.push({
+        prevDate: lastEntry.prevDate, date: lastEntry.date, generalNotes: lastEntry.generalNotes || '',
+        tasks: lastEntry.tasks.map(function(t) {
+          return {name:t.name, stStart:t.stStart, stEnd:t.stEnd, wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:''};
+        })
       });
     }
     if (s.generalNotes !== undefined) generalNotes = s.generalNotes;
