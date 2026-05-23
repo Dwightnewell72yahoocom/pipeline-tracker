@@ -214,8 +214,9 @@ textarea.general-notes-input::placeholder { color:var(--steel); }
       </div>
     </div>
     <div class="section-divider"></div>
-    <div class="btn-row">
-      <button class="btn" onclick="showReport()">&#8595; View &amp; Print Report</button>
+    <div class="btn-row" style="display:flex;gap:10px;">
+      <button class="btn" onclick="showReport()" style="flex:1;">&#8595; View &amp; Print Report</button>
+      <button onclick="resetToToday()" style="flex-shrink:0;padding:14px 16px;border-radius:10px;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.08);color:#fca5a5;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;touch-action:manipulation;" title="Reset date to today">&#8635; Today</button>
     </div>
   </div>
 
@@ -331,6 +332,17 @@ function updateDateDisplay() {
 }
 
 // DATE STEPPER
+function resetToToday() {
+  if (!confirm('Reset date to today? This will NOT delete your entries - just fixes the date.')) return;
+  // Clear any corrupted date state
+  currDate = localMid(new Date());
+  prevDate = addDays(currDate, -1);
+  viewIndex = -1;
+  updateDateDisplay();
+  renderCards(TASKS, false);
+  saveState();
+}
+
 function hasAnyEndData() {
   return TASKS.some(function(t){ return t.stEnd || t.wjEnd; });
 }
