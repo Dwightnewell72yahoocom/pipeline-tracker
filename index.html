@@ -214,9 +214,8 @@ textarea.general-notes-input::placeholder { color:var(--steel); }
       </div>
     </div>
     <div class="section-divider"></div>
-    <div class="btn-row" style="display:flex;gap:10px;">
-      <button class="btn" onclick="showReport()" style="flex:1;">&#8595; View &amp; Print Report</button>
-      <button onclick="resetToToday()" style="flex-shrink:0;padding:14px 16px;border-radius:10px;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.08);color:#fca5a5;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;touch-action:manipulation;" title="Reset date to today">&#8635; Today</button>
+    <div class="btn-row">
+      <button class="btn" onclick="showReport()">&#8595; View &amp; Print Report</button>
     </div>
   </div>
 
@@ -332,18 +331,6 @@ function updateDateDisplay() {
 }
 
 // DATE STEPPER
-function resetToToday() {
-  if (!confirm('Reset date to today? This will NOT change your entries - just fixes the date display.')) return;
-  // Only fix the date - do NOT touch TASKS data at all
-  currDate = localMid(new Date());
-  prevDate = addDays(currDate, -1);
-  viewIndex = -1;
-  updateDateDisplay();
-  // Re-render cards without modifying any task data
-  renderCards(TASKS, false);
-  saveState();
-}
-
 function hasAnyEndData() {
   return TASKS.some(function(t){ return t.stEnd || t.wjEnd; });
 }
@@ -880,7 +867,7 @@ function generatePDF(mode) {
 }
 
 // PERSISTENCE - photos stored separately to avoid size limits
-var STORAGE_KEY = 'parsons_v4';
+var STORAGE_KEY = 'parsons_v5';
 var saveTimer = null;
 
 function setSaveStatus(status, msg) {
@@ -901,7 +888,8 @@ function cleanOldStorage() {
   var keysToRemove = [];
   for (var i = 0; i < localStorage.length; i++) {
     var k = localStorage.key(i);
-    if (k && (k.indexOf('parsons_v1') === 0 || k.indexOf('parsons_v2') === 0 || k.indexOf('parsons_v3') === 0)) {
+    if (k && (k.indexOf('parsons_v1') === 0 || k.indexOf('parsons_v2') === 0 ||
+              k.indexOf('parsons_v3') === 0 || k.indexOf('parsons_v4') === 0)) {
       keysToRemove.push(k);
     }
   }
