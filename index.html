@@ -333,12 +333,13 @@ function updateDateDisplay() {
 
 // DATE STEPPER
 function resetToToday() {
-  if (!confirm('Reset date to today? This will NOT delete your entries - just fixes the date.')) return;
-  // Clear any corrupted date state
+  if (!confirm('Reset date to today? This will NOT change your entries - just fixes the date display.')) return;
+  // Only fix the date - do NOT touch TASKS data at all
   currDate = localMid(new Date());
   prevDate = addDays(currDate, -1);
   viewIndex = -1;
   updateDateDisplay();
+  // Re-render cards without modifying any task data
   renderCards(TASKS, false);
   saveState();
 }
@@ -1038,6 +1039,39 @@ if (!restored) {
 } else {
   updateDateDisplay();
   document.getElementById('generalNotesEl').value = generalNotes;
+  // Auto-advance to today if app was last used on a previous day
+  var today = localMid(new Date());
+  if (currDate < today) {
+    // Save current state as previous day snapshot
+    var snapshot = {
+      prevDate: fmtNice(prevDate),
+      date: fmtNice(currDate),
+      generalNotes: generalNotes,
+      tasks: TASKS.map(function(t) {
+        return {name:t.name, stStart:t.stStart, stEnd:t.stEnd,
+                wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:t.photo};
+      })
+    };
+    dayLog.length = 0;
+    dayLog.push(snapshot);
+    // Shift ends to starts
+    TASKS.forEach(function(t) {
+      var hasEnd = t.stEnd || t.wjEnd;
+      if (hasEnd) {
+        t.stStart = t.stEnd; t.stEnd = '';
+        t.wjStart = t.wjEnd; t.wjEnd = '';
+      } else {
+        t.stEnd = ''; t.wjEnd = '';
+      }
+      t.photo = '';
+      t.notes = '';
+    });
+    // Set dates to today
+    prevDate = localMid(currDate);
+    currDate = today;
+    viewIndex = -1;
+    saveState();
+  }
 }
 if (viewIndex === -1) { renderCards(TASKS, false); }
 else { renderCards(dayLog[viewIndex].tasks, true); }
