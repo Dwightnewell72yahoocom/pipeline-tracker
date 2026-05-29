@@ -855,9 +855,13 @@ function generatePDF(mode) {
   }
 }
 
-// PERSISTENCE - photos stored separately to avoid size limits
-var STORAGE_KEY = 'parsons_v5';
+// PERSISTENCE - Using IndexedDB for reliable storage on all devices
+var DB_NAME = 'ParsonsDB';
+var DB_VERSION = 1;
+var DB_STORE = 'appstate';
+var db = null;
 var saveTimer = null;
+var appReady = false;
 
 function setSaveStatus(status, msg) {
   var bar = document.getElementById('saveBar');
@@ -872,129 +876,213 @@ function debounceSave() {
   saveTimer = setTimeout(saveState, 300);
 }
 
-function cleanOldStorage() {
-  // Remove any old version keys and stale photo keys
-  var keysToRemove = [];
-  for (var i = 0; i < localStorage.length; i++) {
-    var k = localStorage.key(i);
-    if (k && (k.indexOf('parsons_v1') === 0 || k.indexOf('parsons_v2') === 0 ||
-              k.indexOf('parsons_v3') === 0 || k.indexOf('parsons_v4') === 0)) {
-      keysToRemove.push(k);
+// Open IndexedDB
+function openDB(callback) {
+  if (db) { callback(db); return; }
+  var req = indexedDB.open(DB_NAME, DB_VERSION);
+  req.onupgradeneeded = function(e) {
+    var d = e.target.result;
+    if (!d.objectStoreNames.contains(DB_STORE)) {
+      d.createObjectStore(DB_STORE, {keyPath: 'id'});
     }
-  }
-  keysToRemove.forEach(function(k){ try { localStorage.removeItem(k); } catch(e){} });
-  // Remove stale photo slots beyond current task count
-  for (var j = TASKS.length; j < 20; j++) {
-    try { localStorage.removeItem(STORAGE_KEY + '_p_' + j); } catch(e) {}
-  }
+  };
+  req.onsuccess = function(e) {
+    db = e.target.result;
+    callback(db);
+  };
+  req.onerror = function() {
+    console.warn('IndexedDB failed, falling back to localStorage');
+    callback(null);
+  };
 }
 
 function saveState() {
-  try {
-    syncLiveInputs();
-    // Clean old storage first to free space
-    cleanOldStorage();
-    // Save task data WITHOUT photos
-    var taskData = TASKS.map(function(t) {
-      return {name:t.name, stStart:t.stStart, stEnd:t.stEnd, wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes};
-    });
-    // Save day log WITHOUT photos (only keep last 14 days to save space)
-    var recentLog = dayLog.slice(-14);
-    var dayLogData = recentLog.map(function(d) {
-      return {
-        prevDate: d.prevDate, date: d.date, generalNotes: d.generalNotes || '',
-        tasks: d.tasks.map(function(t) {
-          return {name:t.name, stStart:t.stStart, stEnd:t.stEnd, wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes};
-        })
-      };
-    });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      TASKS: taskData, dayLog: dayLogData, generalNotes: generalNotes,
-      currDate: fmtISO(currDate), prevDate: fmtISO(prevDate), viewIndex: viewIndex
-    }));
-    // Save each photo separately - compress aggressively if needed
-    TASKS.forEach(function(t, i) {
+  syncLiveInputs();
+  var state = {
+    id: 'main',
+    TASKS: TASKS.map(function(t) {
+      return {name:t.name, stStart:t.stStart, stEnd:t.stEnd,
+              wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:t.photo};
+    }),
+    dayLog: dayLog.map(function(d) {
+      return {prevDate:d.prevDate, date:d.date, generalNotes:d.generalNotes||'',
+              tasks:d.tasks.map(function(t){
+                return {name:t.name, stStart:t.stStart, stEnd:t.stEnd,
+                        wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:t.photo||''};
+              })};
+    }),
+    generalNotes: generalNotes,
+    currDate: fmtISO(currDate),
+    prevDate: fmtISO(prevDate),
+    viewIndex: viewIndex,
+    lastAdvanced: (function(){ try{ return localStorage.getItem('parsons_lastAdvanced')||''; }catch(e){return '';} })()
+  };
+
+  openDB(function(database) {
+    if (database) {
       try {
-        if (t.photo) {
-          localStorage.setItem(STORAGE_KEY + '_p_' + i, t.photo);
-        } else {
-          localStorage.removeItem(STORAGE_KEY + '_p_' + i);
-        }
-      } catch(e) {
-        // If photo save fails due to quota, remove it and continue
-        try { localStorage.removeItem(STORAGE_KEY + '_p_' + i); } catch(e2) {}
-        console.warn('Photo save failed task', i, '- skipped');
-      }
+        var tx = database.transaction(DB_STORE, 'readwrite');
+        var store = tx.objectStore(DB_STORE);
+        store.put(state);
+        tx.oncomplete = function() {
+          var t = new Date();
+          var h = t.getHours(), mi = String(t.getMinutes()).padStart(2,'0');
+          var ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+          setSaveStatus('saved', '&#10003; Saved ' + h + ':' + mi + ' ' + ap);
+        };
+        tx.onerror = function() { fallbackSave(state); };
+      } catch(e) { fallbackSave(state); }
+    } else {
+      fallbackSave(state);
+    }
+  });
+}
+
+function fallbackSave(state) {
+  // localStorage fallback without photos
+  try {
+    var lite = JSON.parse(JSON.stringify(state));
+    lite.TASKS = lite.TASKS.map(function(t){
+      return {name:t.name,stStart:t.stStart,stEnd:t.stEnd,wjStart:t.wjStart,wjEnd:t.wjEnd,notes:t.notes,photo:''};
     });
+    localStorage.setItem('parsons_fallback', JSON.stringify(lite));
     var t = new Date();
     var h = t.getHours(), mi = String(t.getMinutes()).padStart(2,'0');
     var ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
     setSaveStatus('saved', '&#10003; Saved ' + h + ':' + mi + ' ' + ap);
   } catch(e) {
-    console.warn('Save failed', e);
     setSaveStatus('error', '&#9888; Save failed - tap to retry');
     var bar = document.getElementById('saveBar');
-    if (bar) bar.onclick = function(){ saveState(); this.onclick = null; };
+    if (bar) bar.onclick = function(){ saveState(); this.onclick=null; };
   }
 }
 
-function loadState() {
-  try {
-    // Try new key first, fall back to old keys if needed
-    var raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      // Try to migrate from old versions
-      raw = localStorage.getItem('parsons_v3') || localStorage.getItem('parsons_v2') || localStorage.getItem('parsons_v1');
+function loadState(callback) {
+  openDB(function(database) {
+    if (database) {
+      try {
+        var tx = database.transaction(DB_STORE, 'readonly');
+        var store = tx.objectStore(DB_STORE);
+        var req = store.get('main');
+        req.onsuccess = function(e) {
+          var s = e.target.result;
+          if (s) { applyState(s); callback(true); }
+          else { tryFallbackLoad(callback); }
+        };
+        req.onerror = function() { tryFallbackLoad(callback); };
+      } catch(e) { tryFallbackLoad(callback); }
+    } else {
+      tryFallbackLoad(callback);
     }
-    if (!raw) return false;
-    var s = JSON.parse(raw);
-    if (s.TASKS) {
-      TASKS.length = 0;
-      s.TASKS.forEach(function(t, i) {
-        var photo = '';
-        try { photo = localStorage.getItem(STORAGE_KEY + '_p_' + i) || ''; } catch(e) {}
-        TASKS.push({name:t.name, stStart:t.stStart, stEnd:t.stEnd, wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:photo});
-      });
-    }
-    if (s.dayLog && s.dayLog.length > 0) {
-      dayLog.length = 0;
-      // Only keep the most recent entry if its date is valid (not future, not too old)
-      var lastEntry = s.dayLog[s.dayLog.length - 1];
-      var today = localMid(new Date());
-      var entryDate = lastEntry.date ? new Date(lastEntry.date) : null;
-      var isValid = entryDate && !isNaN(entryDate) && entryDate <= today;
-      if (isValid) {
-        dayLog.push({
-          prevDate: lastEntry.prevDate, date: lastEntry.date, generalNotes: lastEntry.generalNotes || '',
-          tasks: lastEntry.tasks.map(function(t) {
-            return {name:t.name, stStart:t.stStart, stEnd:t.stEnd, wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:''};
-          })
-        });
-      }
-      // If invalid date - discard silently, no history shown
-    }
-    if (s.generalNotes !== undefined) generalNotes = s.generalNotes;
-    if (s.currDate) {
-      var savedCurr = localMid(new Date(s.currDate));
-      var todayCheck = localMid(new Date());
-      // If saved date is in the future, reset to today
-      currDate = (savedCurr > todayCheck) ? todayCheck : savedCurr;
-    }
-    if (s.prevDate) {
-      var savedPrev = localMid(new Date(s.prevDate));
-      prevDate = addDays(currDate, -1);
-    }
-    if (s.viewIndex !== undefined) viewIndex = s.viewIndex;
-    return true;
-  } catch(e) { console.warn('Load failed', e); return false; }
+  });
 }
 
-// Save when app goes to background - critical for iPhone
+function tryFallbackLoad(callback) {
+  try {
+    var raw = localStorage.getItem('parsons_fallback');
+    if (raw) { applyState(JSON.parse(raw)); callback(true); }
+    else { callback(false); }
+  } catch(e) { callback(false); }
+}
+
+function applyState(s) {
+  var today = localMid(new Date());
+  if (s.TASKS) {
+    TASKS.length = 0;
+    s.TASKS.forEach(function(t) {
+      TASKS.push({name:t.name, stStart:t.stStart, stEnd:t.stEnd,
+                  wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:t.photo||''});
+    });
+  }
+  if (s.dayLog && s.dayLog.length > 0) {
+    dayLog.length = 0;
+    var last = s.dayLog[s.dayLog.length - 1];
+    var entryDate = last.date ? new Date(last.date) : null;
+    if (entryDate && !isNaN(entryDate) && entryDate <= today) {
+      dayLog.push({
+        prevDate:last.prevDate, date:last.date, generalNotes:last.generalNotes||'',
+        tasks:last.tasks.map(function(t){
+          return {name:t.name,stStart:t.stStart,stEnd:t.stEnd,
+                  wjStart:t.wjStart,wjEnd:t.wjEnd,notes:t.notes,photo:t.photo||''};
+        })
+      });
+    }
+  }
+  if (s.generalNotes !== undefined) generalNotes = s.generalNotes;
+  if (s.currDate) {
+    var saved = localMid(new Date(s.currDate));
+    currDate = (saved > today) ? today : saved;
+  }
+  prevDate = addDays(currDate, -1);
+  if (s.viewIndex !== undefined) viewIndex = s.viewIndex;
+}
+
+function initApp(restored) {
+  if (!restored) {
+    initDates();
+  } else {
+    updateDateDisplay();
+    var gnEl = document.getElementById('generalNotesEl');
+    if (gnEl) gnEl.value = generalNotes;
+
+    // Auto-advance once per day if last used on a previous day
+    var today = localMid(new Date());
+    var todayISO = fmtISO(today);
+    var lastAdvanced = '';
+    try { lastAdvanced = localStorage.getItem('parsons_lastAdvanced') || ''; } catch(e) {}
+
+    if (currDate < today && lastAdvanced !== todayISO) {
+      var snapshot = {
+        prevDate: fmtNice(prevDate),
+        date: fmtNice(currDate),
+        generalNotes: generalNotes,
+        tasks: TASKS.map(function(t) {
+          return {name:t.name,stStart:t.stStart,stEnd:t.stEnd,
+                  wjStart:t.wjStart,wjEnd:t.wjEnd,notes:t.notes,photo:t.photo};
+        })
+      };
+      dayLog.length = 0;
+      dayLog.push(snapshot);
+      TASKS.forEach(function(t) {
+        if (t.stEnd || t.wjEnd) {
+          t.stStart = t.stEnd; t.stEnd = '';
+          t.wjStart = t.wjEnd; t.wjEnd = '';
+        } else {
+          t.stEnd = ''; t.wjEnd = '';
+        }
+        t.photo = '';
+        t.notes = '';
+      });
+      prevDate = localMid(currDate);
+      currDate = today;
+      viewIndex = -1;
+      try { localStorage.setItem('parsons_lastAdvanced', todayISO); } catch(e) {}
+      saveState();
+    }
+  }
+
+  if (viewIndex === -1) { renderCards(TASKS, false); }
+  else { renderCards(dayLog[viewIndex] ? dayLog[viewIndex].tasks : TASKS, viewIndex !== -1); }
+
+  updateDateDisplay();
+
+  // Restore sunlight preference
+  try {
+    if (localStorage.getItem('parsons_sun') === '1') {
+      document.body.classList.add('sun');
+      document.getElementById('sunBtn').innerHTML = '&#9790; Night';
+    }
+  } catch(e) {}
+
+  appReady = true;
+}
+
+// Save when app goes to background
 document.addEventListener('visibilitychange', function() {
-  if (document.visibilityState === 'hidden') saveState();
+  if (document.visibilityState === 'hidden' && appReady) saveState();
 });
-window.addEventListener('pagehide', saveState);
-window.addEventListener('beforeunload', saveState);
+window.addEventListener('pagehide', function(){ if(appReady) saveState(); });
+window.addEventListener('beforeunload', function(){ if(appReady) saveState(); });
 
 document.getElementById('generalNotesEl').addEventListener('input', function(e) {
   generalNotes = e.target.value;
@@ -1008,81 +1096,10 @@ function toggleSun() {
   try { localStorage.setItem('parsons_sun', isSun ? '1' : '0'); } catch(e) {}
 }
 
-// INIT
-// Force wipe ALL old storage keys on this version upgrade
-try {
-  var wipeVersion = 'parsons_wiped_v19';
-  if (!localStorage.getItem(wipeVersion)) {
-    // First time running v19 - clear everything parsons related
-    var allKeys = [];
-    for (var ki = 0; ki < localStorage.length; ki++) {
-      var kk = localStorage.key(ki);
-      if (kk && kk.indexOf('parsons') === 0) allKeys.push(kk);
-    }
-    allKeys.forEach(function(k){ localStorage.removeItem(k); });
-    localStorage.setItem(wipeVersion, '1');
-  }
-} catch(e) {}
-try { cleanOldStorage(); } catch(e) {}
-var restored = loadState();
-if (!restored) {
-  initDates();
-} else {
-  updateDateDisplay();
-  document.getElementById('generalNotesEl').value = generalNotes;
-
-  // Auto-advance only if:
-  // 1. The saved date is from a PREVIOUS day (not today)
-  // 2. We have NOT already advanced today (checked via lastAdvancedDate flag)
-  var today = localMid(new Date());
-  var todayISO = fmtISO(today);
-  var lastAdvanced = '';
-  try { lastAdvanced = localStorage.getItem('parsons_lastAdvanced') || ''; } catch(e) {}
-
-  if (currDate < today && lastAdvanced !== todayISO) {
-    // Save current state as previous day snapshot
-    var snapshot = {
-      prevDate: fmtNice(prevDate),
-      date: fmtNice(currDate),
-      generalNotes: generalNotes,
-      tasks: TASKS.map(function(t) {
-        return {name:t.name, stStart:t.stStart, stEnd:t.stEnd,
-                wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:t.photo};
-      })
-    };
-    dayLog.length = 0;
-    dayLog.push(snapshot);
-    // Shift ends to starts
-    TASKS.forEach(function(t) {
-      var hasEnd = t.stEnd || t.wjEnd;
-      if (hasEnd) {
-        t.stStart = t.stEnd; t.stEnd = '';
-        t.wjStart = t.wjEnd; t.wjEnd = '';
-      } else {
-        t.stEnd = ''; t.wjEnd = '';
-      }
-      t.photo = '';
-      t.notes = '';
-    });
-    // Set dates to today
-    prevDate = localMid(currDate);
-    currDate = today;
-    viewIndex = -1;
-    // Record that we advanced today so it never runs again today
-    try { localStorage.setItem('parsons_lastAdvanced', todayISO); } catch(e) {}
-    saveState();
-  }
-}
-if (viewIndex === -1) { renderCards(TASKS, false); }
-else { renderCards(dayLog[viewIndex].tasks, true); }
-
-// Restore sunlight preference
-try {
-  if (localStorage.getItem('parsons_sun') === '1') {
-    document.body.classList.add('sun');
-    document.getElementById('sunBtn').innerHTML = '&#9790; Night';
-  }
-} catch(e) {}
+// INIT - load state then start app
+loadState(function(restored) {
+  initApp(restored);
+});
 </script>
 
 <script>
