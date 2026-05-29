@@ -93,6 +93,13 @@ body.sun .sun-toggle { background:#f59e0b; color:#1a3a5c; }
 .header-sub { font-size:12px; color:var(--muted); margin-top:4px; font-family:var(--mono); }
 
 .date-section { margin:16px; background:var(--card-bg); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+.date-label-row { display:flex; align-items:center; justify-content:space-between; }
+.date-label-txt { font-family:var(--mono); font-size:14px; font-weight:600; color:var(--text); }
+.yesterday-btn { font-family:var(--font); font-size:12px; font-weight:600; padding:7px 14px; border-radius:8px; border:1px solid var(--border); background:var(--steel); color:var(--text2); cursor:pointer; touch-action:manipulation; }
+.yesterday-btn:active { opacity:0.8; }
+.yesterday-btn.active { background:var(--accent); color:var(--navy); border-color:var(--accent); }
+body.sun .yesterday-btn { background:#e8f0f8; color:#1a3a5c; border-color:#1a3a5c; }
+body.sun .yesterday-btn.active { background:var(--accent); color:#1a3a5c; }
 .date-inner { padding:14px 16px; }
 .date-stepper { display:flex; align-items:stretch; background:var(--steel); border:1px solid var(--border); border-radius:10px; overflow:hidden; height:52px; }
 .step-btn { width:56px; background:transparent; border:none; color:var(--accent); font-size:30px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; touch-action:manipulation; }
@@ -205,12 +212,9 @@ textarea.general-notes-input::placeholder { color:var(--steel); }
 
   <div class="date-section">
     <div class="date-inner">
-      <div class="date-stepper">
-        <button class="step-btn" onclick="stepDate(-1)" title="Previous day / Browse history">&#8592;</button>
-        <div class="step-sep"></div>
-        <div class="date-display" id="dateDisplay">--</div>
-        <div class="step-sep"></div>
-        <button class="step-btn" onclick="stepDate(1)" title="Next day / Advance date">&#8594;</button>
+      <div class="date-label-row">
+        <span class="date-label-txt" id="dateDisplay">Today: --</span>
+        <button class="yesterday-btn" id="yesterdayBtn" onclick="toggleYesterday()">View Yesterday</button>
       </div>
     </div>
     <div class="section-divider"></div>
@@ -219,8 +223,6 @@ textarea.general-notes-input::placeholder { color:var(--steel); }
     </div>
   </div>
 
-  <div style="height:10px"></div>
-  <div class="mode-bar" id="modebar">Viewing saved entry -- tap + to return to today</div>
   <div style="height:12px"></div>
 
   <div class="section-label">
@@ -320,47 +322,32 @@ function initDates() {
 
 function updateDateDisplay() {
   var el = document.getElementById('dateDisplay');
-  var mb = document.getElementById('modebar');
+  var btn = document.getElementById('yesterdayBtn');
   if (viewIndex === -1) {
-    el.innerText = fmtNice(currDate);
-    mb.classList.remove('visible');
+    // Today view
+    el.innerText = 'Today: ' + fmtNice(currDate);
+    if (btn) { btn.innerText = 'View Yesterday'; btn.classList.remove('active'); }
   } else {
-    el.innerText = dayLog[viewIndex].date;
-    mb.classList.add('visible');
+    // Yesterday view
+    el.innerText = 'Yesterday: ' + dayLog[0].date;
+    if (btn) { btn.innerText = 'Back to Today'; btn.classList.add('active'); }
   }
 }
 
 // DATE STEPPER
-function hasAnyEndData() {
-  return TASKS.some(function(t){ return t.stEnd || t.wjEnd; });
-}
-
-function stepDate(delta) {
+function toggleYesterday() {
   if (viewIndex === -1) {
-    if (delta === 1) {
-      // Only advance if end data exists - otherwise do nothing
-      if (hasAnyEndData()) {
-        saveAndAdvance();
-      }
-      // No ends entered - ignore tap, stay on today editable
-    } else {
-      // Arrow left - show previous day if it exists
-      if (dayLog.length > 0) {
-        viewIndex = 0;
-        updateDateDisplay();
-        renderCards(dayLog[0].tasks, true);
-      }
-      // No previous day yet - do nothing
+    // Switch to yesterday view if available
+    if (dayLog.length > 0) {
+      viewIndex = 0;
+      updateDateDisplay();
+      renderCards(dayLog[0].tasks, true);
     }
   } else {
-    // In history view (previous day)
-    if (delta === 1) {
-      // Arrow right - return to today editable
-      viewIndex = -1;
-      updateDateDisplay();
-      renderCards(TASKS, false);
-    }
-    // Arrow left from history - do nothing (only 1 history entry)
+    // Return to today
+    viewIndex = -1;
+    updateDateDisplay();
+    renderCards(TASKS, false);
   }
 }
 
@@ -423,6 +410,8 @@ function saveAndAdvance() {
   viewIndex = -1;
   updateDateDisplay();
   renderCards(TASKS, false);
+  // Record advance date so auto-advance never duplicates it
+  try { localStorage.setItem('parsons_lastAdvanced', fmtISO(currDate)); } catch(e) {}
   saveState();
 
   if (moved.length) {
@@ -1027,9 +1016,16 @@ if (!restored) {
 } else {
   updateDateDisplay();
   document.getElementById('generalNotesEl').value = generalNotes;
-  // Auto-advance to today if app was last used on a previous day
+
+  // Auto-advance only if:
+  // 1. The saved date is from a PREVIOUS day (not today)
+  // 2. We have NOT already advanced today (checked via lastAdvancedDate flag)
   var today = localMid(new Date());
-  if (currDate < today) {
+  var todayISO = fmtISO(today);
+  var lastAdvanced = '';
+  try { lastAdvanced = localStorage.getItem('parsons_lastAdvanced') || ''; } catch(e) {}
+
+  if (currDate < today && lastAdvanced !== todayISO) {
     // Save current state as previous day snapshot
     var snapshot = {
       prevDate: fmtNice(prevDate),
@@ -1058,6 +1054,8 @@ if (!restored) {
     prevDate = localMid(currDate);
     currDate = today;
     viewIndex = -1;
+    // Record that we advanced today so it never runs again today
+    try { localStorage.setItem('parsons_lastAdvanced', todayISO); } catch(e) {}
     saveState();
   }
 }
