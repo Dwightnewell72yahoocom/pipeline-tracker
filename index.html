@@ -1009,6 +1009,20 @@ function toggleSun() {
 }
 
 // INIT
+// Force wipe ALL old storage keys on this version upgrade
+try {
+  var wipeVersion = 'parsons_wiped_v19';
+  if (!localStorage.getItem(wipeVersion)) {
+    // First time running v19 - clear everything parsons related
+    var allKeys = [];
+    for (var ki = 0; ki < localStorage.length; ki++) {
+      var kk = localStorage.key(ki);
+      if (kk && kk.indexOf('parsons') === 0) allKeys.push(kk);
+    }
+    allKeys.forEach(function(k){ localStorage.removeItem(k); });
+    localStorage.setItem(wipeVersion, '1');
+  }
+} catch(e) {}
 try { cleanOldStorage(); } catch(e) {}
 var restored = loadState();
 if (!restored) {
