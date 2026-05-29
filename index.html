@@ -24,25 +24,18 @@
 }
 body.sun {
   --navy:#f0f4f8; --navy2:#ffffff; --steel:#dbeafe;
-  --accent:#f59e0b; --muted:#444444; --text:#1a3a5c;
+  --accent:#f59e0b; --muted:#444; --text:#1a3a5c;
   --text2:#1a3a5c; --green:#15803d; --card-bg:#ffffff;
   --border:#1a3a5c; background:#f0f4f8;
 }
 body.sun::before { display:none; }
-body.sun .header { background:#ffffff; border-bottom:3px solid #1a3a5c; }
+body.sun .header { background:#fff; border-bottom:3px solid #1a3a5c; }
 body.sun .header::after { display:none; }
 body.sun .header-eyebrow { color:#b45309; }
 body.sun .header h1 { color:#1a3a5c; }
 body.sun .header-sub { color:#444; }
-body.sun .date-stepper { background:#dbeafe; border:2px solid #1a3a5c; }
-body.sun .step-btn { color:#1a3a5c; font-weight:900; }
-body.sun .step-btn:active { background:rgba(26,58,92,0.12); }
-body.sun .step-sep { background:#1a3a5c; width:2px; }
-body.sun .date-display { color:#1a3a5c; font-weight:700; }
-body.sun .date-section { background:#fff; border:2px solid #1a3a5c; }
-body.sun .section-divider { background:#1a3a5c; height:2px; }
+body.sun .top-bar { background:#fff; border:2px solid #1a3a5c; }
 body.sun .btn { background:#1a3a5c; color:#f59e0b; border:none; }
-body.sun .mode-bar { background:#fef3c7; border-color:#f59e0b; color:#92400e; }
 body.sun .task-card { background:#fff; border:2px solid #1a3a5c; }
 body.sun .task-header { background:#1a3a5c; }
 body.sun .task-name-static { color:#fff; }
@@ -59,11 +52,9 @@ body.sun input.ci { background:#f0f6ff; border:2px solid #1a3a5c; color:#1a3a5c;
 body.sun input.ci.start { background:#e8f0f8; color:#1a3a5c; }
 body.sun input.ci:focus { background:#fff; border-color:#f59e0b; }
 body.sun .ci-ro { color:#1a3a5c; border:2px solid #1a3a5c; }
-body.sun .ci-ro.start { color:#444; }
 body.sun .ci-ro.empty { color:#94a3b8; border-color:#cbd5e1; }
 body.sun textarea.notes-input { color:#1a3a5c; }
 body.sun textarea.notes-input::placeholder { color:#94a3b8; }
-body.sun .notes-ro { color:#1a3a5c; }
 body.sun .insert-line { background:#1a3a5c; }
 body.sun .insert-btn { color:#1a3a5c; border-color:rgba(26,58,92,0.4); background:rgba(26,58,92,0.06); }
 body.sun .general-notes-card { background:#fff; border:2px solid #1a3a5c; }
@@ -71,48 +62,29 @@ body.sun .general-notes-header { background:#1a3a5c; }
 body.sun textarea.general-notes-input { color:#1a3a5c; }
 body.sun .add-task-btn { color:#1a3a5c; border-color:rgba(26,58,92,0.4); background:rgba(26,58,92,0.06); }
 body.sun .section-label { color:#1a3a5c; }
-body.sun .camera-btn { color:#1a3a5c; border-color:rgba(26,58,92,0.4); background:rgba(26,58,92,0.06); }
+body.sun .camera-btn { color:#1a3a5c; border-color:rgba(26,58,92,0.3); background:rgba(26,58,92,0.06); }
 
 * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
 body { font-family:var(--font); background:var(--navy); color:var(--text); min-height:100vh; overflow-x:hidden; }
 body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(245,158,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(245,158,11,0.03) 1px,transparent 1px); background-size:40px 40px; pointer-events:none; z-index:0; }
-.app { position:relative; z-index:1; max-width:480px; margin:0 auto; padding:0 0 80px; }
+.app { position:relative; z-index:1; max-width:480px; margin:0 auto; padding:0 0 60px; }
 
-.sun-toggle { position:fixed; top:12px; right:12px; z-index:1000; background:#1a3a5c; border:none; border-radius:99px; padding:7px 14px; font-size:13px; font-weight:700; color:#f59e0b; cursor:pointer; font-family:var(--font); touch-action:manipulation; box-shadow:0 2px 8px rgba(0,0,0,0.3); display:flex; align-items:center; gap:6px; }
+.sun-toggle { position:fixed; top:12px; right:12px; z-index:1000; background:#1a3a5c; border:none; border-radius:99px; padding:7px 14px; font-size:13px; font-weight:700; color:#f59e0b; cursor:pointer; font-family:var(--font); touch-action:manipulation; box-shadow:0 2px 8px rgba(0,0,0,0.3); }
 body.sun .sun-toggle { background:#f59e0b; color:#1a3a5c; }
 
-.save-bar { position:fixed; bottom:0; left:0; right:0; z-index:999; display:flex; align-items:center; justify-content:center; padding:8px 16px; font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:0.05em; transition:background 0.3s; }
-.save-bar.saved { background:rgba(21,128,61,0.92); color:#bbf7d0; }
-.save-bar.saving { background:rgba(180,83,9,0.92); color:#fef3c7; }
-.save-bar.error { background:rgba(185,28,28,0.92); color:#fee2e2; }
-
-.header { background:linear-gradient(160deg,var(--navy2) 0%,var(--steel) 100%); padding:56px 20px 24px; border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
+.header { background:linear-gradient(160deg,var(--navy2) 0%,var(--steel) 100%); padding:56px 20px 20px; border-bottom:1px solid var(--border); position:relative; overflow:hidden; }
 .header::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,var(--accent),transparent); }
 .header-eyebrow { font-size:10px; font-weight:600; letter-spacing:0.15em; color:var(--accent); text-transform:uppercase; margin-bottom:6px; font-family:var(--mono); }
-.header h1 { font-size:22px; font-weight:700; color:var(--text); line-height:1.2; }
+.header h1 { font-size:22px; font-weight:700; color:var(--text); }
 .header-sub { font-size:12px; color:var(--muted); margin-top:4px; font-family:var(--mono); }
 
-.date-section { margin:16px; background:var(--card-bg); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
-.date-label-row { display:flex; align-items:center; justify-content:space-between; }
-.date-label-txt { font-family:var(--mono); font-size:14px; font-weight:600; color:var(--text); }
-.yesterday-btn { font-family:var(--font); font-size:12px; font-weight:600; padding:7px 14px; border-radius:8px; border:1px solid var(--border); background:var(--steel); color:var(--text2); cursor:pointer; touch-action:manipulation; }
-.yesterday-btn:active { opacity:0.8; }
-.yesterday-btn.active { background:var(--accent); color:var(--navy); border-color:var(--accent); }
-body.sun .yesterday-btn { background:#e8f0f8; color:#1a3a5c; border-color:#1a3a5c; }
-body.sun .yesterday-btn.active { background:var(--accent); color:#1a3a5c; }
-.date-inner { padding:14px 16px; }
-.date-stepper { display:flex; align-items:stretch; background:var(--steel); border:1px solid var(--border); border-radius:10px; overflow:hidden; height:52px; }
-.step-btn { width:56px; background:transparent; border:none; color:var(--accent); font-size:30px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; touch-action:manipulation; }
-.step-btn:active { background:rgba(245,158,11,0.22); }
-.step-sep { width:1px; background:var(--border); flex-shrink:0; }
-.date-display { flex:1; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:13px; color:var(--text); user-select:none; text-align:center; }
+.top-bar { margin:16px; background:var(--card-bg); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+.top-bar-inner { padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.today-label { font-family:var(--mono); font-size:13px; font-weight:600; color:var(--text); }
 .section-divider { height:1px; background:var(--border); }
 .btn-row { padding:14px 16px; background:rgba(0,0,0,0.15); }
 .btn { width:100%; font-family:var(--font); font-size:14px; font-weight:600; padding:14px; border-radius:10px; border:1px solid rgba(110,231,183,0.2); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; touch-action:manipulation; background:linear-gradient(135deg,#065f46,#047857); color:#6ee7b7; }
 .btn:active { opacity:0.85; transform:scale(0.98); }
-
-.mode-bar { display:none; margin:0 16px; padding:8px 14px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2); border-radius:10px; font-family:var(--mono); font-size:11px; color:var(--accent); text-align:center; }
-.mode-bar.visible { display:block; }
 
 .section-label { font-size:10px; font-weight:600; letter-spacing:0.15em; color:var(--accent); text-transform:uppercase; font-family:var(--mono); padding:0 16px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; }
 .add-task-btn { font-family:var(--mono); font-size:11px; padding:4px 12px; border-radius:6px; border:1px solid rgba(245,158,11,0.3); background:rgba(245,158,11,0.08); color:var(--accent); cursor:pointer; touch-action:manipulation; text-transform:none; letter-spacing:0; }
@@ -120,7 +92,7 @@ body.sun .yesterday-btn.active { background:var(--accent); color:#1a3a5c; }
 .cards { padding:0 16px; display:flex; flex-direction:column; gap:10px; }
 .task-card { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
 .task-card.flash { animation:cardFlash 0.8s ease; }
-@keyframes cardFlash { 0% { border-color:var(--green); box-shadow:0 0 0 1px var(--green); } 100% { border-color:var(--border); box-shadow:none; } }
+@keyframes cardFlash { 0%{border-color:var(--green);box-shadow:0 0 0 1px var(--green);}100%{border-color:var(--border);box-shadow:none;} }
 .task-header { padding:10px 14px; background:linear-gradient(90deg,var(--steel),var(--navy2)); display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border); }
 .task-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; }
 .task-name-static { font-size:13px; font-weight:600; color:var(--text); }
@@ -145,14 +117,9 @@ input.task-name-input:focus { border-bottom-color:var(--accent); }
 input.ci { width:100%; font-size:15px; font-family:var(--mono); border:1px solid var(--border); border-radius:7px; padding:9px 10px; background:var(--navy); color:var(--text); -webkit-appearance:none; }
 input.ci.start { background:rgba(0,0,0,0.3); color:var(--text2); }
 input.ci:focus { outline:none; border-color:var(--accent); color:var(--text); background:var(--navy2); }
-.ci-ro { font-size:15px; font-family:var(--mono); border:1px solid var(--border); border-radius:7px; padding:9px 10px; color:var(--text2); min-height:38px; display:block; }
-.ci-ro.start { color:var(--muted); }
-.ci-ro.empty { color:var(--steel); }
 
 textarea.notes-input { width:100%; min-height:90px; font-size:13px; font-family:var(--font); padding:12px 14px; background:transparent; border:none; color:var(--text); resize:none; outline:none; line-height:1.5; }
 textarea.notes-input::placeholder { color:var(--steel); }
-.notes-ro { font-size:13px; padding:12px 14px; color:var(--text2); line-height:1.5; min-height:50px; white-space:pre-wrap; }
-.notes-ro.empty { color:var(--steel); font-style:italic; }
 
 .photo-pane-inner { padding:12px 14px; }
 .photo-thumb { width:100%; max-height:200px; object-fit:cover; border-radius:8px; border:1px solid var(--border); display:block; }
@@ -161,7 +128,6 @@ textarea.notes-input::placeholder { color:var(--steel); }
 .photo-empty-icon { font-size:34px; opacity:0.35; }
 .photo-empty-txt { font-size:11px; color:var(--muted); font-family:var(--mono); }
 .camera-btn { font-family:var(--font); font-size:13px; font-weight:600; padding:10px 20px; border-radius:10px; border:1px solid rgba(245,158,11,0.3); background:rgba(245,158,11,0.08); color:var(--accent); cursor:pointer; touch-action:manipulation; }
-.camera-btn:active { background:rgba(245,158,11,0.2); }
 .thumb-badge { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--green); margin-left:4px; vertical-align:middle; }
 
 .insert-row { display:flex; align-items:center; gap:8px; padding:4px 0; }
@@ -170,31 +136,34 @@ textarea.notes-input::placeholder { color:var(--steel); }
 
 .general-notes-card { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin:0 16px; }
 .general-notes-header { padding:10px 14px; background:linear-gradient(90deg,var(--steel),var(--navy2)); display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border); }
-textarea.general-notes-input { width:100%; min-height:120px; font-size:13px; font-family:var(--font); padding:14px; background:transparent; border:none; color:var(--text); resize:none; outline:none; line-height:1.6; }
+textarea.general-notes-input { width:100%; min-height:100px; font-size:13px; font-family:var(--font); padding:14px; background:transparent; border:none; color:var(--text); resize:none; outline:none; line-height:1.6; }
 textarea.general-notes-input::placeholder { color:var(--steel); }
+
+.save-bar { position:fixed; bottom:0; left:0; right:0; z-index:999; display:flex; align-items:center; justify-content:center; padding:8px 16px; font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:0.05em; }
+.save-bar.saved { background:rgba(21,128,61,0.92); color:#bbf7d0; }
+.save-bar.saving { background:rgba(180,83,9,0.92); color:#fef3c7; }
+.save-bar.error { background:rgba(185,28,28,0.92); color:#fee2e2; }
 
 .report-overlay { display:none; position:fixed; inset:0; background:#fff; z-index:9999; flex-direction:column; }
 .report-overlay.open { display:flex; }
 .report-toolbar { display:flex; align-items:center; gap:10px; padding:14px 16px; background:#1a3a5c; flex-shrink:0; }
 .report-toolbar-title { color:#f59e0b; font-size:13px; font-weight:600; flex:1; font-family:monospace; }
-.report-close-btn { background:none; border:1px solid rgba(255,255,255,0.25); color:#fff; font-size:13px; padding:7px 14px; border-radius:8px; cursor:pointer; touch-action:manipulation; }
-.report-save-btn { background:#f59e0b; border:none; color:#1a3a5c; font-size:13px; font-weight:700; padding:7px 16px; border-radius:8px; cursor:pointer; touch-action:manipulation; }
-.report-body { flex:1; overflow-y:auto; padding:24px 20px; color:#111; font-family:Arial,sans-serif; }
-.report-footer-txt { color:#999; font-size:11px; margin-top:20px; padding-top:10px; border-top:1px solid #eee; }
+.report-close-btn { background:none; border:1px solid rgba(255,255,255,0.25); color:#fff; font-size:13px; padding:7px 14px; border-radius:8px; cursor:pointer; }
+.report-save-btn { background:#f59e0b; border:none; color:#1a3a5c; font-size:13px; font-weight:700; padding:7px 16px; border-radius:8px; cursor:pointer; }
+.report-body { flex:1; overflow-y:auto; padding:24px 20px; font-family:Arial,sans-serif; }
 @media print { .report-toolbar { display:none !important; } }
 
-/* PDF Modal */
 #pdfModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:99999; align-items:center; justify-content:center; }
 #pdfModal.open { display:flex; }
-.pdf-modal-box { background:#0f2040; border:1px solid rgba(255,255,255,0.12); border-radius:18px; padding:28px 24px; max-width:320px; width:90%; margin:auto; }
-.pdf-modal-title { font-family:var(--font); font-size:16px; font-weight:700; color:#e8f0f8; margin-bottom:4px; }
-.pdf-modal-sub { font-family:var(--mono); font-size:11px; color:#7a9ab8; margin-bottom:16px; }
-.pdf-modal-divider { height:1px; background:rgba(255,255,255,0.08); margin:14px 0; }
-.pdf-modal-section-label { font-family:var(--mono); font-size:10px; color:#7a9ab8; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.1em; }
-.pdf-btn { width:100%; margin-bottom:10px; padding:14px; border-radius:10px; border:1px solid rgba(245,158,11,0.3); background:rgba(245,158,11,0.08); color:#f59e0b; font-family:var(--font); font-size:13px; font-weight:600; cursor:pointer; text-align:left; touch-action:manipulation; }
-.pdf-btn-plain { width:100%; margin-bottom:10px; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.04); color:#e8f0f8; font-family:var(--font); font-size:12px; font-weight:600; cursor:pointer; text-align:left; touch-action:manipulation; }
+.pdf-box { background:#0f2040; border:1px solid rgba(255,255,255,0.12); border-radius:18px; padding:24px; max-width:320px; width:90%; }
+.pdf-title { font-size:16px; font-weight:700; color:#e8f0f8; margin-bottom:4px; }
+.pdf-sub { font-size:11px; color:#7a9ab8; font-family:var(--mono); margin-bottom:16px; }
+.pdf-btn { width:100%; margin-bottom:10px; padding:14px; border-radius:10px; border:1px solid rgba(245,158,11,0.3); background:rgba(245,158,11,0.08); color:#f59e0b; font-family:var(--font); font-size:13px; font-weight:600; cursor:pointer; text-align:left; }
+.pdf-btn-plain { width:100%; margin-bottom:10px; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.04); color:#e8f0f8; font-family:var(--font); font-size:12px; font-weight:600; cursor:pointer; text-align:left; }
 .pdf-btn-sub { font-size:11px; font-weight:400; color:#7a9ab8; display:block; margin-top:2px; }
-.pdf-cancel-btn { width:100%; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:transparent; color:#7a9ab8; font-family:var(--font); font-size:13px; cursor:pointer; touch-action:manipulation; }
+.pdf-divider { height:1px; background:rgba(255,255,255,0.08); margin:12px 0; }
+.pdf-section-lbl { font-family:var(--mono); font-size:10px; color:#7a9ab8; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.1em; }
+.pdf-cancel { width:100%; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:transparent; color:#7a9ab8; font-family:var(--font); font-size:13px; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -205,18 +174,12 @@ textarea.general-notes-input::placeholder { color:var(--steel); }
   <div class="header">
     <div class="header-eyebrow">Parsons / Field Report</div>
     <h1>Pipeline Progress</h1>
-    <div class="header-sub">Transmission Line Tracker</div>
+    <div class="header-sub" id="todayLabel">Loading...</div>
   </div>
 
   <div style="height:16px"></div>
 
-  <div class="date-section">
-    <div class="date-inner">
-      <div class="date-label-row">
-        <span class="date-label-txt" id="dateDisplay">Today: --</span>
-        <button class="yesterday-btn" id="yesterdayBtn" onclick="toggleYesterday()">View Yesterday</button>
-      </div>
-    </div>
+  <div class="top-bar">
     <div class="section-divider"></div>
     <div class="btn-row">
       <button class="btn" onclick="showReport()">&#8595; View &amp; Print Report</button>
@@ -224,7 +187,6 @@ textarea.general-notes-input::placeholder { color:var(--steel); }
   </div>
 
   <div style="height:12px"></div>
-
   <div class="section-label">
     Tasks
     <button class="add-task-btn" onclick="addTask(-1)">+ Add task</button>
@@ -245,7 +207,6 @@ textarea.general-notes-input::placeholder { color:var(--steel); }
 
 <div class="save-bar saved" id="saveBar">&#10003; Saved</div>
 
-<!-- Report overlay -->
 <div class="report-overlay" id="reportOverlay">
   <div class="report-toolbar">
     <span class="report-toolbar-title">Pipeline Report</span>
@@ -255,386 +216,234 @@ textarea.general-notes-input::placeholder { color:var(--steel); }
   <div class="report-body" id="reportBody"></div>
 </div>
 
-<!-- PDF Options Modal -->
 <div id="pdfModal">
-  <div class="pdf-modal-box">
-    <div class="pdf-modal-title">Save Report as PDF</div>
-    <div class="pdf-modal-sub">Choose what to include</div>
-    <button class="pdf-btn" onclick="generatePDF('full')">
-      &#128196; Full Report
-      <span class="pdf-btn-sub">Data + Notes + Photos in one PDF</span>
-    </button>
-    <button class="pdf-btn-plain" onclick="generatePDF('data')">
-      &#128203; Data &amp; Notes Only
-      <span class="pdf-btn-sub">Progress table and notes, no photos</span>
-    </button>
-    <button class="pdf-btn-plain" onclick="generatePDF('photos')">
-      &#128247; Photos Only
-      <span class="pdf-btn-sub">Site photos with task labels</span>
-    </button>
-    <div class="pdf-modal-divider"></div>
-    <div class="pdf-modal-section-label">Copy to clipboard (paste into Word)</div>
-    <button class="pdf-btn-plain" onclick="copyToClipboard('full')">
-      &#128203; Copy Full Report
-      <span class="pdf-btn-sub">Full table + all notes - paste into Word</span>
-    </button>
-    <button class="pdf-btn-plain" onclick="copyToClipboard('data')">
-      &#128196; Copy Data &amp; Notes Only
-      <span class="pdf-btn-sub">Table + notes + general notes - paste into Word</span>
-    </button>
-    <div class="pdf-modal-divider"></div>
-    <button class="pdf-cancel-btn" onclick="closePdfModal()">Cancel</button>
+  <div class="pdf-box">
+    <div class="pdf-title">Save Report as PDF</div>
+    <div class="pdf-sub">Choose what to include</div>
+    <button class="pdf-btn" onclick="generatePDF('full')">&#128196; Full Report<span class="pdf-btn-sub">Data + Notes + Photos</span></button>
+    <button class="pdf-btn-plain" onclick="generatePDF('data')">&#128203; Data &amp; Notes Only<span class="pdf-btn-sub">No photos</span></button>
+    <button class="pdf-btn-plain" onclick="generatePDF('photos')">&#128247; Photos Only<span class="pdf-btn-sub">Site photos with labels</span></button>
+    <div class="pdf-divider"></div>
+    <div class="pdf-section-lbl">Copy to clipboard (paste into Word)</div>
+    <button class="pdf-btn-plain" onclick="copyToClipboard()">&#128203; Copy Report<span class="pdf-btn-sub">Table + notes - paste into Word</span></button>
+    <div class="pdf-divider"></div>
+    <button class="pdf-cancel" onclick="closePdfModal()">Cancel</button>
   </div>
 </div>
 
 <script>
+// ---- DATA ----
 var TASK_NAMES = ['Trenching','Pipelay','Welded','Tested','Sleeved','Diapered','Slurry'];
-
-function blankTask(name) {
-  return {name:name, stStart:'', stEnd:'', wjStart:'', wjEnd:'', notes:'', photo:''};
-}
-function blankTasks() {
-  return TASK_NAMES.map(function(n){ return blankTask(n); });
-}
-
-var TASKS = blankTasks();
-var dayLog = [];
-var viewIndex = -1;
+function blankTask(n){ return {name:n,stStart:'',stEnd:'',wjStart:'',wjEnd:'',notes:'',photo:''}; }
+var TASKS = TASK_NAMES.map(blankTask);
 var generalNotes = '';
-var currDate, prevDate;
+var prevDayLabel = ''; // label for yesterday shown in report
+var todayLabel = '';   // label for today shown in report
+var saveTimer = null;
+var appReady = false;
 
-// DATE HELPERS
-function localMid(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
-function addDays(d, n) { var r = localMid(d); r.setDate(r.getDate() + n); return r; }
-function pad(n) { return String(n).padStart(2, '0'); }
-function fmtISO(d) { return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
-function fmtNice(d) {
-  var D = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return D[d.getDay()] + ' ' + d.getDate() + ' ' + M[d.getMonth()] + ' ' + d.getFullYear();
+// ---- DATE HELPERS ----
+function localMid(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function fmtISO(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function fmtNice(d){
+  var D=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return D[d.getDay()]+' '+d.getDate()+' '+M[d.getMonth()]+' '+d.getFullYear();
 }
 
-function initDates() {
-  currDate = localMid(new Date());
-  prevDate = addDays(currDate, -1);
-  updateDateDisplay();
+function updateTodayLabel(){
+  var today = localMid(new Date());
+  todayLabel = fmtNice(today);
+  document.getElementById('todayLabel').innerText = 'Today: '+todayLabel;
 }
 
-function updateDateDisplay() {
-  var el = document.getElementById('dateDisplay');
-  var btn = document.getElementById('yesterdayBtn');
-  if (viewIndex === -1) {
-    // Today view
-    el.innerText = 'Today: ' + fmtNice(currDate);
-    if (btn) { btn.innerText = 'View Yesterday'; btn.classList.remove('active'); }
-  } else {
-    // Yesterday view
-    el.innerText = 'Yesterday: ' + dayLog[0].date;
-    if (btn) { btn.innerText = 'Back to Today'; btn.classList.add('active'); }
-  }
+// ---- SAVE STATUS ----
+function setSaveStatus(status,msg){
+  var bar=document.getElementById('saveBar');
+  if(!bar) return;
+  bar.className='save-bar '+status;
+  bar.innerHTML=msg;
+}
+function debounceSave(){
+  setSaveStatus('saving','&#8635; Saving...');
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveState,300);
 }
 
-// DATE STEPPER
-function toggleYesterday() {
-  if (viewIndex === -1) {
-    // Switch to yesterday view if available
-    if (dayLog.length > 0) {
-      viewIndex = 0;
-      updateDateDisplay();
-      renderCards(dayLog[0].tasks, true);
-    }
-  } else {
-    // Return to today
-    viewIndex = -1;
-    updateDateDisplay();
-    renderCards(TASKS, false);
-  }
-}
+// ---- ESCAPE HTML ----
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// SYNC INPUTS
-function syncLiveInputs() {
-  document.querySelectorAll('input.ci').forEach(function(inp) {
-    if (inp.dataset.i !== undefined) TASKS[+inp.dataset.i][inp.dataset.f] = inp.value;
+// ---- SYNC INPUTS ----
+function syncLiveInputs(){
+  document.querySelectorAll('input.ci').forEach(function(inp){
+    if(inp.dataset.i!==undefined) TASKS[+inp.dataset.i][inp.dataset.f]=inp.value;
   });
-  document.querySelectorAll('input.task-name-input').forEach(function(inp) {
-    if (inp.dataset.i !== undefined) TASKS[+inp.dataset.i].name = inp.value || 'Unnamed';
+  document.querySelectorAll('input.task-name-input').forEach(function(inp){
+    if(inp.dataset.i!==undefined) TASKS[+inp.dataset.i].name=inp.value||'Unnamed';
   });
-  document.querySelectorAll('textarea.notes-input').forEach(function(ta) {
-    if (ta.dataset.i !== undefined) TASKS[+ta.dataset.i].notes = ta.value;
+  document.querySelectorAll('textarea.notes-input').forEach(function(ta){
+    if(ta.dataset.i!==undefined) TASKS[+ta.dataset.i].notes=ta.value;
   });
-  var gn = document.getElementById('generalNotesEl');
-  if (gn) generalNotes = gn.value;
+  var gn=document.getElementById('generalNotesEl');
+  if(gn) generalNotes=gn.value;
 }
 
-// SAVE AND ADVANCE
-function saveAndAdvance() {
-  syncLiveInputs();
-  // Save snapshot of current day
-  var snapshot = {
-    prevDate: fmtNice(prevDate),
-    date: fmtNice(currDate),
-    generalNotes: generalNotes,
-    tasks: TASKS.map(function(t) {
-      return {
-        name: t.name, stStart: t.stStart, stEnd: t.stEnd,
-        wjStart: t.wjStart, wjEnd: t.wjEnd, notes: t.notes, photo: t.photo
-      };
-    })
-  };
-  // Keep only the most recent snapshot (previous day only)
-  dayLog.length = 0;
-  dayLog.push(snapshot);
+// ---- RENDER CARDS ----
+function renderCards(){
+  var wrap=document.getElementById('cards');
+  wrap.innerHTML='';
+  TASKS.forEach(function(t,i){
+    var ins=document.createElement('div');
+    ins.className='insert-row';
+    ins.innerHTML='<div class="insert-line"></div><button class="insert-btn" onclick="addTask('+i+')">+ insert here</button><div class="insert-line"></div>';
+    wrap.appendChild(ins);
 
-  // Shift end values to start for next day
-  var moved = [];
-  TASKS.forEach(function(t, i) {
-    var hasEnd = t.stEnd || t.wjEnd;
-    if (hasEnd) {
-      moved.push(i);
-      t.stStart = t.stEnd;
-      t.stEnd = '';
-      t.wjStart = t.wjEnd;
-      t.wjEnd = '';
-    } else {
-      // Keep existing starts intact, just clear ends
-      t.stEnd = '';
-      t.wjEnd = '';
-    }
-    // Clear photo and notes for new day
-    t.photo = '';
-    t.notes = '';
-  });
+    var div=document.createElement('div');
+    div.className='task-card';
+    var badge=t.photo?'<span class="thumb-badge"></span>':'';
+    var ph2=t.photo
+      ?'<div class="photo-pane-inner"><img class="photo-thumb" src="'+t.photo+'" alt="'+esc(t.name)+'"><button class="photo-retake-btn" onclick="triggerCamera('+i+')">Retake Photo</button></div>'
+      :'<div class="photo-pane-inner"><div class="photo-empty"><div class="photo-empty-icon">&#128247;</div><div class="photo-empty-txt">No photo yet</div><button class="camera-btn" onclick="triggerCamera('+i+')">&#128247; Take Photo</button></div></div>';
 
-  prevDate = localMid(currDate);
-  currDate = addDays(currDate, 1);
-  viewIndex = -1;
-  updateDateDisplay();
-  renderCards(TASKS, false);
-  // Record advance date so auto-advance never duplicates it
-  try { localStorage.setItem('parsons_lastAdvanced', fmtISO(currDate)); } catch(e) {}
-  saveState();
-
-  if (moved.length) {
-    document.querySelectorAll('.task-card').forEach(function(el, i) {
-      if (moved.indexOf(i) !== -1) {
-        el.classList.add('flash');
-        setTimeout(function(){ el.classList.remove('flash'); }, 900);
-      }
-    });
-  }
-  saveState();
-}
-
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// RENDER CARDS
-function renderCards(tasks, readonly) {
-  var wrap = document.getElementById('cards');
-  wrap.innerHTML = '';
-
-  tasks.forEach(function(t, i) {
-    if (!readonly) {
-      var ins = document.createElement('div');
-      ins.className = 'insert-row';
-      ins.innerHTML = '<div class="insert-line"></div><button class="insert-btn" onclick="addTask('+i+')">+ insert here</button><div class="insert-line"></div>';
-      wrap.appendChild(ins);
-    }
-
-    var div = document.createElement('div');
-    div.className = 'task-card';
-    var badge = t.photo ? '<span class="thumb-badge"></span>' : '';
-
-    if (readonly) {
-      var ph = t.photo
-        ? '<div class="photo-pane-inner"><img class="photo-thumb" src="'+t.photo+'" alt="'+esc(t.name)+'"></div>'
-        : '<div class="photo-pane-inner"><div class="photo-empty"><div class="photo-empty-icon">&#128247;</div><div class="photo-empty-txt">No photo</div></div></div>';
-      div.innerHTML =
-        '<div class="task-header"><div class="task-dot"></div><span class="task-name-static">'+esc(t.name)+'</span></div>'+
-        '<div class="card-tabs">'+
-          '<button class="card-tab active" onclick="switchTab(this,\'data\')">Data</button>'+
-          '<button class="card-tab" onclick="switchTab(this,\'notes\')">Notes</button>'+
-          '<button class="card-tab" onclick="switchTab(this,\'photo\')">Photo'+badge+'</button>'+
-        '</div>'+
-        '<div class="card-pane active" data-pane="data"><div class="fields">'+
-          '<div class="field-group"><div class="field-group-title">Station</div><div class="field-pair">'+
-            '<div class="field-item"><div class="field-label">Start</div><div class="ci-ro start'+(t.stStart?'':' empty')+'">'+esc(t.stStart||'--')+'</div></div>'+
-            '<div class="field-item"><div class="field-label">End</div><div class="ci-ro'+(t.stEnd?'':' empty')+'">'+esc(t.stEnd||'--')+'</div></div>'+
-          '</div></div>'+
-          '<div class="field-group"><div class="field-group-title">Pipe Count</div><div class="field-pair">'+
-            '<div class="field-item"><div class="field-label">Start</div><div class="ci-ro start'+(t.wjStart?'':' empty')+'">'+esc(t.wjStart||'--')+'</div></div>'+
-            '<div class="field-item"><div class="field-label">End</div><div class="ci-ro'+(t.wjEnd?'':' empty')+'">'+esc(t.wjEnd||'--')+'</div></div>'+
-          '</div></div>'+
+    div.innerHTML=
+      '<div class="task-header"><div class="task-dot"></div><input class="task-name-input" data-i="'+i+'" value="'+esc(t.name)+'" placeholder="Task name"><button class="del-btn" onclick="deleteTask('+i+')">&#x2715;</button></div>'+
+      '<div class="card-tabs">'+
+        '<button class="card-tab active" onclick="switchTab(this,\'data\')">Data</button>'+
+        '<button class="card-tab" onclick="switchTab(this,\'notes\')">Notes</button>'+
+        '<button class="card-tab" onclick="switchTab(this,\'photo\')">Photo'+badge+'</button>'+
+      '</div>'+
+      '<div class="card-pane active" data-pane="data"><div class="fields">'+
+        '<div class="field-group"><div class="field-group-title">Station</div><div class="field-pair">'+
+          '<div class="field-item"><div class="field-label">Start</div><input class="ci start" data-i="'+i+'" data-f="stStart" value="'+esc(t.stStart)+'" placeholder="--"></div>'+
+          '<div class="field-item"><div class="field-label">End</div><input class="ci" data-i="'+i+'" data-f="stEnd" value="'+esc(t.stEnd)+'" placeholder="enter"></div>'+
         '</div></div>'+
-        '<div class="card-pane" data-pane="notes"><div class="notes-ro'+(t.notes?'':' empty')+'">'+esc(t.notes||'No notes.')+'</div></div>'+
-        '<div class="card-pane" data-pane="photo">'+ph+'</div>';
-    } else {
-      var ph2 = t.photo
-        ? '<div class="photo-pane-inner"><img class="photo-thumb" src="'+t.photo+'" alt="'+esc(t.name)+'"><button class="photo-retake-btn" onclick="triggerCamera('+i+')">Retake Photo</button></div>'
-        : '<div class="photo-pane-inner"><div class="photo-empty"><div class="photo-empty-icon">&#128247;</div><div class="photo-empty-txt">No photo yet</div><button class="camera-btn" onclick="triggerCamera('+i+')">&#128247; Take Photo</button></div></div>';
-      div.innerHTML =
-        '<div class="task-header">'+
-          '<div class="task-dot"></div>'+
-          '<input class="task-name-input" data-i="'+i+'" value="'+esc(t.name)+'" placeholder="Task name">'+
-          '<button class="del-btn" onclick="deleteTask('+i+')">&#x2715;</button>'+
-        '</div>'+
-        '<div class="card-tabs">'+
-          '<button class="card-tab active" onclick="switchTab(this,\'data\')">Data</button>'+
-          '<button class="card-tab" onclick="switchTab(this,\'notes\')">Notes</button>'+
-          '<button class="card-tab" onclick="switchTab(this,\'photo\')">Photo'+badge+'</button>'+
-        '</div>'+
-        '<div class="card-pane active" data-pane="data"><div class="fields">'+
-          '<div class="field-group"><div class="field-group-title">Station</div><div class="field-pair">'+
-            '<div class="field-item"><div class="field-label">Start</div><input class="ci start" data-i="'+i+'" data-f="stStart" value="'+esc(t.stStart)+'" placeholder="--"></div>'+
-            '<div class="field-item"><div class="field-label">End</div><input class="ci" data-i="'+i+'" data-f="stEnd" value="'+esc(t.stEnd)+'" placeholder="enter"></div>'+
-          '</div></div>'+
-          '<div class="field-group"><div class="field-group-title">Pipe Count</div><div class="field-pair">'+
-            '<div class="field-item"><div class="field-label">Start</div><input class="ci start" data-i="'+i+'" data-f="wjStart" value="'+esc(t.wjStart)+'" placeholder="--"></div>'+
-            '<div class="field-item"><div class="field-label">End</div><input class="ci" data-i="'+i+'" data-f="wjEnd" value="'+esc(t.wjEnd)+'" placeholder="enter"></div>'+
-          '</div></div>'+
+        '<div class="field-group"><div class="field-group-title">Pipe Count</div><div class="field-pair">'+
+          '<div class="field-item"><div class="field-label">Start</div><input class="ci start" data-i="'+i+'" data-f="wjStart" value="'+esc(t.wjStart)+'" placeholder="--"></div>'+
+          '<div class="field-item"><div class="field-label">End</div><input class="ci" data-i="'+i+'" data-f="wjEnd" value="'+esc(t.wjEnd)+'" placeholder="enter"></div>'+
         '</div></div>'+
-        '<div class="card-pane" data-pane="notes"><textarea class="notes-input" data-i="'+i+'" placeholder="Notes for '+esc(t.name)+'...">'+esc(t.notes)+'</textarea></div>'+
-        '<div class="card-pane" data-pane="photo">'+ph2+'</div>'+
-        '<input type="file" accept="image/*" capture="environment" id="cam-'+i+'" style="display:none" onchange="handlePhoto(event,'+i+')">';
-    }
+      '</div></div>'+
+      '<div class="card-pane" data-pane="notes"><textarea class="notes-input" data-i="'+i+'" placeholder="Notes for '+esc(t.name)+'...">'+esc(t.notes)+'</textarea></div>'+
+      '<div class="card-pane" data-pane="photo">'+ph2+'</div>'+
+      '<input type="file" accept="image/*" capture="environment" id="cam-'+i+'" style="display:none" onchange="handlePhoto(event,'+i+')">';
     wrap.appendChild(div);
   });
 
-  if (!readonly) {
-    var ins2 = document.createElement('div');
-    ins2.className = 'insert-row';
-    ins2.style.marginTop = '4px';
-    ins2.innerHTML = '<div class="insert-line"></div><button class="insert-btn" onclick="addTask(-1)">+ add at end</button><div class="insert-line"></div>';
-    wrap.appendChild(ins2);
+  var ins2=document.createElement('div');
+  ins2.className='insert-row';
+  ins2.style.marginTop='4px';
+  ins2.innerHTML='<div class="insert-line"></div><button class="insert-btn" onclick="addTask(-1)">+ add at end</button><div class="insert-line"></div>';
+  wrap.appendChild(ins2);
 
-    wrap.querySelectorAll('input.ci').forEach(function(inp) {
-      inp.addEventListener('input', function(e) {
-        TASKS[+e.target.dataset.i][e.target.dataset.f] = e.target.value;
-        debounceSave();
-      });
+  wrap.querySelectorAll('input.ci').forEach(function(inp){
+    inp.addEventListener('input',function(e){
+      TASKS[+e.target.dataset.i][e.target.dataset.f]=e.target.value;
+      debounceSave();
     });
-    wrap.querySelectorAll('input.task-name-input').forEach(function(inp) {
-      inp.addEventListener('input', function(e) {
-        TASKS[+e.target.dataset.i].name = e.target.value || 'Unnamed';
-        debounceSave();
-      });
+  });
+  wrap.querySelectorAll('input.task-name-input').forEach(function(inp){
+    inp.addEventListener('input',function(e){
+      TASKS[+e.target.dataset.i].name=e.target.value||'Unnamed';
+      debounceSave();
     });
-    wrap.querySelectorAll('textarea.notes-input').forEach(function(ta) {
-      ta.addEventListener('input', function(e) {
-        TASKS[+e.target.dataset.i].notes = e.target.value;
-        debounceSave();
-      });
+  });
+  wrap.querySelectorAll('textarea.notes-input').forEach(function(ta){
+    ta.addEventListener('input',function(e){
+      TASKS[+e.target.dataset.i].notes=e.target.value;
+      debounceSave();
     });
-  }
+  });
 }
 
-// TABS
-function switchTab(btn, pane) {
-  var card = btn.closest('.task-card');
-  card.querySelectorAll('.card-tab').forEach(function(t){ t.classList.remove('active'); });
-  card.querySelectorAll('.card-pane').forEach(function(p){ p.classList.remove('active'); });
+// ---- TABS ----
+function switchTab(btn,pane){
+  var card=btn.closest('.task-card');
+  card.querySelectorAll('.card-tab').forEach(function(t){t.classList.remove('active');});
+  card.querySelectorAll('.card-pane').forEach(function(p){p.classList.remove('active');});
   btn.classList.add('active');
   card.querySelector('[data-pane="'+pane+'"]').classList.add('active');
 }
 
-// TASK MANAGEMENT
-function addTask(beforeIndex) {
+// ---- TASK MANAGEMENT ----
+function addTask(beforeIndex){
   syncLiveInputs();
-  var newTask = blankTask('New task');
-  if (beforeIndex === -1) { TASKS.push(newTask); } else { TASKS.splice(beforeIndex, 0, newTask); }
-  renderCards(TASKS, false);
-  var idx = beforeIndex === -1 ? TASKS.length - 1 : beforeIndex;
-  setTimeout(function() {
-    var inputs = document.querySelectorAll('input.task-name-input');
-    if (inputs[idx]) { inputs[idx].focus(); inputs[idx].select(); }
-  }, 50);
-  saveState();
+  var t=blankTask('New task');
+  if(beforeIndex===-1){TASKS.push(t);}else{TASKS.splice(beforeIndex,0,t);}
+  renderCards();
+  var idx=beforeIndex===-1?TASKS.length-1:beforeIndex;
+  setTimeout(function(){
+    var inputs=document.querySelectorAll('input.task-name-input');
+    if(inputs[idx]){inputs[idx].focus();inputs[idx].select();}
+  },50);
+  debounceSave();
 }
-
-function deleteTask(i) {
-  if (TASKS.length <= 1) { alert('Must have at least one task.'); return; }
-  if (!confirm('Remove "' + TASKS[i].name + '"?')) return;
+function deleteTask(i){
+  if(TASKS.length<=1){alert('Must have at least one task.');return;}
+  if(!confirm('Remove "'+TASKS[i].name+'"?'))return;
   syncLiveInputs();
-  TASKS.splice(i, 1);
-  renderCards(TASKS, false);
-  saveState();
+  TASKS.splice(i,1);
+  renderCards();
+  debounceSave();
 }
 
-// CAMERA
-function triggerCamera(i) {
-  var inp = document.getElementById('cam-' + i);
-  if (inp) inp.click();
-}
-
-function handlePhoto(event, i) {
-  var file = event.target.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var img = new Image();
-    img.onload = function() {
-      var canvas = document.createElement('canvas');
-      var MAX = 600;
-      var scale = Math.min(MAX / img.width, MAX / img.height, 1);
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      TASKS[i].photo = canvas.toDataURL('image/jpeg', 0.6);
-      renderCards(TASKS, false);
-      setTimeout(function() {
-        var cards = document.querySelectorAll('.task-card');
-        if (cards[i]) {
-          var photoTab = cards[i].querySelectorAll('.card-tab')[2];
-          if (photoTab) switchTab(photoTab, 'photo');
-        }
-      }, 50);
+// ---- CAMERA ----
+function triggerCamera(i){var inp=document.getElementById('cam-'+i);if(inp)inp.click();}
+function handlePhoto(event,i){
+  var file=event.target.files[0];
+  if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var canvas=document.createElement('canvas');
+      var MAX=600;
+      var scale=Math.min(MAX/img.width,MAX/img.height,1);
+      canvas.width=Math.round(img.width*scale);
+      canvas.height=Math.round(img.height*scale);
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      TASKS[i].photo=canvas.toDataURL('image/jpeg',0.6);
+      renderCards();
+      setTimeout(function(){
+        var cards=document.querySelectorAll('.task-card');
+        if(cards[i]){var pt=cards[i].querySelectorAll('.card-tab')[2];if(pt)switchTab(pt,'photo');}
+      },50);
       saveState();
     };
-    img.src = e.target.result;
+    img.src=e.target.result;
   };
   reader.readAsDataURL(file);
 }
 
-// REPORT
-function showReport() {
+// ---- REPORT ----
+function showReport(){
   syncLiveInputs();
-  var activeTasks = viewIndex === -1 ? TASKS : dayLog[viewIndex].tasks;
-  var prevStr = viewIndex === -1 ? fmtNice(prevDate) : dayLog[viewIndex].prevDate;
-  var currStr = viewIndex === -1 ? fmtNice(currDate) : dayLog[viewIndex].date;
-  var gn = viewIndex === -1 ? generalNotes : (dayLog[viewIndex].generalNotes || '');
-  var hasNotes = activeTasks.some(function(t){ return t.notes && t.notes.trim(); });
-
-  var rows = activeTasks.map(function(t, i) {
-    var bg = i % 2 === 0 ? '#ffffff' : '#eef4fb';
-    var noteCell = hasNotes ? '<td style="padding:10px 12px;border:1px solid #ccc;font-size:12px;color:#333;vertical-align:top;line-height:1.5;">'+esc(t.notes||'')+'</td>' : '';
+  var hasNotes=TASKS.some(function(t){return t.notes&&t.notes.trim();});
+  var rows=TASKS.map(function(t,i){
+    var bg=i%2===0?'#ffffff':'#eef4fb';
+    var nc=hasNotes?'<td style="padding:10px 12px;border:1px solid #ccc;font-size:12px;color:#333;vertical-align:top;">'+esc(t.notes||'')+'</td>':'';
     return '<tr style="background:'+bg+'">'+
       '<td style="padding:10px 12px;border:1px solid #ccc;font-weight:600;font-size:13px;">'+esc(t.name)+'</td>'+
       '<td style="padding:10px 12px;border:1px solid #ccc;text-align:center;font-family:Courier New,monospace;font-size:13px;">'+esc(t.stStart||'--')+'</td>'+
       '<td style="padding:10px 12px;border:1px solid #ccc;text-align:center;font-family:Courier New,monospace;font-size:13px;">'+esc(t.stEnd||'--')+'</td>'+
       '<td style="padding:10px 12px;border:1px solid #ccc;text-align:center;font-family:Courier New,monospace;font-size:13px;">'+esc(t.wjStart||'--')+'</td>'+
       '<td style="padding:10px 12px;border:1px solid #ccc;text-align:center;font-family:Courier New,monospace;font-size:13px;">'+esc(t.wjEnd||'--')+'</td>'+
-      noteCell+'</tr>';
+      nc+'</tr>';
   }).join('');
-
-  var notesHdr = hasNotes ? '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:center;font-size:13px;vertical-align:middle;" rowspan="2">Notes</td>' : '';
-
-  var photosHtml = activeTasks.filter(function(t){ return t.photo; }).map(function(t) {
-    return '<div style="page-break-inside:avoid;"><div style="font-size:13px;font-weight:700;color:#1a3a5c;margin-bottom:6px;">'+esc(t.name)+'</div>'+
-      '<img src="'+t.photo+'" style="width:100%;border-radius:6px;border:1px solid #ccc;display:block;"></div>';
+  var nh=hasNotes?'<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:center;font-size:13px;" rowspan="2">Notes</td>':'';
+  var photos=TASKS.filter(function(t){return t.photo;}).map(function(t){
+    return '<div style="page-break-inside:avoid;"><div style="font-size:13px;font-weight:700;color:#1a3a5c;margin-bottom:6px;">'+esc(t.name)+'</div><img src="'+t.photo+'" style="width:100%;border-radius:6px;border:1px solid #ccc;display:block;"></div>';
   }).join('');
-
-  document.getElementById('reportBody').innerHTML =
+  document.getElementById('reportBody').innerHTML=
     '<div style="font-family:Arial,sans-serif;max-width:900px;margin:0 auto;">'+
     '<h1 style="color:#1a3a5c;font-size:28px;margin-bottom:4px;">PARSONS</h1>'+
     '<h2 style="color:#333;font-size:18px;font-weight:normal;margin-bottom:8px;">Pipeline Progress Report</h2>'+
-    '<div style="color:#555;font-size:13px;margin-bottom:24px;padding-bottom:12px;border-bottom:3px solid #1a3a5c;">Previous date: <strong>'+prevStr+'</strong> &nbsp;|&nbsp; Current date: <strong>'+currStr+'</strong></div>'+
+    '<div style="color:#555;font-size:13px;margin-bottom:24px;padding-bottom:12px;border-bottom:3px solid #1a3a5c;">Date: <strong>'+todayLabel+'</strong></div>'+
     '<table style="border-collapse:collapse;width:100%;margin-bottom:24px;">'+
       '<tr>'+
         '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:left;font-size:13px;" rowspan="2">Task</td>'+
         '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:center;font-size:13px;" colspan="2">Station</td>'+
         '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:10px 12px;border:1px solid #999;text-align:center;font-size:13px;" colspan="2">Pipe Count</td>'+
-        notesHdr+
+        nh+
       '</tr>'+
       '<tr>'+
         '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:8px 12px;border:1px solid #999;text-align:center;font-size:12px;">Start</td>'+
@@ -643,469 +452,259 @@ function showReport() {
         '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:8px 12px;border:1px solid #999;text-align:center;font-size:12px;">End</td>'+
       '</tr>'+rows+
     '</table>'+
-    (gn.trim() ? '<div style="margin-bottom:24px;"><h3 style="color:#1a3a5c;font-size:15px;margin-bottom:8px;">General Notes</h3><div style="border:1px solid #ccc;border-radius:4px;padding:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#333;">'+esc(gn)+'</div></div>' : '')+
-    (photosHtml ? '<div><h3 style="color:#1a3a5c;font-size:15px;margin-bottom:16px;">Site Photos</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+photosHtml+'</div></div>' : '')+
-    '<div class="report-footer-txt">Generated: '+new Date().toLocaleString()+'</div></div>';
-
+    (generalNotes.trim()?'<div style="margin-bottom:24px;"><h3 style="color:#1a3a5c;font-size:15px;margin-bottom:8px;">General Notes</h3><div style="border:1px solid #ccc;border-radius:4px;padding:14px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#333;">'+esc(generalNotes)+'</div></div>':'')+
+    (photos?'<div><h3 style="color:#1a3a5c;font-size:15px;margin-bottom:16px;">Site Photos</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+photos+'</div></div>':'')+
+    '<div style="color:#999;font-size:11px;margin-top:24px;padding-top:12px;border-top:1px solid #eee;">Generated: '+new Date().toLocaleString()+'</div>'+
+    '</div>';
   document.getElementById('reportOverlay').classList.add('open');
 }
+function closeReport(){document.getElementById('reportOverlay').classList.remove('open');}
+function reportAction(){syncLiveInputs();saveState();document.getElementById('pdfModal').classList.add('open');}
+function closePdfModal(){document.getElementById('pdfModal').classList.remove('open');}
 
-function closeReport() {
-  document.getElementById('reportOverlay').classList.remove('open');
-}
-
-function reportAction() {
-  syncLiveInputs();
-  saveState();
-  document.getElementById('pdfModal').classList.add('open');
-}
-
-function closePdfModal() {
-  document.getElementById('pdfModal').classList.remove('open');
-}
-
-// COPY TO CLIPBOARD
-function copyToClipboard(mode) {
-  closePdfModal();
-  closeReport();
-  syncLiveInputs();
-  var activeTasks = viewIndex === -1 ? TASKS : dayLog[viewIndex].tasks;
-  var prevStr = viewIndex === -1 ? fmtNice(prevDate) : dayLog[viewIndex].prevDate;
-  var currStr = viewIndex === -1 ? fmtNice(currDate) : dayLog[viewIndex].date;
-  var gn = viewIndex === -1 ? generalNotes : (dayLog[viewIndex].generalNotes || '');
-  var hasNotes = activeTasks.some(function(t){ return t.notes && t.notes.trim(); });
-  var notesHdr = hasNotes ? '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;" rowspan="2">Notes</td>' : '';
-
-  var rows = activeTasks.map(function(t, i) {
-    var bg = i % 2 === 0 ? '#ffffff' : '#eef4fb';
-    var noteCell = hasNotes ? '<td style="padding:8px 10px;border:1px solid #ccc;font-size:11pt;color:#333;">'+(t.notes||'')+'</td>' : '';
+// ---- COPY TO CLIPBOARD ----
+function copyToClipboard(){
+  closePdfModal();closeReport();syncLiveInputs();
+  var hasNotes=TASKS.some(function(t){return t.notes&&t.notes.trim();});
+  var nh=hasNotes?'<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;" rowspan="2">Notes</td>':'';
+  var rows=TASKS.map(function(t,i){
+    var bg=i%2===0?'#ffffff':'#eef4fb';
+    var nc=hasNotes?'<td style="padding:8px 10px;border:1px solid #ccc;font-size:11pt;color:#333;">'+(t.notes||'')+'</td>':'';
     return '<tr style="background:'+bg+';">'+
       '<td style="padding:8px 10px;border:1px solid #ccc;font-weight:bold;font-size:11pt;">'+t.name+'</td>'+
-      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">'+( t.stStart||'--')+'</td>'+
-      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">'+( t.stEnd||'--')+'</td>'+
-      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">'+( t.wjStart||'--')+'</td>'+
-      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">'+( t.wjEnd||'--')+'</td>'+
-      noteCell+'</tr>';
+      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">'+(t.stStart||'--')+'</td>'+
+      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">'+(t.stEnd||'--')+'</td>'+
+      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">'+(t.wjStart||'--')+'</td>'+
+      '<td style="padding:8px 10px;border:1px solid #ccc;text-align:center;font-size:11pt;">'+(t.wjEnd||'--')+'</td>'+
+      nc+'</tr>';
   }).join('');
-
-  var gnHtml = gn.trim()
-    ? '<p style="margin-top:16pt;"><strong style="color:#1a3a5c;font-size:13pt;">General Notes</strong></p><p style="font-size:11pt;color:#333;white-space:pre-wrap;">'+gn+'</p>'
-    : '';
-
-  var html =
-    '<div style="font-family:Arial,sans-serif;">'+
-    '<p style="font-size:18pt;font-weight:bold;color:#1a3a5c;margin-bottom:2pt;">PARSONS</p>'+
-    '<p style="font-size:13pt;color:#333;margin-bottom:2pt;">Pipeline Progress Report</p>'+
-    '<p style="font-size:10pt;color:#555;border-bottom:2px solid #1a3a5c;padding-bottom:6pt;margin-bottom:12pt;">Previous date: <strong>'+prevStr+'</strong> | Current date: <strong>'+currStr+'</strong></p>'+
+  var gnHtml=generalNotes.trim()?'<p style="margin-top:16pt;"><strong style="color:#1a3a5c;">General Notes</strong></p><p style="font-size:11pt;color:#333;white-space:pre-wrap;">'+generalNotes+'</p>':'';
+  var html='<div style="font-family:Arial,sans-serif;">'+
+    '<p style="font-size:18pt;font-weight:bold;color:#1a3a5c;">PARSONS</p>'+
+    '<p style="font-size:13pt;color:#333;">Pipeline Progress Report</p>'+
+    '<p style="font-size:10pt;color:#555;border-bottom:2px solid #1a3a5c;padding-bottom:6pt;margin-bottom:12pt;">Date: <strong>'+todayLabel+'</strong></p>'+
     '<table style="border-collapse:collapse;width:100%;">'+
-      '<tr>'+
-        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;font-size:12pt;" rowspan="2">Task</td>'+
-        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;" colspan="2">Station</td>'+
-        '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;" colspan="2">Pipe Count</td>'+
-        notesHdr+
-      '</tr>'+
-      '<tr>'+
-        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">Start</td>'+
-        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">End</td>'+
-        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">Start</td>'+
-        '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">End</td>'+
-      '</tr>'+rows+
-    '</table>'+gnHtml+
-    '<p style="font-size:9pt;color:#999;margin-top:16pt;border-top:1px solid #eee;padding-top:6pt;">Generated: '+new Date().toLocaleString()+'</p>'+
-    '</div>';
-
+    '<tr><td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;font-size:12pt;" rowspan="2">Task</td>'+
+    '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;" colspan="2">Station</td>'+
+    '<td style="background:#1a3a5c;color:#f59e0b;font-weight:bold;padding:8px 10px;border:1px solid #999;text-align:center;font-size:12pt;" colspan="2">Pipe Count</td>'+nh+'</tr>'+
+    '<tr><td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">Start</td>'+
+    '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">End</td>'+
+    '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">Start</td>'+
+    '<td style="background:#d6e4f0;color:#1a3a5c;font-weight:bold;padding:6px 10px;border:1px solid #999;text-align:center;font-size:11pt;">End</td></tr>'+
+    rows+'</table>'+gnHtml+
+    '<p style="font-size:9pt;color:#999;margin-top:16pt;border-top:1px solid #eee;padding-top:6pt;">Generated: '+new Date().toLocaleString()+'</p></div>';
   try {
-    var blob = new Blob([html], {type: 'text/html'});
-    var item = new ClipboardItem({'text/html': blob});
-    navigator.clipboard.write([item]).then(function() {
-      alert('Copied! Open Word and press Ctrl+V (or Cmd+V on Mac) to paste the formatted table.');
-    }).catch(function() {
-      alert('Copy not supported on this device. Please use Save PDF instead.');
-    });
-  } catch(e) {
-    alert('Copy not supported on this device. Please use Save PDF instead.');
-  }
+    navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'})})]).then(function(){
+      alert('Copied! Open Word and press Ctrl+V to paste the formatted table.');
+    }).catch(function(){ alert('Copy not supported. Use Save PDF instead.'); });
+  } catch(e){ alert('Copy not supported. Use Save PDF instead.'); }
 }
 
-// GENERATE PDF
-function generatePDF(mode) {
-  closePdfModal();
-  closeReport();
+// ---- GENERATE PDF ----
+function generatePDF(mode){
+  closePdfModal();closeReport();syncLiveInputs();
+  var hasNotes=TASKS.some(function(t){return t.notes&&t.notes.trim();});
+  var photoTasks=TASKS.filter(function(t){return t.photo;});
+  var doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var pageW=doc.internal.pageSize.getWidth();
+  var pageH=doc.internal.pageSize.getHeight();
+  var margin=15;var y=margin;
+  function hdr(sub){
+    doc.setFillColor(26,58,92);doc.rect(0,0,pageW,28,'F');
+    doc.setTextColor(245,158,11);doc.setFontSize(20);doc.setFont('helvetica','bold');doc.text('PARSONS',margin,12);
+    doc.setFontSize(11);doc.setFont('helvetica','normal');doc.text(sub,margin,20);
+    doc.setTextColor(200,220,240);doc.setFontSize(9);doc.text('Date: '+todayLabel,margin,26);
+  }
+  function ftr(){doc.setTextColor(150,150,150);doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('Generated: '+new Date().toLocaleString(),margin,pageH-8);}
+  function dataSection(){
+    y=36;
+    var head=[['Task','Sta Start','Sta End','PC Start','PC End']];
+    if(hasNotes)head[0].push('Notes');
+    var body=TASKS.map(function(t){var r=[t.name,t.stStart||'--',t.stEnd||'--',t.wjStart||'--',t.wjEnd||'--'];if(hasNotes)r.push(t.notes||'');return r;});
+    doc.autoTable({startY:y,head:head,body:body,margin:{left:margin,right:margin},
+      styles:{fontSize:9,cellPadding:3,valign:'middle'},
+      headStyles:{fillColor:[26,58,92],textColor:[245,158,11],fontStyle:'bold',halign:'center'},
+      columnStyles:{0:{fontStyle:'bold',halign:'left',cellWidth:hasNotes?28:36},1:{halign:'center',cellWidth:22},2:{halign:'center',cellWidth:22},3:{halign:'center',cellWidth:22},4:{halign:'center',cellWidth:22},5:{halign:'left',cellWidth:hasNotes?44:0}},
+      alternateRowStyles:{fillColor:[240,246,252]},
+      didParseCell:function(d){if(d.row.index%2===0&&d.section==='body')d.cell.styles.fillColor=[255,255,255];}
+    });
+    y=doc.lastAutoTable.finalY+8;
+    if(generalNotes.trim()){
+      if(y>240){doc.addPage();ftr();y=margin;}
+      doc.setTextColor(26,58,92);doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('General Notes',margin,y);y+=6;
+      doc.setTextColor(60,60,60);doc.setFontSize(9);doc.setFont('helvetica','normal');
+      var gl=doc.splitTextToSize(generalNotes,pageW-margin*2);doc.text(gl,margin,y);y+=gl.length*5+8;
+    }
+  }
+  function photosSection(){
+    if(!photoTasks.length){if(mode==='photos'){y=36;}doc.setTextColor(150,150,150);doc.setFontSize(10);doc.setFont('helvetica','normal');doc.text('No photos taken.',margin,y+10);return;}
+    if(mode==='photos')y=36;
+    if(y>200){doc.addPage();ftr();y=margin;}
+    doc.setTextColor(26,58,92);doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('Site Photos',margin,y);y+=8;
+    var cols=2,gutter=6,cellW=(pageW-margin*2-gutter)/2,labelH=6,imgH=55,cellH=labelH+imgH+4;
+    photoTasks.forEach(function(t,idx){
+      var col=idx%cols,rowInPage=Math.floor(idx/cols)%2;
+      if(idx>0&&idx%4===0){doc.addPage();ftr();y=margin;doc.setTextColor(26,58,92);doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('Site Photos (continued)',margin,y);y+=8;}
+      var x=margin+col*(cellW+gutter),cellY=y+rowInPage*(cellH+gutter);
+      doc.setTextColor(26,58,92);doc.setFontSize(9);doc.setFont('helvetica','bold');doc.text(t.name,x,cellY+4,{maxWidth:cellW});
+      try{doc.addImage(t.photo,'JPEG',x,cellY+labelH,cellW,imgH,'','FAST');}
+      catch(e){doc.setTextColor(150,150,150);doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('[Photo unavailable]',x,cellY+labelH+imgH/2);}
+      if((idx+1)%4===0){y=margin+16;}else if(idx===photoTasks.length-1){y+=(rowInPage+1)*(cellH+gutter)+4;}
+    });
+  }
+  if(mode==='full'){hdr('Pipeline Progress Report - Full');dataSection();photosSection();ftr();doc.save('Parsons_Pipeline_Full_'+fmtISO(localMid(new Date()))+'.pdf');}
+  else if(mode==='data'){hdr('Pipeline Progress Report - Data & Notes');dataSection();ftr();doc.save('Parsons_Pipeline_Data_'+fmtISO(localMid(new Date()))+'.pdf');}
+  else if(mode==='photos'){hdr('Pipeline Progress Report - Site Photos');photosSection();ftr();doc.save('Parsons_Pipeline_Photos_'+fmtISO(localMid(new Date()))+'.pdf');}
+}
+
+// ---- INDEXEDDB STORAGE ----
+var DB_NAME='ParsonsDB2';var DB_STORE='state';var db=null;
+
+function openDB(cb){
+  if(db){cb(db);return;}
+  var req=indexedDB.open(DB_NAME,1);
+  req.onupgradeneeded=function(e){
+    var d=e.target.result;
+    if(!d.objectStoreNames.contains(DB_STORE)) d.createObjectStore(DB_STORE,{keyPath:'id'});
+  };
+  req.onsuccess=function(e){db=e.target.result;cb(db);};
+  req.onerror=function(){cb(null);};
+}
+
+function saveState(){
   syncLiveInputs();
-  var activeTasks = viewIndex === -1 ? TASKS : dayLog[viewIndex].tasks;
-  var prevStr = viewIndex === -1 ? fmtNice(prevDate) : dayLog[viewIndex].prevDate;
-  var currStr = viewIndex === -1 ? fmtNice(currDate) : dayLog[viewIndex].date;
-  var gn = viewIndex === -1 ? generalNotes : (dayLog[viewIndex].generalNotes || '');
-  var hasNotes = activeTasks.some(function(t){ return t.notes && t.notes.trim(); });
-  var photoTasks = activeTasks.filter(function(t){ return t.photo; });
-
-  var doc = new window.jspdf.jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
-  var pageW = doc.internal.pageSize.getWidth();
-  var pageH = doc.internal.pageSize.getHeight();
-  var margin = 15;
-  var y = margin;
-
-  function addHeader(subtitle) {
-    doc.setFillColor(26, 58, 92);
-    doc.rect(0, 0, pageW, 28, 'F');
-    doc.setTextColor(245, 158, 11);
-    doc.setFontSize(20); doc.setFont('helvetica', 'bold');
-    doc.text('PARSONS', margin, 12);
-    doc.setFontSize(11); doc.setFont('helvetica', 'normal');
-    doc.text(subtitle, margin, 20);
-    doc.setTextColor(200, 220, 240);
-    doc.setFontSize(9);
-    doc.text('Previous: ' + prevStr + '   |   Current: ' + currStr, margin, 26);
-  }
-
-  function addFooter() {
-    doc.setTextColor(150, 150, 150);
-    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-    doc.text('Generated: ' + new Date().toLocaleString(), margin, pageH - 8);
-  }
-
-  function addDataSection() {
-    y = 36;
-    var head = [['Task', 'Sta Start', 'Sta End', 'PC Start', 'PC End']];
-    if (hasNotes) head[0].push('Notes');
-    var body = activeTasks.map(function(t) {
-      var row = [t.name, t.stStart||'--', t.stEnd||'--', t.wjStart||'--', t.wjEnd||'--'];
-      if (hasNotes) row.push(t.notes || '');
-      return row;
-    });
-    doc.autoTable({
-      startY: y, head: head, body: body,
-      margin: {left: margin, right: margin},
-      styles: {fontSize: 9, cellPadding: 3, valign: 'middle'},
-      headStyles: {fillColor:[26,58,92], textColor:[245,158,11], fontStyle:'bold', halign:'center'},
-      columnStyles: {
-        0: {fontStyle:'bold', halign:'left', cellWidth: hasNotes ? 28 : 36},
-        1: {halign:'center', cellWidth:22}, 2: {halign:'center', cellWidth:22},
-        3: {halign:'center', cellWidth:22}, 4: {halign:'center', cellWidth:22},
-        5: {halign:'left', cellWidth: hasNotes ? 44 : 0}
-      },
-      alternateRowStyles: {fillColor:[240,246,252]},
-      didParseCell: function(data) {
-        if (data.row.index % 2 === 0 && data.section === 'body') data.cell.styles.fillColor = [255,255,255];
-      }
-    });
-    y = doc.lastAutoTable.finalY + 8;
-    if (gn.trim()) {
-      if (y > 240) { doc.addPage(); addFooter(); y = margin; }
-      doc.setTextColor(26,58,92); doc.setFontSize(11); doc.setFont('helvetica','bold');
-      doc.text('General Notes', margin, y); y += 6;
-      doc.setTextColor(60,60,60); doc.setFontSize(9); doc.setFont('helvetica','normal');
-      var gnLines = doc.splitTextToSize(gn, pageW - margin * 2);
-      doc.text(gnLines, margin, y);
-      y += gnLines.length * 5 + 8;
-    }
-  }
-
-  function addPhotosSection() {
-    if (photoTasks.length === 0) {
-      if (mode === 'photos') y = 36;
-      doc.setTextColor(150,150,150); doc.setFontSize(10); doc.setFont('helvetica','normal');
-      doc.text('No photos taken for this date.', margin, y + 10);
-      return;
-    }
-    if (mode === 'photos') y = 36;
-    if (y > 200) { doc.addPage(); addFooter(); y = margin; }
-    doc.setTextColor(26,58,92); doc.setFontSize(11); doc.setFont('helvetica','bold');
-    doc.text('Site Photos', margin, y); y += 8;
-
-    var cols = 2, gutter = 6;
-    var cellW = (pageW - margin * 2 - gutter) / 2;
-    var labelH = 6, imgH = 55, cellH = labelH + imgH + 4;
-
-    photoTasks.forEach(function(t, idx) {
-      var col = idx % cols;
-      var rowInPage = Math.floor(idx / cols) % 2;
-      if (idx > 0 && idx % 4 === 0) {
-        doc.addPage(); addFooter(); y = margin;
-        doc.setTextColor(26,58,92); doc.setFontSize(11); doc.setFont('helvetica','bold');
-        doc.text('Site Photos (continued)', margin, y); y += 8;
-      }
-      var x = margin + col * (cellW + gutter);
-      var cellY = y + rowInPage * (cellH + gutter);
-      doc.setTextColor(26,58,92); doc.setFontSize(9); doc.setFont('helvetica','bold');
-      doc.text(t.name, x, cellY + 4, {maxWidth: cellW});
-      try {
-        doc.addImage(t.photo, 'JPEG', x, cellY + labelH, cellW, imgH, '', 'FAST');
-      } catch(e) {
-        doc.setTextColor(150,150,150); doc.setFontSize(8); doc.setFont('helvetica','normal');
-        doc.text('[Photo unavailable]', x, cellY + labelH + imgH / 2);
-      }
-      if ((idx + 1) % 4 === 0) { y = margin + 16; }
-      else if (idx === photoTasks.length - 1) { y += (rowInPage + 1) * (cellH + gutter) + 4; }
-    });
-  }
-
-  if (mode === 'full') {
-    addHeader('Pipeline Progress Report - Full');
-    addDataSection(); addPhotosSection(); addFooter();
-    doc.save('Parsons_Pipeline_Full_' + fmtISO(currDate) + '.pdf');
-  } else if (mode === 'data') {
-    addHeader('Pipeline Progress Report - Data & Notes');
-    addDataSection(); addFooter();
-    doc.save('Parsons_Pipeline_Data_' + fmtISO(currDate) + '.pdf');
-  } else if (mode === 'photos') {
-    addHeader('Pipeline Progress Report - Site Photos');
-    addPhotosSection(); addFooter();
-    doc.save('Parsons_Pipeline_Photos_' + fmtISO(currDate) + '.pdf');
-  }
-}
-
-// PERSISTENCE - Using IndexedDB for reliable storage on all devices
-var DB_NAME = 'ParsonsDB';
-var DB_VERSION = 1;
-var DB_STORE = 'appstate';
-var db = null;
-var saveTimer = null;
-var appReady = false;
-
-function setSaveStatus(status, msg) {
-  var bar = document.getElementById('saveBar');
-  if (!bar) return;
-  bar.className = 'save-bar ' + status;
-  bar.innerHTML = msg;
-}
-
-function debounceSave() {
-  setSaveStatus('saving', '&#8635; Saving...');
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveState, 300);
-}
-
-// Open IndexedDB
-function openDB(callback) {
-  if (db) { callback(db); return; }
-  var req = indexedDB.open(DB_NAME, DB_VERSION);
-  req.onupgradeneeded = function(e) {
-    var d = e.target.result;
-    if (!d.objectStoreNames.contains(DB_STORE)) {
-      d.createObjectStore(DB_STORE, {keyPath: 'id'});
-    }
+  var today=localMid(new Date());
+  var state={
+    id:'main',
+    savedDate:fmtISO(today),
+    TASKS:TASKS.map(function(t){return {name:t.name,stStart:t.stStart,stEnd:t.stEnd,wjStart:t.wjStart,wjEnd:t.wjEnd,notes:t.notes,photo:t.photo};}),
+    generalNotes:generalNotes
   };
-  req.onsuccess = function(e) {
-    db = e.target.result;
-    callback(db);
-  };
-  req.onerror = function() {
-    console.warn('IndexedDB failed, falling back to localStorage');
-    callback(null);
-  };
-}
-
-function saveState() {
-  syncLiveInputs();
-  var state = {
-    id: 'main',
-    TASKS: TASKS.map(function(t) {
-      return {name:t.name, stStart:t.stStart, stEnd:t.stEnd,
-              wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:t.photo};
-    }),
-    dayLog: dayLog.map(function(d) {
-      return {prevDate:d.prevDate, date:d.date, generalNotes:d.generalNotes||'',
-              tasks:d.tasks.map(function(t){
-                return {name:t.name, stStart:t.stStart, stEnd:t.stEnd,
-                        wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:t.photo||''};
-              })};
-    }),
-    generalNotes: generalNotes,
-    currDate: fmtISO(currDate),
-    prevDate: fmtISO(prevDate),
-    viewIndex: viewIndex,
-    lastAdvanced: (function(){ try{ return localStorage.getItem('parsons_lastAdvanced')||''; }catch(e){return '';} })()
-  };
-
-  openDB(function(database) {
-    if (database) {
-      try {
-        var tx = database.transaction(DB_STORE, 'readwrite');
-        var store = tx.objectStore(DB_STORE);
-        store.put(state);
-        tx.oncomplete = function() {
-          var t = new Date();
-          var h = t.getHours(), mi = String(t.getMinutes()).padStart(2,'0');
-          var ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
-          setSaveStatus('saved', '&#10003; Saved ' + h + ':' + mi + ' ' + ap);
-        };
-        tx.onerror = function() { fallbackSave(state); };
-      } catch(e) { fallbackSave(state); }
-    } else {
-      fallbackSave(state);
-    }
+  openDB(function(database){
+    if(database){
+      try{
+        var tx=database.transaction(DB_STORE,'readwrite');
+        tx.objectStore(DB_STORE).put(state);
+        tx.oncomplete=function(){showSaved();};
+        tx.onerror=function(){lsSave(state);};
+      }catch(e){lsSave(state);}
+    } else {lsSave(state);}
   });
 }
 
-function fallbackSave(state) {
-  // localStorage fallback without photos
-  try {
-    var lite = JSON.parse(JSON.stringify(state));
-    lite.TASKS = lite.TASKS.map(function(t){
-      return {name:t.name,stStart:t.stStart,stEnd:t.stEnd,wjStart:t.wjStart,wjEnd:t.wjEnd,notes:t.notes,photo:''};
-    });
-    localStorage.setItem('parsons_fallback', JSON.stringify(lite));
-    var t = new Date();
-    var h = t.getHours(), mi = String(t.getMinutes()).padStart(2,'0');
-    var ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
-    setSaveStatus('saved', '&#10003; Saved ' + h + ':' + mi + ' ' + ap);
-  } catch(e) {
-    setSaveStatus('error', '&#9888; Save failed - tap to retry');
-    var bar = document.getElementById('saveBar');
-    if (bar) bar.onclick = function(){ saveState(); this.onclick=null; };
+function lsSave(state){
+  try{
+    var lite=JSON.parse(JSON.stringify(state));
+    lite.TASKS=lite.TASKS.map(function(t){return {name:t.name,stStart:t.stStart,stEnd:t.stEnd,wjStart:t.wjStart,wjEnd:t.wjEnd,notes:t.notes,photo:''};});
+    localStorage.setItem('parsons_ls',JSON.stringify(lite));
+    showSaved();
+  }catch(e){
+    setSaveStatus('error','&#9888; Save failed - tap to retry');
+    var bar=document.getElementById('saveBar');
+    if(bar)bar.onclick=function(){saveState();this.onclick=null;};
   }
 }
 
-function loadState(callback) {
-  openDB(function(database) {
-    if (database) {
-      try {
-        var tx = database.transaction(DB_STORE, 'readonly');
-        var store = tx.objectStore(DB_STORE);
-        var req = store.get('main');
-        req.onsuccess = function(e) {
-          var s = e.target.result;
-          if (s) { applyState(s); callback(true); }
-          else { tryFallbackLoad(callback); }
+function showSaved(){
+  var t=new Date(),h=t.getHours(),mi=String(t.getMinutes()).padStart(2,'0'),ap=h>=12?'PM':'AM';
+  h=h%12||12;
+  setSaveStatus('saved','&#10003; Saved '+h+':'+mi+' '+ap);
+}
+
+function loadState(cb){
+  openDB(function(database){
+    if(database){
+      try{
+        var tx=database.transaction(DB_STORE,'readonly');
+        var req=tx.objectStore(DB_STORE).get('main');
+        req.onsuccess=function(e){
+          if(e.target.result){applyAndAdvance(e.target.result);cb(true);}
+          else{lsLoad(cb);}
         };
-        req.onerror = function() { tryFallbackLoad(callback); };
-      } catch(e) { tryFallbackLoad(callback); }
-    } else {
-      tryFallbackLoad(callback);
-    }
+        req.onerror=function(){lsLoad(cb);};
+      }catch(e){lsLoad(cb);}
+    } else {lsLoad(cb);}
   });
 }
 
-function tryFallbackLoad(callback) {
-  try {
-    var raw = localStorage.getItem('parsons_fallback');
-    if (raw) { applyState(JSON.parse(raw)); callback(true); }
-    else { callback(false); }
-  } catch(e) { callback(false); }
+function lsLoad(cb){
+  try{
+    var raw=localStorage.getItem('parsons_ls');
+    if(raw){applyAndAdvance(JSON.parse(raw));cb(true);}else{cb(false);}
+  }catch(e){cb(false);}
 }
 
-function applyState(s) {
-  var today = localMid(new Date());
-  if (s.TASKS) {
-    TASKS.length = 0;
-    s.TASKS.forEach(function(t) {
-      TASKS.push({name:t.name, stStart:t.stStart, stEnd:t.stEnd,
-                  wjStart:t.wjStart, wjEnd:t.wjEnd, notes:t.notes, photo:t.photo||''});
+function applyAndAdvance(s){
+  var today=localMid(new Date());
+  var todayISO=fmtISO(today);
+  var savedDate=s.savedDate||'';
+
+  // Load task data
+  if(s.TASKS){
+    TASKS.length=0;
+    s.TASKS.forEach(function(t){TASKS.push({name:t.name,stStart:t.stStart,stEnd:t.stEnd,wjStart:t.wjStart,wjEnd:t.wjEnd,notes:t.notes,photo:t.photo||''},);});
+  }
+  if(s.generalNotes!==undefined) generalNotes=s.generalNotes;
+
+  // If saved on a PREVIOUS day, shift ends to starts
+  if(savedDate && savedDate !== todayISO){
+    TASKS.forEach(function(t){
+      if(t.stEnd||t.wjEnd){
+        t.stStart=t.stEnd;t.stEnd='';
+        t.wjStart=t.wjEnd;t.wjEnd='';
+      } else {
+        t.stEnd='';t.wjEnd='';
+      }
+      t.photo='';
+      t.notes='';
     });
+    generalNotes='';
+    // Save immediately with today's date
+    saveState();
   }
-  if (s.dayLog && s.dayLog.length > 0) {
-    dayLog.length = 0;
-    var last = s.dayLog[s.dayLog.length - 1];
-    var entryDate = last.date ? new Date(last.date) : null;
-    if (entryDate && !isNaN(entryDate) && entryDate <= today) {
-      dayLog.push({
-        prevDate:last.prevDate, date:last.date, generalNotes:last.generalNotes||'',
-        tasks:last.tasks.map(function(t){
-          return {name:t.name,stStart:t.stStart,stEnd:t.stEnd,
-                  wjStart:t.wjStart,wjEnd:t.wjEnd,notes:t.notes,photo:t.photo||''};
-        })
-      });
-    }
-  }
-  if (s.generalNotes !== undefined) generalNotes = s.generalNotes;
-  if (s.currDate) {
-    var saved = localMid(new Date(s.currDate));
-    currDate = (saved > today) ? today : saved;
-  }
-  prevDate = addDays(currDate, -1);
-  if (s.viewIndex !== undefined) viewIndex = s.viewIndex;
 }
 
-function initApp(restored) {
-  if (!restored) {
-    initDates();
-  } else {
-    updateDateDisplay();
-    var gnEl = document.getElementById('generalNotesEl');
-    if (gnEl) gnEl.value = generalNotes;
+// Save on visibility change and page hide
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&appReady)saveState();});
+window.addEventListener('pagehide',function(){if(appReady)saveState();});
+window.addEventListener('beforeunload',function(){if(appReady)saveState();});
 
-    // Auto-advance once per day if last used on a previous day
-    var today = localMid(new Date());
-    var todayISO = fmtISO(today);
-    var lastAdvanced = '';
-    try { lastAdvanced = localStorage.getItem('parsons_lastAdvanced') || ''; } catch(e) {}
+document.getElementById('generalNotesEl').addEventListener('input',function(e){
+  generalNotes=e.target.value;debounceSave();
+});
 
-    if (currDate < today && lastAdvanced !== todayISO) {
-      var snapshot = {
-        prevDate: fmtNice(prevDate),
-        date: fmtNice(currDate),
-        generalNotes: generalNotes,
-        tasks: TASKS.map(function(t) {
-          return {name:t.name,stStart:t.stStart,stEnd:t.stEnd,
-                  wjStart:t.wjStart,wjEnd:t.wjEnd,notes:t.notes,photo:t.photo};
-        })
-      };
-      dayLog.length = 0;
-      dayLog.push(snapshot);
-      TASKS.forEach(function(t) {
-        if (t.stEnd || t.wjEnd) {
-          t.stStart = t.stEnd; t.stEnd = '';
-          t.wjStart = t.wjEnd; t.wjEnd = '';
-        } else {
-          t.stEnd = ''; t.wjEnd = '';
-        }
-        t.photo = '';
-        t.notes = '';
-      });
-      prevDate = localMid(currDate);
-      currDate = today;
-      viewIndex = -1;
-      try { localStorage.setItem('parsons_lastAdvanced', todayISO); } catch(e) {}
-      saveState();
-    }
+// ---- SUNLIGHT MODE ----
+function toggleSun(){
+  var isSun=document.body.classList.toggle('sun');
+  document.getElementById('sunBtn').innerHTML=isSun?'&#9790; Night':'&#9728; Sunlight';
+  try{localStorage.setItem('parsons_sun',isSun?'1':'0');}catch(e){}
+}
+
+// ---- INIT ----
+updateTodayLabel();
+loadState(function(restored){
+  if(!restored){
+    // First run - blank state
+    TASKS=TASK_NAMES.map(blankTask);
+    generalNotes='';
   }
-
-  if (viewIndex === -1) { renderCards(TASKS, false); }
-  else { renderCards(dayLog[viewIndex] ? dayLog[viewIndex].tasks : TASKS, viewIndex !== -1); }
-
-  updateDateDisplay();
-
-  // Restore sunlight preference
-  try {
-    if (localStorage.getItem('parsons_sun') === '1') {
+  document.getElementById('generalNotesEl').value=generalNotes;
+  renderCards();
+  appReady=true;
+  // Restore sun pref
+  try{
+    if(localStorage.getItem('parsons_sun')==='1'){
       document.body.classList.add('sun');
-      document.getElementById('sunBtn').innerHTML = '&#9790; Night';
+      document.getElementById('sunBtn').innerHTML='&#9790; Night';
     }
-  } catch(e) {}
-
-  appReady = true;
-}
-
-// Save when app goes to background
-document.addEventListener('visibilitychange', function() {
-  if (document.visibilityState === 'hidden' && appReady) saveState();
-});
-window.addEventListener('pagehide', function(){ if(appReady) saveState(); });
-window.addEventListener('beforeunload', function(){ if(appReady) saveState(); });
-
-document.getElementById('generalNotesEl').addEventListener('input', function(e) {
-  generalNotes = e.target.value;
-  debounceSave();
-});
-
-// SUNLIGHT MODE
-function toggleSun() {
-  var isSun = document.body.classList.toggle('sun');
-  document.getElementById('sunBtn').innerHTML = isSun ? '&#9790; Night' : '&#9728; Sunlight';
-  try { localStorage.setItem('parsons_sun', isSun ? '1' : '0'); } catch(e) {}
-}
-
-// INIT - load state then start app
-loadState(function(restored) {
-  initApp(restored);
+  }catch(e){}
 });
 </script>
 
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('./sw.js').catch(function(e){ console.log('SW error', e); });
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(e){console.log('SW error',e);});
   });
 }
 </script>
